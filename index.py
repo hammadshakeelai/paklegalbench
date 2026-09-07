@@ -290,6 +290,113 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
     return found
 
 
+# Statutory legal lexicon mapping Urdu and Perso-Arabic legal terminology to English statutory concepts
+URDU_LEGAL_LEXICON: list[tuple[re.Pattern, str]] = [
+    # Institutions & Offices
+    (re.compile(r"قومی\s*اسمبلی"), "national assembly"),
+    (re.compile(r"سینیٹ"), "senate"),
+    (re.compile(r"مجلس\s*شوری|پارلیمنٹ"), "majlis-e-shoora parliament"),
+    (re.compile(r"سپریم\s*کورٹ|عدالت\s*عظمی"), "supreme court"),
+    (re.compile(r"ہائی\s*کورٹ|عدالت\s*عالیہ"), "high court"),
+    (re.compile(r"صدر\s*مملکت|صدر\b"), "president"),
+    (re.compile(r"وزیراعظم"), "prime minister"),
+    (re.compile(r"چیف\s*جسٹس"), "chief justice"),
+    (re.compile(r"جج|ججز"), "judge judges"),
+    (re.compile(r"وفاقی\s*شرعی\s*عدالت"), "federal shariat court"),
+    (re.compile(r"اسلامی\s*نظریاتی\s*کونسل|اسلامی\s*کونسل"), "islamic council council of islamic ideology"),
+    (re.compile(r"الیکشن\s*کمیشن"), "election commission chief election commissioner"),
+    (re.compile(r"وفاقی\s*حکومت"), "federal government"),
+    (re.compile(r"صوبائی\s*اسمبلی"), "provincial assembly"),
+    (re.compile(r"گورنر"), "governor"),
+    (re.compile(r"وزیراعلی"), "chief minister"),
+    (re.compile(r"مقامی\s*حکومت|مقامی\s*حکومتوں"), "local government local governments devolve"),
+    (re.compile(r"مشترکہ\s*مفادات\s*کونسل"), "council of common interests"),
+    (re.compile(r"قومی\s*اقتصادی\s*کونسل"), "national economic council"),
+    (re.compile(r"قومی\s*مالیاتی\s*کمیشن|این\s*ایف\s*سی"), "national finance commission nfc"),
+    (re.compile(r"مسلح\s*افواج"), "armed forces military"),
+    (re.compile(r"سول\s*سروس"), "civil service service of pakistan"),
+    (re.compile(r"آڈیٹر\s*جنرل"), "auditor general"),
+    (re.compile(r"اٹارنی\s*جنرل"), "attorney general"),
+    (re.compile(r"ایڈووکیٹ\s*جنرل"), "advocate general"),
+    # Constitutional Rights & Principles
+    (re.compile(r"بنیادی\s*حقوق"), "fundamental rights"),
+    (re.compile(r"حق\s*زندگی|زندگی"), "life liberty security of person"),
+    (re.compile(r"منصفانہ\s*ٹرائل"), "fair trial due process"),
+    (re.compile(r"گرفتاری|حراست"), "arrest detention safeguards"),
+    (re.compile(r"غلامی|مجبور\s*مشقت"), "slavery forced labour child"),
+    (re.compile(r"دوہری\s*سزا"), "double punishment jeopardy self-incrimination"),
+    (re.compile(r"عزت\s*نفس|وقار"), "dignity of man privacy home"),
+    (re.compile(r"نقل\s*و\s*حرکت|سفر"), "movement travel reside remain"),
+    (re.compile(r"اجتماع|جلسہ"), "assembly peaceably without arms"),
+    (re.compile(r"انجمن\s*سازی|جماعت"), "association political party union"),
+    (re.compile(r"تجارت|کاروبار|پیشہ"), "trade business profession lawful"),
+    (re.compile(r"تقریر|اظہار\s*رائے"), "speech expression press"),
+    (re.compile(r"معلومات\s*تک\s*رسائی|حق\s*معلومات"), "information right to information access"),
+    (re.compile(r"مذہب\s*کی\s*آزادی|مذہبی\s*آزادی"), "freedom of religion religious institutions profess"),
+    (re.compile(r"مساوات|برابری"), "equality of citizens equal protection discrimination"),
+    (re.compile(r"تعلیم\s*کا\s*حق|تعلیم"), "education free and compulsory education children"),
+    (re.compile(r"جائیداد\s*کا\s*حق|ملکیت"), "property acquire hold dispose of property"),
+    (re.compile(r"عورتوں\s*اور\s*بچوں"), "women and children special provision protection"),
+    (re.compile(r"اقلیتوں"), "minorities minority legitimate rights interests"),
+    (re.compile(r"سنگین\s*غداری"), "high treason subvert abrogate force conspiracy"),
+    (re.compile(r"آئینی\s*ترمیم"), "amendment of constitution amend bill two-thirds"),
+    (re.compile(r"قانون\s*سازی|قانون"), "legislation law act parliament"),
+    (re.compile(r"آرڈیننس"), "ordinance promulgate president national assembly"),
+    (re.compile(r"مالیاتی\s*بل|منی\s*بل"), "money bill imposition regulation tax borrowing"),
+    (re.compile(r"بجٹ|سالانہ\s*بجٹ|مصارف"), "annual budget statement expenditure authorized schedule"),
+    (re.compile(r"مخصوص\s*نشستیں"), "reserved seats women non-muslims proportional representation"),
+    (re.compile(r"تحریک\s*عدم\s*اعتماد|عدم\s*اعتماد"), "vote of no-confidence resolution prime minister"),
+    (re.compile(r"منحرف\s*رکن|انحراف"), "defected member disqualification ground of defection resignation"),
+    (re.compile(r"نااہلی"), "disqualification qualification member parliament"),
+    (re.compile(r"ہنگامی\s*حالت|ایمرجنسی"), "emergency proclamation war external aggression financial internal"),
+    (re.compile(r"تحلیل"), "dissolution dissolve national assembly prime minister advise"),
+    (re.compile(r"حلف"), "oath affirmation third schedule office"),
+    (re.compile(r"نگران\s*حکومت|نگران\s*وزیراعظم"), "caretaker government caretaker prime minister dissolution"),
+    (re.compile(r"توثیق\s*شدہ\s*جدول"), "authenticated schedule of authorized expenditure laying authenticate"),
+    (re.compile(r"صدر\s*مقام"), "principal seat bench high court"),
+    (re.compile(r"رائے\s*شماری|انتخاب"), "election voting poll majority ballot candidate"),
+    (re.compile(r"اسلامی\s*تعلیمات|اسلامی\s*طرز\s*زندگی"), "islamic way of life teachings quran sunnah"),
+    (re.compile(r"شہری|شہریوں"), "citizen citizens nationality pakistan"),
+    # Penal & Criminal Procedure
+    (re.compile(r"قتل\s*عمد"), "qatl-i-amd intentional murder death punishment"),
+    (re.compile(r"قتل\s*خطا"), "qatl-i-khata accidental murder diyat"),
+    (re.compile(r"قتل\s*شبہ\s*عمد"), "qatl shibh-i-amd"),
+    (re.compile(r"زنا|زیادتی"), "rape sexual intercourse"),
+    (re.compile(r"چوری"), "theft stolen property dishonest"),
+    (re.compile(r"ڈکیتی"), "dacoity robbery extortion"),
+    (re.compile(r"دھوکہ\s*دہی|فریب"), "cheating fraudulently dishonestly"),
+    (re.compile(r"چیک\s*باؤنس|بوگس\s*چیک"), "cheque dishonour dishonestly issuing cheque"),
+    (re.compile(r"امانت\s*میں\s*خیانت"), "criminal breach of trust entrustment"),
+    (re.compile(r"جعل\s*سازی"), "forgery forged document"),
+    (re.compile(r"رشوت"), "bribery public servant illegal gratification"),
+    (re.compile(r"تہمت|بدنامی"), "defamation reputation"),
+    (re.compile(r"ضمانت"), "bail bailable non-bailable bond"),
+    (re.compile(r"قبل\s*از\s*گرفتاری\s*ضمانت|عبوری\s*ضمانت"), "pre-arrest bail anticipatory"),
+    (re.compile(r"بعد\s*از\s*گرفتاری\s*ضمانت"), "post-arrest bail release"),
+    (re.compile(r"ایف\s*آئی\s*آر|پہلی\s*اطلاعی\s*رپورٹ"), "first information report cognizable"),
+    (re.compile(r"چالان|پولیس\s*رپورٹ"), "police report investigation report magistrate"),
+    (re.compile(r"بریت|رہائی"), "acquittal acquit discharge"),
+    (re.compile(r"تفتیش"), "investigation inquiry police officer"),
+    (re.compile(r"وارنٹ"), "warrant arrest warrant summons"),
+    (re.compile(r"تلاشی"), "search warrant inspection"),
+    (re.compile(r"اعتراف\s*جرم|اقبالی\s*بیان"), "confession magistrate recording statement"),
+    (re.compile(r"فرد\s*جرم"), "charge frame charge"),
+]
+
+
+def expand_multilingual_query(query: str) -> str:
+    """Expand Urdu and Perso-Arabic legal queries with English statutory vocabulary."""
+    if not re.search(r"[\u0600-\u06FF]", query):
+        return query
+    expansions = []
+    for pat, eng in URDU_LEGAL_LEXICON:
+        if pat.search(query):
+            expansions.append(eng)
+    if expansions:
+        return f"{query} {' '.join(expansions)}"
+    return query
+
+
 def rrf(ranked_lists: list[list[str]], k: int = 60,
         weights: list[float] | None = None) -> list[tuple[str, float]]:
     """
@@ -514,7 +621,8 @@ class Retriever:
             add("exact", self._exact_channel(query))
 
         if cfg.use_sparse:
-            s = self.bm25.scores([stem(t) for t in tokenize(query)])
+            sparse_query = expand_multilingual_query(query)
+            s = self.bm25.scores([stem(t) for t in tokenize(sparse_query)])
             ranked = sorted(range(len(s)), key=lambda i: -s[i])[:cfg.candidates]
             add("sparse", [self.ids[i] for i in ranked if s[i] > 0])
 
@@ -595,7 +703,8 @@ class Retriever:
         if "exact" in hits[0].channels:
             return None
 
-        q_terms = {stem(t) for t in tokenize(query) if t not in STOPWORDS}
+        check_query = expand_multilingual_query(query)
+        q_terms = {stem(t) for t in tokenize(check_query) if t not in STOPWORDS}
         if q_terms:
             top_terms = {stem(t) for t in tokenize(hits[0].chunk.indexed_text())}
             coverage = len(q_terms & top_terms) / len(q_terms)

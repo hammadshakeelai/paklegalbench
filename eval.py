@@ -152,6 +152,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--adversarial", action="store_true")
     ap.add_argument("--legal-uqa", action="store_true")
+    ap.add_argument("--urdu", action="store_true", help="Evaluate using Urdu questions from LEGAL-UQA")
     ap.add_argument("--corpus", default=None, help="Path to corpus chunks json")
     ap.add_argument("--out", default="results/retrieval.json")
     args = ap.parse_args()
@@ -169,6 +170,13 @@ def main():
     if args.legal_uqa:
         cases += load_legal_uqa()
 
+    if args.urdu:
+        cases = [
+            {**c, "question": c.get("question_urdu") or c["question"]}
+            for c in cases
+        ]
+        print("Mode: Urdu questions evaluation active.")
+
     chunks = load_chunks(corpus_path)
     retriever = Retriever(chunks)
     print(f"{len(cases)} cases · {len(chunks)} chunks · dense {'on' if retriever.dense_available else 'OFF'}\n")
@@ -180,10 +188,14 @@ def main():
         results[name] = score(retriever, cases, cfg)
 
     print(table(results))
-    out = ROOT / args.out
+    out_file = args.out
+    if args.out == "results/retrieval.json" and args.legal_uqa:
+        out_file = "results/legal_uqa_urdu.json" if args.urdu else "results/legal_uqa_eng.json"
+
+    out = ROOT / out_file
     out.parent.mkdir(exist_ok=True)
     out.write_text(json.dumps(results, indent=2))
-    print(f"\nwritten to {args.out}")
+    print(f"\nwritten to {out_file}")
 
 
 if __name__ == "__main__":

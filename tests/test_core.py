@@ -324,6 +324,63 @@ def test_legal_uqa_benchmark_mapping():
         assert c["gold_ids"][0].startswith("const-1973-a"), f"Invalid gold_id format: {c['gold_ids'][0]}"
 
 
+def test_expand_multilingual_query():
+    from index import expand_multilingual_query
+
+    # English query should remain unmodified
+    eng_q = "What is the penalty for murder under 302 PPC?"
+    assert expand_multilingual_query(eng_q) == eng_q
+
+    # Urdu queries should append corresponding English statutory terminology
+    urdu_q1 = "کیا قومی اسمبلی میں خواتین کے لیے مخصوص نشستیں ہیں؟"
+    expanded1 = expand_multilingual_query(urdu_q1)
+    assert "national assembly" in expanded1
+    assert "reserved seats" in expanded1
+
+    urdu_q2 = "مقامی حکومتوں کے اختیارات اور ذمہ داریاں"
+    expanded2 = expand_multilingual_query(urdu_q2)
+    assert "local government" in expanded2
+    assert "devolve" in expanded2
+
+
+def test_urdu_conceptual_retrieval():
+    from index import Retriever, load_chunks, RetrievalConfig
+    r = Retriever(load_chunks(), load_dense=False)
+    cfg = RetrievalConfig()
+
+    # Query in pure Urdu script asking about fair trial
+    hits_trial = r.search("منصفانہ ٹرائل کا حق اور قانونی تقاضے", cfg)
+    assert len(hits_trial) > 0
+    assert hits_trial[0].chunk.citation() == "Constitution, Article 10A"
+
+    # Query in pure Urdu script asking about right to information
+    hits_info = r.search("معلومات تک رسائی کا بنیادی حق", cfg)
+    assert len(hits_info) > 0
+    assert hits_info[0].chunk.citation() == "Constitution, Article 19A"
+
+    # If full chunks.json is present, also test local government
+    from pathlib import Path
+    if Path("chunks.json").exists():
+        r_full = Retriever(load_chunks("chunks.json"), load_dense=False)
+        hits_local = r_full.search("مقامی حکومتوں کے اختیارات اور ذمہ داریاں", cfg)
+        assert len(hits_local) > 0
+        assert "140A" in hits_local[0].chunk.citation() or "Local Government" in hits_local[0].chunk.marginal_note
+
+
+def test_stanford_hallucination_benchmark():
+    import stanford_eval
+    from index import Retriever, load_chunks
+    r = Retriever(load_chunks(), load_dense=False)
+    report = stanford_eval.run_evaluation(r, mode="mock")
+
+    assert report["citation_metrics"]["citation_grounding_rate"] == 1.0
+    assert report["citation_metrics"]["citation_hallucination_rate"] == 0.0
+    assert report["refusal_metrics"]["premise_verification_rate"] == 1.0
+    assert report["safety_metrics"]["disclaimer_compliance_rate"] == 1.0
+
+
+
+
 
 
 
