@@ -85,12 +85,7 @@ class Chunk:
 
 def load_chunks(path: Path | str | None = None) -> list[Chunk]:
     if path is None:
-        env_path = os.environ.get("PLB_CORPUS_PATH")
-        if env_path:
-            path = Path(env_path)
-        else:
-            chunks_json = ROOT / "chunks.json"
-            path = chunks_json if chunks_json.exists() else DEFAULT_CORPUS
+        path = os.environ.get("PLB_CORPUS_PATH", DEFAULT_CORPUS)
     raw = json.loads(Path(path).read_text(encoding="utf-8"))
     rows = raw["chunks"] if isinstance(raw, dict) else raw
     return [Chunk(**{k: v for k, v in r.items() if not k.startswith("_")}) for r in rows]
