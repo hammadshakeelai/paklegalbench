@@ -16,7 +16,8 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 
 import llm
 from index import RetrievalConfig, build_default
@@ -24,6 +25,7 @@ from index import RetrievalConfig, build_default
 ROOT = Path(__file__).parent
 
 app = FastAPI(title="PakLegalBench")
+app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
 # Loading the embedding model takes ~10s. Set PLB_NO_DENSE=1 for fast restarts.
 retriever = build_default() if not os.environ.get("PLB_NO_DENSE") else None
@@ -33,15 +35,40 @@ if retriever is None:
 
 
 class ChatRequest(BaseModel):
-    question: str
-    history: list[dict] = []
+    question: str = Field(..., max_length=4000)
+    history: list[dict] = Field(default_factory=list, max_length=10)
     use_exact: bool = True
     use_sparse: bool = True
     use_dense: bool = True
     use_rerank: bool = False
 
 
-@app.get("/api/health")
+class HealthResponse(BaseModel):
+    chunks: int
+    dense: bool
+    providers: list[str]
+    corpus_verified: bool
+
+
+class SourceItem(BaseModel):
+    citation: str
+    marginal_note: str
+    act: str
+    text: str
+    score: float
+    channels: list[str]
+    verified: bool
+    source_url: str
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    refused: bool
+    sources: list[SourceItem] = []
+    provider: str | None = None
+
+
+@app.get("/api/health", response_model=HealthResponse)
 def health():
     return {
         "chunks": len(retriever.chunks),
@@ -54,7 +81,7 @@ def health():
 GREETINGS = {"hi", "hello", "hey", "salam", "assalam o alaikum", "aoa", "help", "start"}
 
 
-@app.post("/api/chat")
+@app.post("/api/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
     q_norm = req.question.strip().lower().rstrip("!?.,")
     if q_norm in GREETINGS:
@@ -98,7 +125,14 @@ def chat(req: ChatRequest):
 
     if retriever.should_refuse(hits, cfg, req.question):
         reason = retriever.refusal_reason(req.question, hits, cfg)
-        if reason and reason.startswith("unknown_provision:"):
+        if reason and reason.startswith("foreign_jurisdiction:"):
+            act = reason.split(":", 1)[1]
+            msg = (
+                f"The requested provision belongs to {act}, which is outside Pakistani jurisdiction. "
+                "PakLegalBench exclusively indexes Pakistani federal statutes (the Constitution 1973, "
+                "the Pakistan Penal Code 1860, and the Code of Criminal Procedure 1898)."
+            )
+        elif reason and reason.startswith("unknown_provision:"):
             prov = reason.split(":", 1)[1]
             msg = (
                 f"I could not find {prov} in the indexed corpus. "

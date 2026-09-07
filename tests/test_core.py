@@ -56,10 +56,187 @@ def test_reference_variants():
 
 def test_exact_channel_normalization():
     from index import Retriever, load_chunks
-    r = Retriever(load_chunks())
+    r = Retriever(load_chunks(), load_dense=False)
     assert "ppc-1860-s489f" in r._exact_channel("489F PPC")
     assert "ppc-1860-s489f" in r._exact_channel("Section 489-F PPC")
     assert "const-1973-a10a" in r._exact_channel("Article 10-A")
     assert "const-1973-a10a" in r._exact_channel("Article 10A")
     assert "crpc-1898-s265k" in r._exact_channel("265K CrPC")
+
+
+# --- Edge cases: empty, whitespace, and special symbols ---
+
+
+def test_tokenize_empty_and_whitespace():
+    assert tokenize("") == []
+    assert tokenize("   ") == []
+    assert tokenize(" \t \n \r ") == []
+
+
+def test_tokenize_special_symbols():
+    assert tokenize("!@#$%^&*()_+=-`~[]\\{}|;':\",./<>?") == []
+    assert tokenize("Section @#$ 302 !!! PPC ???") == ["section", "302", "ppc"]
+    assert tokenize("Section 489—F PPC") == ["section", "489", "f", "ppc"]
+
+
+def test_extract_references_empty_and_whitespace():
+    assert extract_references("") == []
+    assert extract_references("   ") == []
+    assert extract_references(" \t \n ") == []
+
+
+def test_extract_references_special_symbols():
+    assert extract_references("!@#$%^&*()_+") == []
+    assert extract_references("??? ... !!!") == []
+    assert extract_references("*** 302 PPC ***") == [("302", "PPC")]
+    assert extract_references("(u/s 497 Cr.P.C.)") == [("497", "CrPC")]
+    assert extract_references("[Article 199]") == [("199", "Constitution")]
+    assert extract_references("Section 302, PPC.") == [("302", "PPC")]
+
+
+# --- Edge cases: multiple citations in one query ---
+
+
+def test_extract_references_multiple_citations_ppc_and_crpc():
+    refs = extract_references("302 PPC and 497 CrPC")
+    assert ("302", "PPC") in refs
+    assert ("497", "CrPC") in refs
+    assert len(refs) == 2
+
+    refs_prefixed = extract_references("Section 302 PPC and Section 497 CrPC")
+    assert ("302", "PPC") in refs_prefixed
+    assert ("497", "CrPC") in refs_prefixed
+
+
+def test_extract_references_multiple_citations_same_act():
+    refs = extract_references("Article 199 and Article 10A")
+    assert ("199", "Constitution") in refs
+    assert ("10A", "Constitution") in refs
+    assert len(refs) == 2
+
+
+def test_extract_references_multiple_citations_cross_act():
+    refs = extract_references("Article 199 of Constitution and 302 PPC")
+    assert ("199", "Constitution") in refs
+    assert ("302", "PPC") in refs
+    assert len(refs) == 2
+
+    refs2 = extract_references("Section 489-F PPC and u/s 497 CrPC")
+    assert ("489-F", "PPC") in refs2
+    assert ("497", "CrPC") in refs2
+    assert len(refs2) == 2
+
+
+def test_exact_channel_multiple_citations():
+    from index import Retriever, load_chunks
+    r = Retriever(load_chunks(), load_dense=False)
+    exact = r._exact_channel("302 PPC and 497 CrPC")
+    assert "ppc-1860-s302" in exact
+    assert "crpc-1898-s497" in exact
+
+    exact_cross = r._exact_channel("Article 199 and 302 PPC")
+    assert "const-1973-a199" in exact_cross
+    assert "ppc-1860-s302" in exact_cross
+
+
+def test_retrieval_and_refusal_empty_and_whitespace():
+    from index import Retriever, load_chunks
+    r = Retriever(load_chunks(), load_dense=False)
+    for q in ["", "   ", " \t\n\r "]:
+        hits = r.search(q)
+        assert hits == []
+        assert r.refusal_reason(q, hits) == "nothing_retrieved"
+        assert r.should_refuse(hits, query=q) is True
+
+
+def test_retrieval_and_refusal_special_symbols():
+    from index import Retriever, load_chunks
+    r = Retriever(load_chunks(), load_dense=False)
+    for q in ["!@#$%^&*()_+=-", "??? ... !!!"]:
+        hits = r.search(q)
+        assert hits == []
+        assert r.refusal_reason(q, hits) == "nothing_retrieved"
+        assert r.should_refuse(hits, query=q) is True
+
+
+def test_retrieval_and_refusal_multiple_citations():
+    from index import Retriever, load_chunks
+    r = Retriever(load_chunks(), load_dense=False)
+    q = "302 PPC and 497 CrPC"
+    hits = r.search(q)
+    assert len(hits) >= 2
+    top_ids = [h.chunk.id for h in hits[:2]]
+    assert "ppc-1860-s302" in top_ids
+    assert "crpc-1898-s497" in top_ids
+    # Multi-citation query should NOT be falsely refused
+    assert r.should_refuse(hits, query=q) is False
+    assert r.refusal_reason(q, hits) is None
+
+
+# --- Pure function boundary & edge cases ---
+
+
+def test_rrf_boundary_conditions():
+    assert rrf([[], []]) == []
+    res = rrf([["x", "y"], []], k=60)
+    assert len(res) == 2
+    assert res[0][0] == "x"
+    assert res[1][0] == "y"
+
+
+def test_bm25_empty_and_oov():
+    from index import BM25
+    bm = BM25([["punishment", "murder", "ppc"], ["cheating", "property", "ppc"]])
+    assert bm.scores([]) == [0.0, 0.0]
+    assert bm.scores(["unknownterm123xyz"]) == [0.0, 0.0]
+
+
+# --- Vernacular statutory synonyms & filler words ---
+
+
+def test_vernacular_references():
+    assert ("154", "CrPC") in extract_references("how is an FIR registered")
+    assert ("154", "CrPC") in extract_references("First Information Report")
+    assert ("173", "CrPC") in extract_references("what is a challan")
+    assert ("498", "CrPC") in extract_references("how do I get pre-arrest bail")
+    assert ("498", "CrPC") in extract_references("anticipatory bail procedure")
+    assert ("497", "CrPC") in extract_references("can bail be granted in a non-bailable offence")
+    assert ("496", "CrPC") in extract_references("grant of bail in bailable offence")
+    assert ("199", "Constitution") in extract_references("which court has writ jurisdiction in Pakistan")
+    assert ("199", "Constitution") in extract_references("filing a writ petition")
+    assert ("302", "PPC") in extract_references("qatl-i-amd penalty")
+    assert ("302", "PPC") in extract_references("punishment for intentional murder")
+    assert ("489-F", "PPC") in extract_references("what happens if my cheque bounces")
+    assert ("489-F", "PPC") in extract_references("punishment for bounced cheque")
+    assert ("489-F", "PPC") in extract_references("cheque dishonour case")
+
+
+def test_filler_words_in_stopwords():
+    from index import STOPWORDS
+    assert "please" in STOPWORDS
+    assert "tell" in STOPWORDS
+    assert "me" in STOPWORDS
+    assert "kya" in STOPWORDS
+    assert "hai" in STOPWORDS
+    assert "hain" in STOPWORDS
+
+
+def test_stemming_inflections():
+    from index import stem
+    assert stem("detained") == "detain"
+    assert stem("detention") == "deten"
+    assert stem("producing") == "produc"
+    assert stem("produced") == "produc"
+    assert stem("bounces") == "bounc"
+
+
+def test_exact_channel_vernacular_resolution():
+    from index import Retriever, load_chunks
+    r = Retriever(load_chunks(), load_dense=False)
+    assert "ppc-1860-s489f" in r._exact_channel("what happens if my cheque bounces")
+    assert "crpc-1898-s173" in r._exact_channel("what is a challan")
+    assert "crpc-1898-s154" in r._exact_channel("how is an FIR registered")
+    assert "const-1973-a199" in r._exact_channel("which court has writ jurisdiction in Pakistan")
+
+
 

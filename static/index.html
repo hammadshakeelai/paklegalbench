@@ -157,10 +157,18 @@ document.querySelectorAll('.examples button').forEach(b => {
   b.addEventListener('click', () => { input.value = b.textContent; form.requestSubmit(); });
 });
 
-function esc(s){ return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function esc(s){
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
+}
 
 function citations(s){
-  return esc(s).replace(/\[([^\]]{2,60})\]/g, '<cite>[$1]</cite>');
+  return esc(s).replace(/\[([A-Za-z0-9\s,.-]{2,60})\]/g, '<cite>[$1]</cite>');
 }
 
 function addMsg(role, text, refused){

@@ -29,19 +29,31 @@ DEFAULT_CORPUS = ROOT / "seed_corpus.json"
 
 # Maps how people actually write act names to the act_short field.
 ACT_ALIASES = {
+    "pakistan penal code": "PPC",
+    "code of criminal procedure": "CrPC",
+    "criminal procedure": "CrPC",
+    "penal code": "PPC",
     "ppc": "PPC",
     "p.p.c": "PPC",
     "p.p.c.": "PPC",
-    "pakistan penal code": "PPC",
-    "penal code": "PPC",
     "crpc": "CrPC",
     "cr.p.c": "CrPC",
     "cr.p.c.": "CrPC",
-    "criminal procedure": "CrPC",
-    "code of criminal procedure": "CrPC",
     "constitution": "Constitution",
     "article": "Constitution",
     "art": "Constitution",
+}
+
+# Explicitly track foreign acts to prevent cross-jurisdictional confusion (e.g. IPC vs PPC)
+FOREIGN_ACTS = {
+    "indian penal code": "IPC",
+    "ipc": "IPC",
+    "i.p.c": "IPC",
+    "i.p.c.": "IPC",
+    "indian evidence act": "Indian Evidence Act",
+    "bnss": "BNSS",
+    "bns": "BNS",
+    "bsa": "BSA",
 }
 
 
@@ -98,13 +110,18 @@ def load_chunks(path: Path | str | None = None) -> list[Chunk]:
 TOKEN_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 
 # Deliberately short. Legal queries are terse and over-stripping destroys the
-# coverage signal used for refusal.
+# coverage signal used for refusal. Common conversational and Roman Urdu fillers
+# are included so bilingual user queries do not dilute refusal coverage.
 STOPWORDS = {
     "a", "an", "the", "is", "are", "was", "were", "be", "been", "of", "in", "on",
     "at", "to", "for", "with", "and", "or", "if", "it", "its", "this", "that",
     "what", "which", "who", "whom", "how", "when", "where", "why", "can", "could",
     "do", "does", "did", "i", "my", "me", "you", "your", "under", "about", "any",
     "there", "s", "u", "sec", "please", "tell", "explain", "give",
+    # Roman Urdu and conversational query fillers
+    "bhai", "kya", "hai", "hain", "ka", "ke", "ki", "ko", "se", "main", "mein",
+    "kaisay", "kaise", "kese", "hoga", "hogi", "hoti", "milti", "milegi", "karein",
+    "karna", "batao", "batayein", "bataen", "mujhe", "mera", "meri", "kuch", "tehat",
 }
 
 
@@ -114,13 +131,70 @@ def tokenize(text: str) -> list[str]:
     return TOKEN_RE.findall(text.lower())
 
 
+def stem(word: str) -> str:
+    """Lightweight suffix normalizer for common English inflections in legal text."""
+    for suffix in ("ing", "tion", "tions", "ed", "es", "s"):
+        if word.endswith(suffix) and len(word) - len(suffix) >= 3:
+            return word[:-len(suffix)]
+    return word
+
+
+def resolve_act_name(raw: str) -> str:
+    raw_l = raw.lower().strip()
+    for f_alias, f_short in FOREIGN_ACTS.items():
+        if re.search(rf"\b{re.escape(f_alias)}\b", raw_l):
+            return f_short
+    for alias, short in ACT_ALIASES.items():
+        if re.search(rf"\b{re.escape(alias)}\b", raw_l):
+            return short
+    return raw.strip().title()
+
+
 REFERENCE_PATTERNS = [
-    # "Article 199", "Art. 10A", "Article 10-A"
+    # 1. Qualified enactment reference: "Section 10 of the Cyber Terrorism Act 2024"
+    re.compile(
+        r"\b(?:section|sec\.?|s\.|u/s)\s*([0-9]+(?:[-–]?[a-z])?)\s*(?:of\s+(?:the\s+)?)?([a-z0-9\s–-]+?\b(?:act|ordinance|code|rules|order|regulation|statute))\b",
+        re.I,
+    ),
+    # 2. Act preceding section: "Cyber Terrorism Act Section 10"
+    re.compile(
+        r"\b([a-z0-9\s–-]+?\b(?:act|ordinance|code|rules|order|regulation|statute))\s*(?:section|sec\.?|s\.)\s*([0-9]+(?:[-–]?[a-z])?)\b",
+        re.I,
+    ),
+    # 3. Act prefix: "PPC 302", "CrPC 497", "PPC 303-A", "IPC 302"
+    re.compile(
+        r"\b(ppc|crpc|cr\.?p\.?c\.?|p\.?p\.?c\.?|ipc|i\.?p\.?c\.?)\s*(?:section|sec\.?|s\.)?\s*([0-9]+(?:[-–]?[a-z])?)\b",
+        re.I,
+    ),
+    # 4. Act suffix: "302 PPC", "497 CrPC", "489-F P.P.C.", "302 IPC"
+    re.compile(
+        r"\b([0-9]+(?:[-–]?[a-z])?)\s*(?:of\s+the\s+)?(ppc|crpc|cr\.?p\.?c\.?|p\.?p\.?c\.?|ipc|i\.?p\.?c\.?)\b",
+        re.I,
+    ),
+    # 5. "Article 199", "Art. 10A", "Article 10-A"
     re.compile(r"\b(?:article|art\.?)\s*([0-9]+(?:[-–]?[a-z])?)\b", re.I),
-    # "Section 302 PPC", "s. 497 CrPC", "u/s 154"
-    re.compile(r"\b(?:section|sec\.?|s\.|u/s)\s*([0-9]+(?:[-–]?[a-z])?)\b", re.I),
-    # bare "302 PPC" / "497 CrPC" / "489-F P.P.C."
-    re.compile(r"\b([0-9]+(?:[-–]?[a-z])?)\s*(?:of\s+the\s+)?(ppc|crpc|cr\.?p\.?c\.?|p\.?p\.?c\.?)\b", re.I),
+    # 6. Generic section / Urdu "dafa" / "dhara": "Section 302", "dafa 302", "u/s 154"
+    re.compile(r"\b(?:section|sec\.?|s\.|u/s|dafa|dhara|dharra)\s*([0-9]+(?:[-–]?[a-z])?)\b", re.I),
+]
+
+# Statutory synonyms and vernacular terminology mapped to canonical provisions
+VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
+    # FIR (CrPC 154) - "Information in cognizable cases"
+    (re.compile(r"\b(?:f\.?i\.?r\.?|first\s+information\s+report)\b", re.I), ("154", "CrPC")),
+    # Challan (CrPC 173) - "Report of police officer on completion of investigation"
+    (re.compile(r"\bchallan\b", re.I), ("173", "CrPC")),
+    # Pre-arrest bail / anticipatory bail (CrPC 498)
+    (re.compile(r"\b(?:pre-?arrest\s+bail|anticipatory\s+bail|bail\s+before\s+arrest)\b", re.I), ("498", "CrPC")),
+    # Non-bailable bail (CrPC 497)
+    (re.compile(r"\b(?:bail\b.*?\bnon-?bailable|non-?bailable\b.*?\bbail)\b", re.I), ("497", "CrPC")),
+    # Bailable bail (CrPC 496)
+    (re.compile(r"(?<!non-)(?<!non )\bbailable\b.*?\bbail|\bbail\b.*?(?<!non-)(?<!non )\bbailable\b", re.I), ("496", "CrPC")),
+    # Writ Petition / Writ jurisdiction (Constitution Article 199)
+    (re.compile(r"\b(?:writ\s+(?:petition|jurisdiction)|constitutional\s+petition)\b", re.I), ("199", "Constitution")),
+    # Qatl-i-amd (PPC 302) - Intentional murder
+    (re.compile(r"\b(?:qatl[-–\s]*(?:i|e)[-–\s]*amd|intentional\s+murder)\b", re.I), ("302", "PPC")),
+    # Cheque Bounce (PPC 489-F) - Dishonestly issuing a cheque
+    (re.compile(r"\b(?:cheque\s+bounces?|bounced?\s+cheque|check\s+bounces?|bounced?\s+check|cheque\s+dishonou?r(?:ed)?|dishonou?red\s+cheque)\b", re.I), ("489-F", "PPC")),
 ]
 
 
@@ -132,25 +206,48 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
     """
     q = query.lower()
     act_hint = None
-    for alias, short in ACT_ALIASES.items():
-        if re.search(rf"\b{re.escape(alias)}\b", q):
-            act_hint = short
+    for f_alias, f_short in FOREIGN_ACTS.items():
+        if re.search(rf"\b{re.escape(f_alias)}\b", q):
+            act_hint = f_short
             break
+    if act_hint is None:
+        for alias, short in ACT_ALIASES.items():
+            if re.search(rf"\b{re.escape(alias)}\b", q):
+                act_hint = short
+                break
 
     found: list[tuple[str, str | None]] = []
     seen = set()
     for pat in REFERENCE_PATTERNS:
         for m in pat.finditer(query):
-            raw_sec = m.group(1).upper()
-            sec = re.sub(r"[–\s]", "-", raw_sec)
-            act = act_hint
-            if m.lastindex and m.lastindex >= 2:
-                tail = (m.group(2) or "").lower().replace(".", "")
-                act = "PPC" if tail == "ppc" else "CrPC"
+            groups = m.groups()
+            if len(groups) == 2 and groups[0] and groups[1]:
+                g0, g1 = groups[0], groups[1]
+                if re.match(r"^[0-9]", g0):
+                    raw_sec, raw_act = g0, g1
+                else:
+                    raw_act, raw_sec = g0, g1
+                act = resolve_act_name(raw_act)
+            else:
+                raw_sec = groups[0]
+                act = "Constitution" if re.search(r"\b(?:article|art\.?)\b", m.group(0), re.I) else act_hint
+
+            sec = re.sub(r"[–\s]", "-", raw_sec.upper())
+            # If we already recorded this section, do not add redundant/conflicting references for it
+            if any(s == sec for s, a in found):
+                continue
             key = (sec, act)
             if key not in seen:
                 seen.add(key)
                 found.append(key)
+
+    # Resolve statutory synonyms and vernacular terminology
+    for pat, ref in VERNACULAR_PATTERNS:
+        if pat.search(query):
+            if ref not in seen:
+                seen.add(ref)
+                found.append(ref)
+
     return found
 
 
@@ -281,6 +378,16 @@ class RetrievalConfig:
     candidates: int = 20
     top_k: int = 5
     rrf_k: int = 60
+    # Channel weights: exact 1.4, sparse 1.0, dense 0.8.
+    # Rationale:
+    # 1. exact (1.4): Prioritizes explicit statutory references (e.g. '302 PPC')
+    #    over any single retrieval channel (1.4 > 1.0 sparse, 1.4 > 0.8 dense).
+    # 2. sparse (1.0) > dense (0.8): Exact statutory terminology ('bailable',
+    #    'cognizable') is high-precision signal in legal text. Dense models
+    #    frequently rank semantically-similar provisions above the one named, so
+    #    sparse is weighted above dense to keep retrieval anchored in statutory law.
+    # 3. rrf_k (60): Standard smoothing constant from Cormack et al. (2009); smooths
+    #    rank degradation so multi-channel consensus is rewarded.
     weights: dict = field(default_factory=lambda: {"exact": 1.4, "sparse": 1.0, "dense": 0.8})
 
     # --- refusal ---
@@ -313,7 +420,7 @@ class Retriever:
         self.by_id = {c.id: c for c in chunks}
         self.ids = [c.id for c in chunks]
         texts = [c.indexed_text() for c in chunks]
-        self.bm25 = BM25([tokenize(t) for t in texts])
+        self.bm25 = BM25([[stem(t) for t in tokenize(t)] for t in texts])
         self.dense = DenseIndex(texts) if load_dense else None
         self._reranker: Reranker | None = None
 
@@ -327,6 +434,8 @@ class Retriever:
             return []
         out = []
         for sec, act in refs:
+            if act in FOREIGN_ACTS.values():
+                continue
             norm_sec = sec.replace("-", "").replace(" ", "").upper()
             for c in self.chunks:
                 chunk_sec = c.section.replace("-", "").replace(" ", "").upper()
@@ -356,7 +465,7 @@ class Retriever:
             add("exact", self._exact_channel(query))
 
         if cfg.use_sparse:
-            s = self.bm25.scores(tokenize(query))
+            s = self.bm25.scores([stem(t) for t in tokenize(query)])
             ranked = sorted(range(len(s)), key=lambda i: -s[i])[:cfg.candidates]
             add("sparse", [self.ids[i] for i in ranked if s[i] > 0])
 
@@ -392,9 +501,20 @@ class Retriever:
         if not hits:
             return "nothing_retrieved"
 
+        refs = extract_references(query)
+
+        # 0. foreign jurisdiction refusal
+        for sec, act in refs:
+            if act in FOREIGN_ACTS.values():
+                return f"foreign_jurisdiction:{act}"
+
+        q_lower = query.lower()
+        for f_alias, f_short in FOREIGN_ACTS.items():
+            if re.search(rf"\b{re.escape(f_alias)}\b", q_lower):
+                return f"foreign_jurisdiction:{f_short}"
+
         # 1. named a provision we do not have
         if cfg.refuse_on_missing_reference:
-            refs = extract_references(query)
             if refs and not self._exact_channel(query):
                 labels = ", ".join(
                     f"{a or ''} {s}".strip() for s, a in refs
@@ -407,9 +527,9 @@ class Retriever:
         if "exact" in hits[0].channels:
             return None
 
-        q_terms = {t for t in tokenize(query) if t not in STOPWORDS}
+        q_terms = {stem(t) for t in tokenize(query) if t not in STOPWORDS}
         if q_terms:
-            top_terms = set(tokenize(hits[0].chunk.indexed_text()))
+            top_terms = {stem(t) for t in tokenize(hits[0].chunk.indexed_text())}
             coverage = len(q_terms & top_terms) / len(q_terms)
             if coverage < cfg.min_term_coverage:
                 return f"low_coverage:{coverage:.2f}"
