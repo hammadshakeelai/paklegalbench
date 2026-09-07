@@ -154,13 +154,36 @@ def available_providers() -> list[str]:
     return [name for name, env, _ in PROVIDERS if os.environ.get(env)]
 
 
+_GRAPH: dict | None = None
+
+
+def _get_statute_graph() -> dict:
+    global _GRAPH
+    if _GRAPH is None:
+        graph_file = Path(__file__).parent / "statute_graph.json"
+        if graph_file.exists():
+            try:
+                data = json.loads(graph_file.read_text(encoding="utf-8"))
+                _GRAPH = data.get("citation_adjacency", {})
+            except Exception:
+                _GRAPH = {}
+        else:
+            _GRAPH = {}
+    return _GRAPH
+
+
 def build_context(hits) -> str:
-    """hits: list[index.Hit] -> the structured CONTEXT block."""
+    """hits: list[index.Hit] -> the structured CONTEXT block with cross-reference annotations."""
+    graph = _get_statute_graph()
     parts = []
     for h in hits:
         c = h.chunk
+        sec_norm = c.section.replace("-", "").replace(" ", "").upper()
+        key = f"{c.act_short}:{sec_norm}"
+        cross_refs = graph.get(key, [])
+        ref_attr = f' cross_references="{", ".join(cross_refs)}"' if cross_refs else ""
         parts.append(
-            f"<statute citation=\"{c.citation()}\" act=\"{c.act}\" section=\"{c.section_label}\">\n"
+            f'<statute citation="{c.citation()}" act="{c.act}" section="{c.section_label}"{ref_attr}>\n'
             f"Marginal Note: {c.marginal_note}\n"
             f"Text: {c.text}\n"
             f"</statute>"

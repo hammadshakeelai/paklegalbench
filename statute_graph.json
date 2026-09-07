@@ -1,0 +1,2520 @@
+{
+  "metadata": {
+    "source_corpus": "chunks.json",
+    "total_nodes": 1617,
+    "nodes_with_out_edges": 90,
+    "total_directed_edges": 234
+  },
+  "adjacency": {
+    "constitution-1973-s280": [
+      "constitution-1973-s8"
+    ],
+    "constitution-1973-s2": [
+      "constitution-1973-s102",
+      "constitution-1973-s168",
+      "constitution-1973-s203c",
+      "constitution-1973-s214",
+      "constitution-1973-s244",
+      "constitution-1973-s41",
+      "constitution-1973-s42",
+      "constitution-1973-s65",
+      "constitution-1973-s91",
+      "constitution-1973-s92"
+    ],
+    "constitution-1973-s5": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s11": [
+      "constitution-1973-s10",
+      "constitution-1973-s270"
+    ],
+    "constitution-1973-s14": [
+      "constitution-1973-s17"
+    ],
+    "constitution-1973-s19a": [
+      "constitution-1973-s2",
+      "constitution-1973-s251",
+      "constitution-1973-s253",
+      "constitution-1973-s25a"
+    ],
+    "constitution-1973-s35": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s45": [
+      "constitution-1973-s128",
+      "constitution-1973-s2",
+      "constitution-1973-s224",
+      "constitution-1973-s224a",
+      "constitution-1973-s41",
+      "constitution-1973-s46",
+      "constitution-1973-s48",
+      "constitution-1973-s51",
+      "constitution-1973-s53",
+      "constitution-1973-s54",
+      "constitution-1973-s55",
+      "constitution-1973-s58",
+      "constitution-1973-s59",
+      "constitution-1973-s62",
+      "constitution-1973-s63",
+      "constitution-1973-s89"
+    ],
+    "constitution-1973-s66": [
+      "constitution-1973-s63a"
+    ],
+    "constitution-1973-s67": [
+      "constitution-1973-s2",
+      "constitution-1973-s66",
+      "constitution-1973-s75"
+    ],
+    "constitution-1973-s76": [
+      "constitution-1973-s73",
+      "constitution-1973-s82",
+      "constitution-1973-s83"
+    ],
+    "constitution-1973-s2454": [
+      "constitution-1973-s2",
+      "constitution-1973-s3",
+      "constitution-1973-s91"
+    ],
+    "constitution-1973-s96": [
+      "constitution-1973-s2",
+      "constitution-1973-s99"
+    ],
+    "constitution-1973-s105": [
+      "constitution-1973-s106",
+      "constitution-1973-s112",
+      "constitution-1973-s116",
+      "constitution-1973-s2",
+      "constitution-1973-s48"
+    ],
+    "constitution-1973-s117": [
+      "constitution-1973-s122",
+      "constitution-1973-s123"
+    ],
+    "constitution-1973-s127": [
+      "constitution-1973-s1",
+      "constitution-1973-s130",
+      "constitution-1973-s131",
+      "constitution-1973-s2",
+      "constitution-1973-s53",
+      "constitution-1973-s54",
+      "constitution-1973-s55",
+      "constitution-1973-s77",
+      "constitution-1973-s87",
+      "constitution-1973-s88"
+    ],
+    "constitution-1973-s134": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s135": [
+      "constitution-1973-s105",
+      "constitution-1973-s136",
+      "constitution-1973-s139",
+      "constitution-1973-s140a",
+      "constitution-1973-s143",
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s152a": [
+      "constitution-1973-s10a",
+      "constitution-1973-s154",
+      "constitution-1973-s156",
+      "constitution-1973-s166",
+      "constitution-1973-s2",
+      "constitution-1973-s3",
+      "constitution-1973-s5",
+      "constitution-1973-s78"
+    ],
+    "constitution-1973-s173": [
+      "constitution-1973-s175",
+      "constitution-1973-s177",
+      "constitution-1973-s179",
+      "constitution-1973-s186a",
+      "constitution-1973-s199",
+      "constitution-1973-s2",
+      "constitution-1973-s267b",
+      "constitution-1973-s68"
+    ],
+    "constitution-1973-s2002": [
+      "constitution-1973-s189",
+      "constitution-1973-s193",
+      "constitution-1973-s195",
+      "constitution-1973-s196",
+      "constitution-1973-s2",
+      "constitution-1973-s203c",
+      "constitution-1973-s203d",
+      "constitution-1973-s203e",
+      "constitution-1973-s203f",
+      "constitution-1973-s267b",
+      "constitution-1973-s3",
+      "constitution-1973-s4",
+      "constitution-1973-s5",
+      "constitution-1973-s6"
+    ],
+    "constitution-1973-s203h": [
+      "constitution-1973-s2",
+      "constitution-1973-s203b",
+      "constitution-1973-s7"
+    ],
+    "constitution-1973-s203i": [
+      "constitution-1973-s6",
+      "constitution-1973-s8"
+    ],
+    "constitution-1973-s205": [
+      "constitution-1973-s2",
+      "constitution-1973-s204"
+    ],
+    "constitution-1973-s207": [
+      "constitution-1973-s206",
+      "constitution-1973-s9"
+    ],
+    "constitution-1973-s210": [
+      "constitution-1973-s204",
+      "constitution-1973-s209"
+    ],
+    "constitution-1973-s212a": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s212b": [
+      "constitution-1973-s209",
+      "constitution-1973-s213",
+      "constitution-1973-s218"
+    ],
+    "constitution-1973-s220": [
+      "constitution-1973-s112",
+      "constitution-1973-s2",
+      "constitution-1973-s224a",
+      "constitution-1973-s226",
+      "constitution-1973-s51",
+      "constitution-1973-s58"
+    ],
+    "constitution-1973-s228": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s229": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s233": [
+      "constitution-1973-s105",
+      "constitution-1973-s280",
+      "constitution-1973-s7"
+    ],
+    "constitution-1973-s236": [
+      "constitution-1973-s2",
+      "constitution-1973-s239",
+      "constitution-1973-s3"
+    ],
+    "constitution-1973-s241": [
+      "constitution-1973-s199",
+      "constitution-1973-s2",
+      "constitution-1973-s240",
+      "constitution-1973-s245"
+    ],
+    "constitution-1973-s253": [
+      "constitution-1973-s152a",
+      "constitution-1973-s2",
+      "constitution-1973-s268",
+      "constitution-1973-s49",
+      "constitution-1973-s6"
+    ],
+    "constitution-1973-s270a": [
+      "constitution-1973-s106",
+      "constitution-1973-s127",
+      "constitution-1973-s2",
+      "constitution-1973-s222",
+      "constitution-1973-s223",
+      "constitution-1973-s225",
+      "constitution-1973-s271",
+      "constitution-1973-s272",
+      "constitution-1973-s273",
+      "constitution-1973-s51",
+      "constitution-1973-s59",
+      "constitution-1973-s63",
+      "constitution-1973-s64",
+      "constitution-1973-s65"
+    ],
+    "constitution-1973-s275": [
+      "constitution-1973-s171",
+      "constitution-1973-s2",
+      "constitution-1973-s240",
+      "constitution-1973-s2a",
+      "constitution-1973-s42",
+      "constitution-1973-s8"
+    ],
+    "constitution-1973-s13": [
+      "constitution-1973-s205"
+    ],
+    "constitution-1973-s1": [
+      "constitution-1973-s2"
+    ],
+    "ppc-1860-s70": [
+      "ppc-1860-s121"
+    ],
+    "ppc-1860-s462i": [
+      "ppc-1860-s462h"
+    ],
+    "ppc-1860-s472": [
+      "ppc-1860-s467"
+    ],
+    "ppc-1860-s473": [
+      "ppc-1860-s466",
+      "ppc-1860-s467"
+    ],
+    "ppc-1860-s2": [
+      "ppc-1860-s7"
+    ],
+    "ppc-1860-s6": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s13": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s18": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s21": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s45": [
+      "ppc-1860-s21"
+    ],
+    "ppc-1860-s52": [
+      "ppc-1860-s130",
+      "ppc-1860-s157"
+    ],
+    "ppc-1860-s56": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s97": [
+      "ppc-1860-s99"
+    ],
+    "ppc-1860-s101": [
+      "ppc-1860-s99"
+    ],
+    "ppc-1860-s103": [
+      "ppc-1860-s99"
+    ],
+    "ppc-1860-s104": [
+      "ppc-1860-s99"
+    ],
+    "ppc-1860-s121": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s124": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s4s": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s126": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s131": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s138": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s142": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s150": [
+      "ppc-1860-s141"
+    ],
+    "ppc-1860-s152": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s1s": [
+      "ppc-1860-s17"
+    ],
+    "ppc-1860-s160": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s163": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s175": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s225": [
+      "ppc-1860-s223"
+    ],
+    "ppc-1860-s230": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s238": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s240": [
+      "ppc-1860-s2",
+      "ppc-1860-s239"
+    ],
+    "ppc-1860-s250": [
+      "ppc-1860-s246"
+    ],
+    "ppc-1860-s251": [
+      "ppc-1860-s2",
+      "ppc-1860-s246"
+    ],
+    "ppc-1860-s272": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s291": [
+      "ppc-1860-s292",
+      "ppc-1860-s293"
+    ],
+    "ppc-1860-s5s": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s298c": [
+      "ppc-1860-s323"
+    ],
+    "ppc-1860-s302": [
+      "ppc-1860-s304"
+    ],
+    "ppc-1860-s304": [
+      "ppc-1860-s17"
+    ],
+    "ppc-1860-s307": [
+      "ppc-1860-s309",
+      "ppc-1860-s310"
+    ],
+    "ppc-1860-s308": [
+      "ppc-1860-s306",
+      "ppc-1860-s307"
+    ],
+    "ppc-1860-s312": [
+      "ppc-1860-s309",
+      "ppc-1860-s310"
+    ],
+    "ppc-1860-s338e": [
+      "ppc-1860-s310",
+      "ppc-1860-s345"
+    ],
+    "ppc-1860-s358": [
+      "ppc-1860-s352"
+    ],
+    "ppc-1860-s371": [
+      "ppc-1860-s371b"
+    ],
+    "ppc-1860-s376": [
+      "ppc-1860-s333",
+      "ppc-1860-s335",
+      "ppc-1860-s337",
+      "ppc-1860-s337c",
+      "ppc-1860-s337f",
+      "ppc-1860-s377",
+      "ppc-1860-s377b"
+    ],
+    "ppc-1860-s387": [
+      "ppc-1860-s377"
+    ],
+    "ppc-1860-s389": [
+      "ppc-1860-s377"
+    ],
+    "crpc-1898-s349": [
+      "crpc-1898-s245",
+      "crpc-1898-s76"
+    ]
+  },
+  "reverse_adjacency": {
+    "constitution-1973-s8": [
+      "constitution-1973-s203i",
+      "constitution-1973-s275",
+      "constitution-1973-s280"
+    ],
+    "constitution-1973-s2a": [
+      "constitution-1973-s2",
+      "constitution-1973-s275"
+    ],
+    "constitution-1973-s101": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s2": [
+      "constitution-1973-s1",
+      "constitution-1973-s105",
+      "constitution-1973-s127",
+      "constitution-1973-s134",
+      "constitution-1973-s135",
+      "constitution-1973-s152a",
+      "constitution-1973-s173",
+      "constitution-1973-s19a",
+      "constitution-1973-s2002",
+      "constitution-1973-s203h",
+      "constitution-1973-s205",
+      "constitution-1973-s212a",
+      "constitution-1973-s220",
+      "constitution-1973-s228",
+      "constitution-1973-s229",
+      "constitution-1973-s236",
+      "constitution-1973-s241",
+      "constitution-1973-s2454",
+      "constitution-1973-s253",
+      "constitution-1973-s270a",
+      "constitution-1973-s275",
+      "constitution-1973-s35",
+      "constitution-1973-s45",
+      "constitution-1973-s5",
+      "constitution-1973-s67",
+      "constitution-1973-s96"
+    ],
+    "constitution-1973-s270": [
+      "constitution-1973-s11"
+    ],
+    "constitution-1973-s10": [
+      "constitution-1973-s11"
+    ],
+    "constitution-1973-s17": [
+      "constitution-1973-s14"
+    ],
+    "constitution-1973-s25a": [
+      "constitution-1973-s19a"
+    ],
+    "constitution-1973-s253": [
+      "constitution-1973-s19a"
+    ],
+    "constitution-1973-s251": [
+      "constitution-1973-s19a"
+    ],
+    "constitution-1973-s51": [
+      "constitution-1973-s220",
+      "constitution-1973-s270a",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s41": [
+      "constitution-1973-s2",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s63": [
+      "constitution-1973-s270a",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s89": [
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s48": [
+      "constitution-1973-s105",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s128": [
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s58": [
+      "constitution-1973-s220",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s59": [
+      "constitution-1973-s270a",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s55": [
+      "constitution-1973-s127",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s62": [
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s46": [
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s224a": [
+      "constitution-1973-s220",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s224": [
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s54": [
+      "constitution-1973-s127",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s53": [
+      "constitution-1973-s127",
+      "constitution-1973-s45"
+    ],
+    "constitution-1973-s63a": [
+      "constitution-1973-s66"
+    ],
+    "constitution-1973-s66": [
+      "constitution-1973-s67"
+    ],
+    "constitution-1973-s75": [
+      "constitution-1973-s67"
+    ],
+    "constitution-1973-s82": [
+      "constitution-1973-s76"
+    ],
+    "constitution-1973-s83": [
+      "constitution-1973-s76"
+    ],
+    "constitution-1973-s73": [
+      "constitution-1973-s76"
+    ],
+    "constitution-1973-s91": [
+      "constitution-1973-s2",
+      "constitution-1973-s2454"
+    ],
+    "constitution-1973-s3": [
+      "constitution-1973-s152a",
+      "constitution-1973-s2002",
+      "constitution-1973-s236",
+      "constitution-1973-s2454"
+    ],
+    "constitution-1973-s99": [
+      "constitution-1973-s96"
+    ],
+    "constitution-1973-s106": [
+      "constitution-1973-s105",
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s112": [
+      "constitution-1973-s105",
+      "constitution-1973-s220"
+    ],
+    "constitution-1973-s116": [
+      "constitution-1973-s105"
+    ],
+    "constitution-1973-s123": [
+      "constitution-1973-s117"
+    ],
+    "constitution-1973-s122": [
+      "constitution-1973-s117"
+    ],
+    "constitution-1973-s77": [
+      "constitution-1973-s127"
+    ],
+    "constitution-1973-s1": [
+      "constitution-1973-s127"
+    ],
+    "constitution-1973-s87": [
+      "constitution-1973-s127"
+    ],
+    "constitution-1973-s131": [
+      "constitution-1973-s127"
+    ],
+    "constitution-1973-s130": [
+      "constitution-1973-s127"
+    ],
+    "constitution-1973-s88": [
+      "constitution-1973-s127"
+    ],
+    "constitution-1973-s143": [
+      "constitution-1973-s135"
+    ],
+    "constitution-1973-s139": [
+      "constitution-1973-s135"
+    ],
+    "constitution-1973-s105": [
+      "constitution-1973-s135",
+      "constitution-1973-s233"
+    ],
+    "constitution-1973-s140a": [
+      "constitution-1973-s135"
+    ],
+    "constitution-1973-s136": [
+      "constitution-1973-s135"
+    ],
+    "constitution-1973-s166": [
+      "constitution-1973-s152a"
+    ],
+    "constitution-1973-s156": [
+      "constitution-1973-s152a"
+    ],
+    "constitution-1973-s78": [
+      "constitution-1973-s152a"
+    ],
+    "constitution-1973-s10a": [
+      "constitution-1973-s152a"
+    ],
+    "constitution-1973-s154": [
+      "constitution-1973-s152a"
+    ],
+    "constitution-1973-s5": [
+      "constitution-1973-s152a",
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s179": [
+      "constitution-1973-s173"
+    ],
+    "constitution-1973-s186a": [
+      "constitution-1973-s173"
+    ],
+    "constitution-1973-s177": [
+      "constitution-1973-s173"
+    ],
+    "constitution-1973-s68": [
+      "constitution-1973-s173"
+    ],
+    "constitution-1973-s199": [
+      "constitution-1973-s173",
+      "constitution-1973-s241"
+    ],
+    "constitution-1973-s267b": [
+      "constitution-1973-s173",
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s175": [
+      "constitution-1973-s173"
+    ],
+    "constitution-1973-s4": [
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s203f": [
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s196": [
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s189": [
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s193": [
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s195": [
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s203c": [
+      "constitution-1973-s2",
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s203e": [
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s6": [
+      "constitution-1973-s2002",
+      "constitution-1973-s203i",
+      "constitution-1973-s253"
+    ],
+    "constitution-1973-s203d": [
+      "constitution-1973-s2002"
+    ],
+    "constitution-1973-s7": [
+      "constitution-1973-s203h",
+      "constitution-1973-s233"
+    ],
+    "constitution-1973-s203b": [
+      "constitution-1973-s203h"
+    ],
+    "constitution-1973-s204": [
+      "constitution-1973-s205",
+      "constitution-1973-s210"
+    ],
+    "constitution-1973-s206": [
+      "constitution-1973-s207"
+    ],
+    "constitution-1973-s9": [
+      "constitution-1973-s207"
+    ],
+    "constitution-1973-s209": [
+      "constitution-1973-s210",
+      "constitution-1973-s212b"
+    ],
+    "constitution-1973-s218": [
+      "constitution-1973-s212b"
+    ],
+    "constitution-1973-s213": [
+      "constitution-1973-s212b"
+    ],
+    "constitution-1973-s226": [
+      "constitution-1973-s220"
+    ],
+    "constitution-1973-s280": [
+      "constitution-1973-s233"
+    ],
+    "constitution-1973-s239": [
+      "constitution-1973-s236"
+    ],
+    "constitution-1973-s245": [
+      "constitution-1973-s241"
+    ],
+    "constitution-1973-s240": [
+      "constitution-1973-s241",
+      "constitution-1973-s275"
+    ],
+    "constitution-1973-s49": [
+      "constitution-1973-s253"
+    ],
+    "constitution-1973-s152a": [
+      "constitution-1973-s253"
+    ],
+    "constitution-1973-s268": [
+      "constitution-1973-s253"
+    ],
+    "constitution-1973-s271": [
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s222": [
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s127": [
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s272": [
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s64": [
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s273": [
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s223": [
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s225": [
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s65": [
+      "constitution-1973-s2",
+      "constitution-1973-s270a"
+    ],
+    "constitution-1973-s171": [
+      "constitution-1973-s275"
+    ],
+    "constitution-1973-s42": [
+      "constitution-1973-s2",
+      "constitution-1973-s275"
+    ],
+    "constitution-1973-s92": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s244": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s214": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s168": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s102": [
+      "constitution-1973-s2"
+    ],
+    "constitution-1973-s205": [
+      "constitution-1973-s13"
+    ],
+    "ppc-1860-s121": [
+      "ppc-1860-s70"
+    ],
+    "ppc-1860-s462h": [
+      "ppc-1860-s462i"
+    ],
+    "ppc-1860-s467": [
+      "ppc-1860-s472",
+      "ppc-1860-s472",
+      "ppc-1860-s473",
+      "ppc-1860-s473"
+    ],
+    "ppc-1860-s7": [
+      "ppc-1860-s2"
+    ],
+    "ppc-1860-s2": [
+      "ppc-1860-s121",
+      "ppc-1860-s124",
+      "ppc-1860-s126",
+      "ppc-1860-s13",
+      "ppc-1860-s131",
+      "ppc-1860-s138",
+      "ppc-1860-s142",
+      "ppc-1860-s152",
+      "ppc-1860-s160",
+      "ppc-1860-s163",
+      "ppc-1860-s175",
+      "ppc-1860-s18",
+      "ppc-1860-s21",
+      "ppc-1860-s230",
+      "ppc-1860-s238",
+      "ppc-1860-s240",
+      "ppc-1860-s251",
+      "ppc-1860-s272",
+      "ppc-1860-s4s",
+      "ppc-1860-s56",
+      "ppc-1860-s5s",
+      "ppc-1860-s6"
+    ],
+    "ppc-1860-s21": [
+      "ppc-1860-s45"
+    ],
+    "ppc-1860-s130": [
+      "ppc-1860-s52"
+    ],
+    "ppc-1860-s157": [
+      "ppc-1860-s52"
+    ],
+    "ppc-1860-s99": [
+      "ppc-1860-s101",
+      "ppc-1860-s103",
+      "ppc-1860-s104",
+      "ppc-1860-s97"
+    ],
+    "ppc-1860-s141": [
+      "ppc-1860-s150",
+      "ppc-1860-s1s"
+    ],
+    "ppc-1860-s223": [
+      "ppc-1860-s225"
+    ],
+    "ppc-1860-s239": [
+      "ppc-1860-s240"
+    ],
+    "ppc-1860-s246": [
+      "ppc-1860-s250",
+      "ppc-1860-s251"
+    ],
+    "ppc-1860-s17": [
+      "ppc-1860-s1s",
+      "ppc-1860-s304"
+    ],
+    "ppc-1860-s293": [
+      "ppc-1860-s291"
+    ],
+    "ppc-1860-s292": [
+      "ppc-1860-s291"
+    ],
+    "ppc-1860-s323": [
+      "ppc-1860-s298c"
+    ],
+    "ppc-1860-s304": [
+      "ppc-1860-s302"
+    ],
+    "ppc-1860-s309": [
+      "ppc-1860-s307",
+      "ppc-1860-s312"
+    ],
+    "ppc-1860-s310": [
+      "ppc-1860-s307",
+      "ppc-1860-s312",
+      "ppc-1860-s338e"
+    ],
+    "ppc-1860-s307": [
+      "ppc-1860-s308"
+    ],
+    "ppc-1860-s306": [
+      "ppc-1860-s308"
+    ],
+    "ppc-1860-s345": [
+      "ppc-1860-s338e"
+    ],
+    "ppc-1860-s352": [
+      "ppc-1860-s358"
+    ],
+    "ppc-1860-s371b": [
+      "ppc-1860-s371"
+    ],
+    "ppc-1860-s333": [
+      "ppc-1860-s376"
+    ],
+    "ppc-1860-s337": [
+      "ppc-1860-s376"
+    ],
+    "ppc-1860-s337c": [
+      "ppc-1860-s376"
+    ],
+    "ppc-1860-s377": [
+      "ppc-1860-s376",
+      "ppc-1860-s387",
+      "ppc-1860-s389"
+    ],
+    "ppc-1860-s377b": [
+      "ppc-1860-s376"
+    ],
+    "ppc-1860-s335": [
+      "ppc-1860-s376"
+    ],
+    "ppc-1860-s337f": [
+      "ppc-1860-s376"
+    ],
+    "ppc-1860-s466": [
+      "ppc-1860-s473"
+    ],
+    "crpc-1898-s76": [
+      "crpc-1898-s349"
+    ],
+    "crpc-1898-s245": [
+      "crpc-1898-s349"
+    ]
+  },
+  "citation_adjacency": {
+    "Constitution:280": [
+      "Constitution, Article 8"
+    ],
+    "Constitution:2": [
+      "Constitution, Article 102",
+      "Constitution, Article 168",
+      "Constitution, Article 203C",
+      "Constitution, Article 214",
+      "Constitution, Article 244",
+      "Constitution, Article 41",
+      "Constitution, Article 42",
+      "Constitution, Article 65",
+      "Constitution, Article 91",
+      "Constitution, Article 92"
+    ],
+    "Constitution:5": [
+      "Constitution, Article 2"
+    ],
+    "Constitution:11": [
+      "Constitution, Article 10",
+      "Constitution, Article 270"
+    ],
+    "Constitution:14": [
+      "Constitution, Article 17"
+    ],
+    "Constitution:19A": [
+      "Constitution, Article 2",
+      "Constitution, Article 251",
+      "Constitution, Article 253",
+      "Constitution, Article 25A"
+    ],
+    "Constitution:35": [
+      "Constitution, Article 2"
+    ],
+    "Constitution:45": [
+      "Constitution, Article 128",
+      "Constitution, Article 2",
+      "Constitution, Article 224",
+      "Constitution, Article 224A",
+      "Constitution, Article 41",
+      "Constitution, Article 46",
+      "Constitution, Article 48",
+      "Constitution, Article 51",
+      "Constitution, Article 53",
+      "Constitution, Article 54",
+      "Constitution, Article 55",
+      "Constitution, Article 58",
+      "Constitution, Article 59",
+      "Constitution, Article 62",
+      "Constitution, Article 63",
+      "Constitution, Article 89"
+    ],
+    "Constitution:66": [
+      "Constitution, Article 63A"
+    ],
+    "Constitution:67": [
+      "Constitution, Article 2",
+      "Constitution, Article 66",
+      "Constitution, Article 75"
+    ],
+    "Constitution:76": [
+      "Constitution, Article 73",
+      "Constitution, Article 82",
+      "Constitution, Article 83"
+    ],
+    "Constitution:2454": [
+      "Constitution, Article 2",
+      "Constitution, Article 3",
+      "Constitution, Article 91"
+    ],
+    "Constitution:96": [
+      "Constitution, Article 2",
+      "Constitution, Article 99"
+    ],
+    "Constitution:105": [
+      "Constitution, Article 106",
+      "Constitution, Article 112",
+      "Constitution, Article 116",
+      "Constitution, Article 2",
+      "Constitution, Article 48"
+    ],
+    "Constitution:117": [
+      "Constitution, Article 122",
+      "Constitution, Article 123"
+    ],
+    "Constitution:127": [
+      "Constitution, Article 1",
+      "Constitution, Article 130",
+      "Constitution, Article 131",
+      "Constitution, Article 2",
+      "Constitution, Article 53",
+      "Constitution, Article 54",
+      "Constitution, Article 55",
+      "Constitution, Article 77",
+      "Constitution, Article 87",
+      "Constitution, Article 88"
+    ],
+    "Constitution:134": [
+      "Constitution, Article 2"
+    ],
+    "Constitution:135": [
+      "Constitution, Article 105",
+      "Constitution, Article 136",
+      "Constitution, Article 139",
+      "Constitution, Article 140A",
+      "Constitution, Article 143",
+      "Constitution, Article 2"
+    ],
+    "Constitution:152A": [
+      "Constitution, Article 10A",
+      "Constitution, Article 154",
+      "Constitution, Article 156",
+      "Constitution, Article 166",
+      "Constitution, Article 2",
+      "Constitution, Article 3",
+      "Constitution, Article 5",
+      "Constitution, Article 78"
+    ],
+    "Constitution:173": [
+      "Constitution, Article 175",
+      "Constitution, Article 177",
+      "Constitution, Article 179",
+      "Constitution, Article 186A",
+      "Constitution, Article 199",
+      "Constitution, Article 2",
+      "Constitution, Article 267B",
+      "Constitution, Article 68"
+    ],
+    "Constitution:2002": [
+      "Constitution, Article 189",
+      "Constitution, Article 193",
+      "Constitution, Article 195",
+      "Constitution, Article 196",
+      "Constitution, Article 2",
+      "Constitution, Article 203C",
+      "Constitution, Article 203D",
+      "Constitution, Article 203E",
+      "Constitution, Article 203F",
+      "Constitution, Article 267B",
+      "Constitution, Article 3",
+      "Constitution, Article 4",
+      "Constitution, Article 5",
+      "Constitution, Article 6"
+    ],
+    "Constitution:203H": [
+      "Constitution, Article 2",
+      "Constitution, Article 203B",
+      "Constitution, Article 7"
+    ],
+    "Constitution:203I": [
+      "Constitution, Article 6",
+      "Constitution, Article 8"
+    ],
+    "Constitution:205": [
+      "Constitution, Article 2",
+      "Constitution, Article 204"
+    ],
+    "Constitution:207": [
+      "Constitution, Article 206",
+      "Constitution, Article 9"
+    ],
+    "Constitution:210": [
+      "Constitution, Article 204",
+      "Constitution, Article 209"
+    ],
+    "Constitution:212A": [
+      "Constitution, Article 2"
+    ],
+    "Constitution:212B": [
+      "Constitution, Article 209",
+      "Constitution, Article 213",
+      "Constitution, Article 218"
+    ],
+    "Constitution:220": [
+      "Constitution, Article 112",
+      "Constitution, Article 2",
+      "Constitution, Article 224A",
+      "Constitution, Article 226",
+      "Constitution, Article 51",
+      "Constitution, Article 58"
+    ],
+    "Constitution:228": [
+      "Constitution, Article 2"
+    ],
+    "Constitution:229": [
+      "Constitution, Article 2"
+    ],
+    "Constitution:233": [
+      "Constitution, Article 105",
+      "Constitution, Article 280",
+      "Constitution, Article 7"
+    ],
+    "Constitution:236": [
+      "Constitution, Article 2",
+      "Constitution, Article 239",
+      "Constitution, Article 3"
+    ],
+    "Constitution:241": [
+      "Constitution, Article 199",
+      "Constitution, Article 2",
+      "Constitution, Article 240",
+      "Constitution, Article 245"
+    ],
+    "Constitution:253": [
+      "Constitution, Article 152A",
+      "Constitution, Article 2",
+      "Constitution, Article 268",
+      "Constitution, Article 49",
+      "Constitution, Article 6"
+    ],
+    "Constitution:270A": [
+      "Constitution, Article 106",
+      "Constitution, Article 127",
+      "Constitution, Article 2",
+      "Constitution, Article 222",
+      "Constitution, Article 223",
+      "Constitution, Article 225",
+      "Constitution, Article 271",
+      "Constitution, Article 272",
+      "Constitution, Article 273",
+      "Constitution, Article 51",
+      "Constitution, Article 59",
+      "Constitution, Article 63",
+      "Constitution, Article 64",
+      "Constitution, Article 65"
+    ],
+    "Constitution:275": [
+      "Constitution, Article 171",
+      "Constitution, Article 2",
+      "Constitution, Article 240",
+      "Constitution, Article 2A",
+      "Constitution, Article 42",
+      "Constitution, Article 8"
+    ],
+    "Constitution:13": [
+      "Constitution, Article 205"
+    ],
+    "Constitution:1": [
+      "Constitution, Article 2"
+    ],
+    "PPC:70": [
+      "PPC Section 121"
+    ],
+    "PPC:462I": [
+      "PPC Section 462H"
+    ],
+    "PPC:472": [
+      "PPC Section 467"
+    ],
+    "PPC:473": [
+      "PPC Section 466",
+      "PPC Section 467"
+    ],
+    "PPC:2": [
+      "PPC Section 7"
+    ],
+    "PPC:6": [
+      "PPC Section 2"
+    ],
+    "PPC:13": [
+      "PPC Section 2"
+    ],
+    "PPC:18": [
+      "PPC Section 2"
+    ],
+    "PPC:21": [
+      "PPC Section 2"
+    ],
+    "PPC:45": [
+      "PPC Section 21"
+    ],
+    "PPC:52": [
+      "PPC Section 130",
+      "PPC Section 157"
+    ],
+    "PPC:56": [
+      "PPC Section 2"
+    ],
+    "PPC:97": [
+      "PPC Section 99"
+    ],
+    "PPC:101": [
+      "PPC Section 99"
+    ],
+    "PPC:103": [
+      "PPC Section 99"
+    ],
+    "PPC:104": [
+      "PPC Section 99"
+    ],
+    "PPC:121": [
+      "PPC Section 2"
+    ],
+    "PPC:124": [
+      "PPC Section 2"
+    ],
+    "PPC:4S": [
+      "PPC Section 2"
+    ],
+    "PPC:126": [
+      "PPC Section 2"
+    ],
+    "PPC:131": [
+      "PPC Section 2"
+    ],
+    "PPC:138": [
+      "PPC Section 2"
+    ],
+    "PPC:142": [
+      "PPC Section 2"
+    ],
+    "PPC:150": [
+      "PPC Section 141"
+    ],
+    "PPC:152": [
+      "PPC Section 2"
+    ],
+    "PPC:1S": [
+      "PPC Section 17"
+    ],
+    "PPC:160": [
+      "PPC Section 2"
+    ],
+    "PPC:163": [
+      "PPC Section 2"
+    ],
+    "PPC:175": [
+      "PPC Section 2"
+    ],
+    "PPC:225": [
+      "PPC Section 223"
+    ],
+    "PPC:230": [
+      "PPC Section 2"
+    ],
+    "PPC:238": [
+      "PPC Section 2"
+    ],
+    "PPC:240": [
+      "PPC Section 2",
+      "PPC Section 239"
+    ],
+    "PPC:250": [
+      "PPC Section 246"
+    ],
+    "PPC:251": [
+      "PPC Section 2",
+      "PPC Section 246"
+    ],
+    "PPC:272": [
+      "PPC Section 2"
+    ],
+    "PPC:291": [
+      "PPC Section 292",
+      "PPC Section 293"
+    ],
+    "PPC:5S": [
+      "PPC Section 2"
+    ],
+    "PPC:298C": [
+      "PPC Section 323"
+    ],
+    "PPC:302": [
+      "PPC Section 304"
+    ],
+    "PPC:304": [
+      "PPC Section 17"
+    ],
+    "PPC:307": [
+      "PPC Section 309",
+      "PPC Section 310"
+    ],
+    "PPC:308": [
+      "PPC Section 306",
+      "PPC Section 307"
+    ],
+    "PPC:312": [
+      "PPC Section 309",
+      "PPC Section 310"
+    ],
+    "PPC:338E": [
+      "PPC Section 310",
+      "PPC Section 345"
+    ],
+    "PPC:358": [
+      "PPC Section 352"
+    ],
+    "PPC:371": [
+      "PPC Section 371B"
+    ],
+    "PPC:376": [
+      "PPC Section 333",
+      "PPC Section 335",
+      "PPC Section 337",
+      "PPC Section 337C",
+      "PPC Section 337F",
+      "PPC Section 377",
+      "PPC Section 377B"
+    ],
+    "PPC:387": [
+      "PPC Section 377"
+    ],
+    "PPC:389": [
+      "PPC Section 377"
+    ],
+    "CrPC:349": [
+      "CrPC Section 245",
+      "CrPC Section 76"
+    ]
+  },
+  "edges": [
+    {
+      "source": "constitution-1973-s280",
+      "target": "constitution-1973-s8",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s2a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s101",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s5",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s11",
+      "target": "constitution-1973-s270",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s11",
+      "target": "constitution-1973-s10",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s14",
+      "target": "constitution-1973-s17",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s19a",
+      "target": "constitution-1973-s25a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s19a",
+      "target": "constitution-1973-s253",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s19a",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s19a",
+      "target": "constitution-1973-s251",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s35",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s51",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s41",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s63",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s89",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s48",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s128",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s58",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s59",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s55",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s62",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s46",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s224a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s224",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s54",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s45",
+      "target": "constitution-1973-s53",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s66",
+      "target": "constitution-1973-s63a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s67",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s67",
+      "target": "constitution-1973-s66",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s67",
+      "target": "constitution-1973-s75",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s76",
+      "target": "constitution-1973-s82",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s76",
+      "target": "constitution-1973-s83",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s76",
+      "target": "constitution-1973-s73",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2454",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2454",
+      "target": "constitution-1973-s91",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2454",
+      "target": "constitution-1973-s3",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s96",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s96",
+      "target": "constitution-1973-s99",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s105",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s105",
+      "target": "constitution-1973-s48",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s105",
+      "target": "constitution-1973-s106",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s105",
+      "target": "constitution-1973-s112",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s105",
+      "target": "constitution-1973-s116",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s117",
+      "target": "constitution-1973-s123",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s117",
+      "target": "constitution-1973-s122",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s77",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s55",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s1",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s87",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s131",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s54",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s53",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s130",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s127",
+      "target": "constitution-1973-s88",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s134",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s135",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s135",
+      "target": "constitution-1973-s143",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s135",
+      "target": "constitution-1973-s139",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s135",
+      "target": "constitution-1973-s105",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s135",
+      "target": "constitution-1973-s140a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s135",
+      "target": "constitution-1973-s136",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s152a",
+      "target": "constitution-1973-s166",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s152a",
+      "target": "constitution-1973-s156",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s152a",
+      "target": "constitution-1973-s78",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s152a",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s152a",
+      "target": "constitution-1973-s10a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s152a",
+      "target": "constitution-1973-s154",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s152a",
+      "target": "constitution-1973-s3",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s152a",
+      "target": "constitution-1973-s5",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s173",
+      "target": "constitution-1973-s179",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s173",
+      "target": "constitution-1973-s186a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s173",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s173",
+      "target": "constitution-1973-s177",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s173",
+      "target": "constitution-1973-s68",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s173",
+      "target": "constitution-1973-s199",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s173",
+      "target": "constitution-1973-s267b",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s173",
+      "target": "constitution-1973-s175",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s4",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s203f",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s196",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s189",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s193",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s195",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s203c",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s203e",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s6",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s267b",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s203d",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s3",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2002",
+      "target": "constitution-1973-s5",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s203h",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s203h",
+      "target": "constitution-1973-s7",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s203h",
+      "target": "constitution-1973-s203b",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s203i",
+      "target": "constitution-1973-s8",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s203i",
+      "target": "constitution-1973-s6",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s205",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s205",
+      "target": "constitution-1973-s204",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s207",
+      "target": "constitution-1973-s206",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s207",
+      "target": "constitution-1973-s9",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s210",
+      "target": "constitution-1973-s204",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s210",
+      "target": "constitution-1973-s209",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s212a",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s212b",
+      "target": "constitution-1973-s218",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s212b",
+      "target": "constitution-1973-s213",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s212b",
+      "target": "constitution-1973-s209",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s220",
+      "target": "constitution-1973-s51",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s220",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s220",
+      "target": "constitution-1973-s58",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s220",
+      "target": "constitution-1973-s226",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s220",
+      "target": "constitution-1973-s112",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s220",
+      "target": "constitution-1973-s224a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s228",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s229",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s233",
+      "target": "constitution-1973-s105",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s233",
+      "target": "constitution-1973-s7",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s233",
+      "target": "constitution-1973-s280",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s236",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s236",
+      "target": "constitution-1973-s239",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s236",
+      "target": "constitution-1973-s3",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s241",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s241",
+      "target": "constitution-1973-s199",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s241",
+      "target": "constitution-1973-s245",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s241",
+      "target": "constitution-1973-s240",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s253",
+      "target": "constitution-1973-s49",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s253",
+      "target": "constitution-1973-s152a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s253",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s253",
+      "target": "constitution-1973-s6",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s253",
+      "target": "constitution-1973-s268",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s51",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s271",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s222",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s127",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s63",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s272",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s59",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s64",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s106",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s273",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s223",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s225",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s270a",
+      "target": "constitution-1973-s65",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s275",
+      "target": "constitution-1973-s8",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s275",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s275",
+      "target": "constitution-1973-s2a",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s275",
+      "target": "constitution-1973-s171",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s275",
+      "target": "constitution-1973-s240",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s275",
+      "target": "constitution-1973-s42",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s41",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s91",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s92",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s203c",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s244",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s214",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s168",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s102",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s65",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s2",
+      "target": "constitution-1973-s42",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s13",
+      "target": "constitution-1973-s205",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "constitution-1973-s1",
+      "target": "constitution-1973-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s70",
+      "target": "ppc-1860-s121",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s462i",
+      "target": "ppc-1860-s462h",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s472",
+      "target": "ppc-1860-s467",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s473",
+      "target": "ppc-1860-s467",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s2",
+      "target": "ppc-1860-s7",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s6",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s13",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s18",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s21",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s45",
+      "target": "ppc-1860-s21",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s52",
+      "target": "ppc-1860-s130",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s52",
+      "target": "ppc-1860-s157",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s56",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s97",
+      "target": "ppc-1860-s99",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s101",
+      "target": "ppc-1860-s99",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s103",
+      "target": "ppc-1860-s99",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s104",
+      "target": "ppc-1860-s99",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s121",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s124",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s4s",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s126",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s131",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s138",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s142",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s150",
+      "target": "ppc-1860-s141",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s152",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s1s",
+      "target": "ppc-1860-s141",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s160",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s163",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s175",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s225",
+      "target": "ppc-1860-s223",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s230",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s238",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s240",
+      "target": "ppc-1860-s239",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s240",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s250",
+      "target": "ppc-1860-s246",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s251",
+      "target": "ppc-1860-s246",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s251",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s1s",
+      "target": "ppc-1860-s17",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s272",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s291",
+      "target": "ppc-1860-s293",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s291",
+      "target": "ppc-1860-s292",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s5s",
+      "target": "ppc-1860-s2",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s298c",
+      "target": "ppc-1860-s323",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s302",
+      "target": "ppc-1860-s304",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s304",
+      "target": "ppc-1860-s17",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s307",
+      "target": "ppc-1860-s309",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s307",
+      "target": "ppc-1860-s310",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s308",
+      "target": "ppc-1860-s307",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s308",
+      "target": "ppc-1860-s306",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s312",
+      "target": "ppc-1860-s309",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s312",
+      "target": "ppc-1860-s310",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s338e",
+      "target": "ppc-1860-s310",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s338e",
+      "target": "ppc-1860-s345",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s358",
+      "target": "ppc-1860-s352",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s371",
+      "target": "ppc-1860-s371b",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s376",
+      "target": "ppc-1860-s333",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s376",
+      "target": "ppc-1860-s337",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s376",
+      "target": "ppc-1860-s337c",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s376",
+      "target": "ppc-1860-s377",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s376",
+      "target": "ppc-1860-s377b",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s376",
+      "target": "ppc-1860-s335",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s376",
+      "target": "ppc-1860-s337f",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s387",
+      "target": "ppc-1860-s377",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s389",
+      "target": "ppc-1860-s377",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s472",
+      "target": "ppc-1860-s467",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s473",
+      "target": "ppc-1860-s466",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "ppc-1860-s473",
+      "target": "ppc-1860-s467",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "crpc-1898-s349",
+      "target": "crpc-1898-s76",
+      "type": "REFERENCES"
+    },
+    {
+      "source": "crpc-1898-s349",
+      "target": "crpc-1898-s245",
+      "type": "REFERENCES"
+    }
+  ]
+}
