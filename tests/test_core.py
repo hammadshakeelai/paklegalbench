@@ -239,4 +239,53 @@ def test_exact_channel_vernacular_resolution():
     assert "const-1973-a199" in r._exact_channel("which court has writ jurisdiction in Pakistan")
 
 
+def test_urdu_script_references():
+    assert ("302", "PPC") in extract_references("دفعہ ۳۰۲ تعزیرات پاکستان")
+    assert ("199", "Constitution") in extract_references("آرٹیکل ۱۹۹ آئین پاکستان")
+    assert ("302", "PPC") in extract_references("قتل عمد کی سزا کیا ہے")
+    assert ("497", "CrPC") in extract_references("ضمانت کے بنیادی اصول")
+    assert ("154", "CrPC") in extract_references("ایف آئی آر درج کروانا")
+    assert ("173", "CrPC") in extract_references("پولیس چالان")
+    assert ("489-F", "PPC") in extract_references("چیک باؤنس کا مقدمہ")
+    assert ("199", "Constitution") in extract_references("ہائی کورٹ میں رٹ پٹیشن")
+
+
+def test_bounded_section_ranges():
+    refs_const = extract_references("Articles 8 to 10 of Constitution")
+    sections = [s for s, a in refs_const]
+    assert "8" in sections and "9" in sections and "10" in sections
+
+    refs_ppc = extract_references("Sections 300 to 302 PPC")
+    ppc_secs = [s for s, a in refs_ppc]
+    assert "300" in ppc_secs and "301" in ppc_secs and "302" in ppc_secs
+
+
+def test_graph_context_expansion():
+    from index import Retriever, load_chunks, RetrievalConfig
+    r = Retriever(load_chunks(), load_dense=False)
+    # Search with graph expansion enabled
+    cfg = RetrievalConfig(use_graph_context=True, top_k=2)
+    hits = r.search("302 PPC", cfg)
+    assert len(hits) >= 1
+    assert hits[0].chunk.citation() == "PPC Section 302"
+    # Ensure graph adjacency helper executes gracefully
+    adj = r._get_graph_adjacency()
+    assert isinstance(adj, dict)
+
+
+def test_law_gat_benchmark():
+    import law_gat_eval
+    questions = law_gat_eval.load_dataset()
+    assert len(questions) == 30
+    from index import Retriever, load_chunks, RetrievalConfig
+    r = Retriever(load_chunks(), load_dense=False)
+    stats = law_gat_eval.evaluate_retrieval(r, questions, RetrievalConfig())
+    assert stats["overall"]["recall@1"] >= 0.90
+    assert stats["overall"]["recall@5"] >= 0.95
+    assert stats["overall"]["mrr"] >= 0.95
+    assert stats["overall"]["false_refusal_rate"] == 0.0
+
+
+
+
 

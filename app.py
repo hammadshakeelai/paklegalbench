@@ -59,6 +59,7 @@ class SourceItem(BaseModel):
     channels: list[str]
     verified: bool
     source_url: str
+    cross_references: list[str] = []
 
 
 class ChatResponse(BaseModel):
@@ -109,19 +110,24 @@ def chat(req: ChatRequest):
     )
     hits = retriever.search(req.question, cfg)
 
-    sources = [
-        {
-            "citation": h.chunk.citation(),
-            "marginal_note": h.chunk.marginal_note,
-            "act": h.chunk.act,
-            "text": h.chunk.text,
+    graph = llm._get_statute_graph()
+    sources = []
+    for h in hits:
+        c = h.chunk
+        sec_norm = c.section.replace("-", "").replace(" ", "").upper()
+        key = f"{c.act_short}:{sec_norm}"
+        refs = graph.get(key, [])
+        sources.append({
+            "citation": c.citation(),
+            "marginal_note": c.marginal_note,
+            "act": c.act,
+            "text": c.text,
             "score": round(h.score, 5),
             "channels": h.channels,
-            "verified": h.chunk.verified,
-            "source_url": h.chunk.source_url,
-        }
-        for h in hits
-    ]
+            "verified": c.verified,
+            "source_url": c.source_url,
+            "cross_references": refs,
+        })
 
     if retriever.should_refuse(hits, cfg, req.question):
         reason = retriever.refusal_reason(req.question, hits, cfg)

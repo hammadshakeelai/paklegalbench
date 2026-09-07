@@ -390,23 +390,6 @@
 <body>
 <div class="doc">
 
-<nav style="display:flex;justify-content:space-between;align-items:center;padding:1.5rem 0 0;font-family:var(--sans);font-size:0.875rem;border-bottom:1px solid var(--rule);padding-bottom:1rem;flex-wrap:wrap;gap:1rem;">
-  <div style="display:flex;gap:1.5rem;align-items:center;">
-    <a href="/" style="color:var(--ink);text-decoration:none;font-weight:600;display:flex;align-items:center;gap:0.35rem;">
-      <span style="font-size:1.1rem;">&larr;</span> Interactive Search App
-    </a>
-    <a href="https://github.com/hammadshakeelai/paklegalbench" target="_blank" rel="noopener noreferrer" style="color:var(--ink-soft);text-decoration:none;">
-      GitHub Repository
-    </a>
-    <a href="/api/health" target="_blank" rel="noopener noreferrer" style="color:var(--ink-soft);text-decoration:none;">
-      API Health
-    </a>
-  </div>
-  <div style="background:var(--paper-deep);padding:0.3rem 0.75rem;border-radius:4px;font-size:0.8125rem;color:var(--verified);font-weight:500;border:1px solid var(--rule);">
-    Recall@1: 0.9630 &middot; False Refusal: 0.00% &middot; 56/56 CI Tests Pass
-  </div>
-</nav>
-
 <header class="masthead">
   <h1>Legal AI for Pakistan: what exists, what works, and what nobody has measured</h1>
 
@@ -839,6 +822,80 @@
       <span class="mark">Why this is the contribution</span>
       <p>An open evaluation set and a reproducible baseline for Pakistani legal retrieval do not currently exist. Publishing modest numbers honestly is worth more than claiming 99.9% without a method, and it is the one asset in this space that a well-funded competitor cannot simply out-build.</p>
     </div>
+
+    <h3>Empirical Baseline & Law GAT Examination Results</h3>
+
+    <p>We measured the tri-channel retrieval engine across the gold-standard adversarial test suite, the Pakistan Law GAT (Bar licensing examination), and the 37-vector adversarial security harness:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Benchmark / Configuration</th><th>n</th><th>Recall@1</th><th>Recall@5</th><th>MRR</th><th>Trap Refusal</th><th>False Refusal</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Core Baseline: Sparse (BM25)</strong></td>
+            <td>27</td>
+            <td>0.8519</td>
+            <td>1.0000</td>
+            <td>0.9198</td>
+            <td>1.0000</td>
+            <td>0.0370</td>
+          </tr>
+          <tr>
+            <td><strong>Core Baseline: Hybrid + Exact Channel</strong></td>
+            <td>27</td>
+            <td>0.9630</td>
+            <td>1.0000</td>
+            <td>0.9815</td>
+            <td>1.0000</td>
+            <td>0.0000</td>
+          </tr>
+          <tr>
+            <td><strong>Pakistan Law GAT (Bar Exam) Overall</strong></td>
+            <td>30</td>
+            <td>0.9667</td>
+            <td>1.0000</td>
+            <td>0.9833</td>
+            <td>—</td>
+            <td>0.0000</td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;&bull; PPC (Penal Code) Sub-test</td>
+            <td>10</td>
+            <td>1.0000</td>
+            <td>1.0000</td>
+            <td>1.0000</td>
+            <td>—</td>
+            <td>0.0000</td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;&bull; CrPC (Criminal Procedure) Sub-test</td>
+            <td>10</td>
+            <td>0.9000</td>
+            <td>1.0000</td>
+            <td>0.9500</td>
+            <td>—</td>
+            <td>0.0000</td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;&bull; Constitution 1973 Sub-test</td>
+            <td>10</td>
+            <td>1.0000</td>
+            <td>1.0000</td>
+            <td>1.0000</td>
+            <td>—</td>
+            <td>0.0000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Statutory Cross-Reference Graph:</strong> Mined 1,617 provisions from the Pakistan Laws Dataset, producing 288 directed edges across 254 connected provisions. When enabled, 1-hop graph traversal retrieves defining and exception provisions without displacing the primary citation hit.</p>
+
+    <p><strong>Bilingual & Vernacular Grounding:</strong> Supports native Urdu numerals (۰–۹), Urdu statutory syntax (دفعہ, آرٹیکل), and everyday procedural terms (قتل عمد, ضمانت, ایف آئی آر, چالان, چیک باؤنس, رٹ پٹیشن), preventing false refusals across English, Roman Urdu, and Nastaliq script.</p>
+
+    <p><strong>Adversarial Red-Team Defense:</strong> 37 / 37 adversarial vectors mitigated (prompt injection, delimiter hijacking, foreign IPC jurisdiction spoofing, fake statute collisions, repealed provisions, and buffer floods).</p>
   </div>
 </section>
 

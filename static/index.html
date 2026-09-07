@@ -74,6 +74,13 @@
              font-variant-numeric:tabular-nums}
   .chan{color:var(--verified);font-weight:500}
 
+  .cross-refs{margin-top:.45rem;font-size:.7rem;color:var(--ink-soft);line-height:1.4}
+  .cross-refs-title{font-weight:600;display:block;margin-bottom:.2rem}
+  .ref-pill{display:inline-block;background:var(--paper-deep);border:1px solid var(--rule);
+            color:var(--ink);padding:.15rem .45rem;font-size:.6875rem;font-family:var(--sans);
+            cursor:pointer;margin:.1rem .25rem .1rem 0;border-radius:2px}
+  .ref-pill:hover{border-color:var(--ink);background:#fff}
+
   .toggles{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--rule)}
   .toggles h2{border:none;padding:0;margin-bottom:.55rem}
   .toggles label{display:block;margin-bottom:.3rem;cursor:pointer;color:var(--ink-soft)}
@@ -112,7 +119,8 @@
         <ul class="examples">
           <li><button type="button">What is the punishment under Section 420 PPC?</button></li>
           <li><button type="button">When can bail be granted in a non-bailable offence?</button></li>
-          <li><button type="button">What is the difference between 302 and 320 PPC?</button></li>
+          <li><button type="button">Articles 8 to 10 of Constitution</button></li>
+          <li><button type="button">دفعہ ۳۰۲ تعزیرات پاکستان</button></li>
           <li><button type="button">What is the penalty under Section 999 PPC?</button></li>
         </ul>
       </div>
@@ -194,8 +202,18 @@ function renderSources(list){
         <span>${s.score.toFixed(4)}</span>
         <span class="chan">${s.channels.join(' + ') || 'fused'}</span>
       </div>
+      ${s.cross_references && s.cross_references.length ? `
+        <div class="cross-refs">
+          <span class="cross-refs-title">Cross-references:</span>
+          ${s.cross_references.slice(0, 5).map(r => `<button type="button" class="ref-pill" onclick="lookupRef('${esc(r)}')">${esc(r)}</button>`).join('')}
+        </div>` : ''}
     </div>`).join('');
 }
+
+window.lookupRef = function(ref) {
+  input.value = ref;
+  form.requestSubmit();
+};
 
 form.addEventListener('submit', async e => {
   e.preventDefault();

@@ -1,0 +1,252 @@
+{
+  "timestamp": "2026-09-07T21:30:03Z",
+  "retrieval": {
+    "overall": {
+      "total_questions": 30,
+      "recall@1": 0.9667,
+      "recall@5": 1.0,
+      "mrr": 0.9833,
+      "false_refusal_rate": 0.0
+    },
+    "by_subject": {
+      "PPC": {
+        "n": 10,
+        "recall@1": 1.0,
+        "recall@5": 1.0,
+        "mrr": 1.0,
+        "false_refusals": 0
+      },
+      "CrPC": {
+        "n": 10,
+        "recall@1": 0.9,
+        "recall@5": 1.0,
+        "mrr": 0.95,
+        "false_refusals": 0
+      },
+      "Constitution": {
+        "n": 10,
+        "recall@1": 1.0,
+        "recall@5": 1.0,
+        "mrr": 1.0,
+        "false_refusals": 0
+      }
+    }
+  },
+  "llm_answering": {
+    "total": 30,
+    "correct": 18,
+    "accuracy": 0.6,
+    "details": [
+      {
+        "id": "gat-ppc-01",
+        "subject": "PPC",
+        "expected": "B",
+        "is_correct": true,
+        "response_snippet": "\n\nB) 3 years, or with fine, or with both [PPC Section 489-F]",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-ppc-02",
+        "subject": "PPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) Punished with death or imprisonment for life as ta'zir [PPC Section 302]\n\nVerify against the primary source before relying on this.",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-ppc-03",
+        "subject": "PPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) [PPC Section 320]",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-ppc-04",
+        "subject": "PPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) [PPC Section 420]",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-ppc-05",
+        "subject": "PPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) [PPC Section 379]",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-ppc-06",
+        "subject": "PPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\n**A) 14 years**\n\nUnder Section 392 PPC, where the robbery is committed on a highway between sunset and sunrise, the term of imprisonment m",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-ppc-07",
+        "subject": "PPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\n**A) [PPC Section 324]**\n\nSection 324 provides imprisonment of either description extending to ten years and liability to fine; where hurt",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-ppc-08",
+        "subject": "PPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) [PPC Section 411]",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-ppc-09",
+        "subject": "PPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) 7 years, or fine, or both [PPC Section 506]\n\nVerify against the primary source before relying on this.",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-ppc-10",
+        "subject": "PPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) Section 320 PPC [PPC Section 320]\n\nVerify against the primary source before relying on this.",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-01",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) Section 154 CrPC [CrPC Section 154]\n\nVerify against the primary source before relying on this.",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-02",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": false,
+        "response_snippet": "\n\nThe provisions I retrieved do not cover this. The text of CrPC Section 173 provided in the context states that the officer must forward th",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-03",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nOption A is correct. [CrPC Section 54]",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-04",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\n**A) Section 161 CrPC**\n\nSection 161 CrPC provides for the examination of witnesses by a police officer making an investigation, including",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-05",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) Offences punishable with death, imprisonment for life, or imprisonment for 10 years [CrPC Section 497]\n\nVerify against the primary sour",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-06",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nBased on the provisions supplied, I cannot find an explicit text of Section 497(2) CrPC in the context. However, under the general provisi",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-07",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) Section 498 CrPC [CrPC Section 498]",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-08",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\nA) Acquit the accused at any stage of the case if the charge is groundless [CrPC Section 249-A]\n\n**Verify against the primary source befor",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-09",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": true,
+        "response_snippet": "\n\n**A) Section 265-K CrPC** — \"Power of court to acquit accused at any stage\" [CrPC Section 265-K]. The marginal note confirms it is the Ses",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-crpc-10",
+        "subject": "CrPC",
+        "expected": "A",
+        "is_correct": false,
+        "response_snippet": "\n\nThe provisions I retrieved do not cover this question. The CONTEXT contains Sections 497, 498, 54, 173 of the CrPC and Article 201 of the ",
+        "provider": "agnes"
+      },
+      {
+        "id": "gat-const-01",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      },
+      {
+        "id": "gat-const-02",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      },
+      {
+        "id": "gat-const-03",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      },
+      {
+        "id": "gat-const-04",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      },
+      {
+        "id": "gat-const-05",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      },
+      {
+        "id": "gat-const-06",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      },
+      {
+        "id": "gat-const-07",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      },
+      {
+        "id": "gat-const-08",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      },
+      {
+        "id": "gat-const-09",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      },
+      {
+        "id": "gat-const-10",
+        "error": "All providers failed. agnes: HTTP Error 429: Too Many Requests",
+        "is_correct": false
+      }
+    ]
+  }
+}

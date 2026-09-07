@@ -152,6 +152,7 @@ def test_chat_valid_response_shape_with_mocked_llm():
         assert "channels" in src and isinstance(src["channels"], list)
         assert "verified" in src and isinstance(src["verified"], bool)
         assert "source_url" in src and isinstance(src["source_url"], str)
+        assert "cross_references" in src and isinstance(src["cross_references"], list)
 
 
 def test_chat_multi_citation_query():
@@ -164,6 +165,16 @@ def test_chat_multi_citation_query():
         citations = [s["citation"] for s in data["sources"][:2]]
         assert any("302" in c for c in citations)
         assert any("497" in c for c in citations)
+
+
+def test_chat_urdu_query():
+    with patch("llm.answer", return_value=("Under PPC Section 302, qatl-i-amd is defined and punished.", "mock-groq")):
+        resp = client.post("/api/chat", json={"question": "دفعہ ۳۰۲ تعزیرات پاکستان"})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["refused"] is False
+        assert len(data["sources"]) >= 1
+        assert "302" in data["sources"][0]["citation"]
 
 
 def test_openapi_schema_definitions():

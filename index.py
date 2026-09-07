@@ -42,6 +42,13 @@ ACT_ALIASES = {
     "constitution": "Constitution",
     "article": "Constitution",
     "art": "Constitution",
+    # Urdu act aliases
+    "تعزیرات پاکستان": "PPC",
+    "ضابطہ فوجداری": "CrPC",
+    "آئین پاکستان": "Constitution",
+    "آئین": "Constitution",
+    "پی پی سی": "PPC",
+    "سی آر پی سی": "CrPC",
 }
 
 # Explicitly track foreign acts to prevent cross-jurisdictional confusion (e.g. IPC vs PPC)
@@ -55,6 +62,8 @@ FOREIGN_ACTS = {
     "bns": "BNS",
     "bsa": "BSA",
 }
+
+URDU_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
 
 
 # --------------------------------------------------------------------------
@@ -171,30 +180,41 @@ REFERENCE_PATTERNS = [
         r"\b([0-9]+(?:[-–]?[a-z])?)\s*(?:of\s+the\s+)?(ppc|crpc|cr\.?p\.?c\.?|p\.?p\.?c\.?|ipc|i\.?p\.?c\.?)\b",
         re.I,
     ),
-    # 5. "Article 199", "Art. 10A", "Article 10-A"
-    re.compile(r"\b(?:article|art\.?)\s*([0-9]+(?:[-–]?[a-z])?)\b", re.I),
-    # 6. Generic section / Urdu "dafa" / "dhara": "Section 302", "dafa 302", "u/s 154"
-    re.compile(r"\b(?:section|sec\.?|s\.|u/s|dafa|dhara|dharra)\s*([0-9]+(?:[-–]?[a-z])?)\b", re.I),
+    # 5. "Article 199", "Art. 10A", "Article 10-A", Urdu "آرٹیکل 199"
+    re.compile(r"(?:\barticle\b|\bart\.?\b|آرٹیکل)\s*([0-9]+(?:[-–]?[a-z])?)", re.I),
+    # 6. Generic section / Urdu "dafa" / "dhara" / "دفعہ" / "سیکشن": "Section 302", "dafa 302", "u/s 154"
+    re.compile(r"(?:\bsection\b|\bsec\.?\b|\bs\.\b|\bu/s\b|\bdafa\b|\bdhara\b|\bdharra\b|دفعہ|سیکشن)\s*([0-9]+(?:[-–]?[a-z])?)", re.I),
+]
+
+RANGE_PATTERNS = [
+    re.compile(
+        r"\b(?:sections?|articles?|secs?\.?|arts?\.?|دفعات|آرٹیکلز)\s*([0-9]+)\s*(?:to|-|–|تا)\s*([0-9]+)(?:\s*(?:of\s+(?:the\s+)?)?([a-z0-9\s–-]+?\b(?:act|ordinance|code|rules|order|regulation|statute|ppc|crpc|constitution|تعزیرات\s*پاکستان|ضابطہ\s*فوجداری|آئین)))?\b",
+        re.I,
+    ),
 ]
 
 # Statutory synonyms and vernacular terminology mapped to canonical provisions
 VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     # FIR (CrPC 154) - "Information in cognizable cases"
-    (re.compile(r"\b(?:f\.?i\.?r\.?|first\s+information\s+report)\b", re.I), ("154", "CrPC")),
+    (re.compile(r"\b(?:f\.?i\.?r\.?|first\s+information\s+report)\b|ایف\s*آئی\s*آر|پہلی\s*اطلاعی\s*رپورٹ", re.I), ("154", "CrPC")),
     # Challan (CrPC 173) - "Report of police officer on completion of investigation"
-    (re.compile(r"\bchallan\b", re.I), ("173", "CrPC")),
+    (re.compile(r"\bchallan\b|چالان", re.I), ("173", "CrPC")),
     # Pre-arrest bail / anticipatory bail (CrPC 498)
-    (re.compile(r"\b(?:pre-?arrest\s+bail|anticipatory\s+bail|bail\s+before\s+arrest)\b", re.I), ("498", "CrPC")),
+    (re.compile(r"\b(?:pre-?arrest\s+bail|anticipatory\s+bail|bail\s+before\s+arrest)\b|قبل\s*از\s*گرفتاری\s*ضمانت|عبوری\s*ضمانت", re.I), ("498", "CrPC")),
     # Non-bailable bail (CrPC 497)
-    (re.compile(r"\b(?:bail\b.*?\bnon-?bailable|non-?bailable\b.*?\bbail)\b", re.I), ("497", "CrPC")),
+    (re.compile(r"\b(?:bail\b.*?\bnon-?bailable|non-?bailable\b.*?\bbail)\b|غیر\s*ضمانتی|بعد\s*از\s*گرفتاری\s*ضمانت", re.I), ("497", "CrPC")),
     # Bailable bail (CrPC 496)
     (re.compile(r"(?<!non-)(?<!non )\bbailable\b.*?\bbail|\bbail\b.*?(?<!non-)(?<!non )\bbailable\b", re.I), ("496", "CrPC")),
+    # General bail (CrPC 497 default)
+    (re.compile(r"ضمانت", re.I), ("497", "CrPC")),
     # Writ Petition / Writ jurisdiction (Constitution Article 199)
-    (re.compile(r"\b(?:writ\s+(?:petition|jurisdiction)|constitutional\s+petition)\b", re.I), ("199", "Constitution")),
+    (re.compile(r"\b(?:writ\s+(?:petition|jurisdiction)|constitutional\s+petition)\b|رٹ\s*پٹیشن|آئینی\s*درخواست", re.I), ("199", "Constitution")),
     # Qatl-i-amd (PPC 302) - Intentional murder
-    (re.compile(r"\b(?:qatl[-–\s]*(?:i|e)[-–\s]*amd|intentional\s+murder)\b", re.I), ("302", "PPC")),
+    (re.compile(r"\b(?:qatl[-–\s]*(?:i|e)[-–\s]*amd|intentional\s+murder)\b|قتل\s*عمد", re.I), ("302", "PPC")),
     # Cheque Bounce (PPC 489-F) - Dishonestly issuing a cheque
-    (re.compile(r"\b(?:cheque\s+bounces?|bounced?\s+cheque|check\s+bounces?|bounced?\s+check|cheque\s+dishonou?r(?:ed)?|dishonou?red\s+cheque)\b", re.I), ("489-F", "PPC")),
+    (re.compile(r"\b(?:cheque\s+bounces?|bounced?\s+cheque|check\s+bounces?|bounced?\s+check|cheque\s+dishonou?r(?:ed)?|dishonou?red\s+cheque)\b|چیک\s*(?:باؤنس|ڈس\s*آنر)", re.I), ("489-F", "PPC")),
+    # Fundamental Rights (Constitution Article 8)
+    (re.compile(r"بنیادی\s*حقوق", re.I), ("8", "Constitution")),
 ]
 
 
@@ -204,7 +224,8 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
     Returns [(section, act_short_or_None), ...] with section normalised
     to uppercase, e.g. ("489-F", "PPC") or ("10A", "Constitution").
     """
-    q = query.lower()
+    q_norm = query.translate(URDU_DIGITS)
+    q = q_norm.lower()
     act_hint = None
     for f_alias, f_short in FOREIGN_ACTS.items():
         if re.search(rf"\b{re.escape(f_alias)}\b", q):
@@ -218,8 +239,26 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
 
     found: list[tuple[str, str | None]] = []
     seen = set()
+
+    # Check bounded section/article ranges first (e.g. Articles 8 to 10 Constitution)
+    for pat in RANGE_PATTERNS:
+        for m in pat.finditer(q_norm):
+            start, end = int(m.group(1)), int(m.group(2))
+            act_raw = m.group(3)
+            act = resolve_act_name(act_raw) if act_raw else None
+            if act is None:
+                act = "Constitution" if re.search(r"\b(?:articles?|arts?\.?|آرٹیکلز)\b", m.group(0), re.I) else act_hint
+            if 0 < end - start <= 10:
+                for s in range(start, end + 1):
+                    s_str = str(s)
+                    if not any(x == s_str for x, _ in found):
+                        key = (s_str, act)
+                        if key not in seen:
+                            seen.add(key)
+                            found.append(key)
+
     for pat in REFERENCE_PATTERNS:
-        for m in pat.finditer(query):
+        for m in pat.finditer(q_norm):
             groups = m.groups()
             if len(groups) == 2 and groups[0] and groups[1]:
                 g0, g1 = groups[0], groups[1]
@@ -230,7 +269,7 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
                 act = resolve_act_name(raw_act)
             else:
                 raw_sec = groups[0]
-                act = "Constitution" if re.search(r"\b(?:article|art\.?)\b", m.group(0), re.I) else act_hint
+                act = "Constitution" if re.search(r"(?:\barticle\b|\bart\.?\b|آرٹیکل)", m.group(0), re.I) else act_hint
 
             sec = re.sub(r"[–\s]", "-", raw_sec.upper())
             # If we already recorded this section, do not add redundant/conflicting references for it
@@ -243,7 +282,7 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
 
     # Resolve statutory synonyms and vernacular terminology
     for pat, ref in VERNACULAR_PATTERNS:
-        if pat.search(query):
+        if pat.search(q_norm):
             if ref not in seen:
                 seen.add(ref)
                 found.append(ref)
@@ -403,6 +442,7 @@ class RetrievalConfig:
     #   2. the top hit covers too few of the query's content words -> refuse
     refuse_on_missing_reference: bool = True
     min_term_coverage: float = 0.34
+    use_graph_context: bool = False
 
 
 @dataclass
@@ -423,29 +463,38 @@ class Retriever:
         self.bm25 = BM25([[stem(t) for t in tokenize(t)] for t in texts])
         self.dense = DenseIndex(texts) if load_dense else None
         self._reranker: Reranker | None = None
+        self._graph_adj: dict[str, list[str]] | None = None
+
+    def _get_graph_adjacency(self) -> dict[str, list[str]]:
+        if self._graph_adj is None:
+            graph_file = Path(__file__).parent / "statute_graph.json"
+            if graph_file.exists():
+                try:
+                    data = json.loads(graph_file.read_text(encoding="utf-8"))
+                    self._graph_adj = data.get("adjacency", {})
+                except Exception:
+                    self._graph_adj = {}
+            else:
+                self._graph_adj = {}
+        return self._graph_adj
 
     @property
     def dense_available(self) -> bool:
         return bool(self.dense and self.dense.available)
 
     def _exact_channel(self, query: str) -> list[str]:
-        refs = extract_references(query)
-        if not refs:
-            return []
-        out = []
-        for sec, act in refs:
+        hits = []
+        for sec, act in extract_references(query):
             if act in FOREIGN_ACTS.values():
                 continue
-            norm_sec = sec.replace("-", "").replace(" ", "").upper()
+            sec_norm = sec.replace("-", "").replace(" ", "").upper()
             for c in self.chunks:
-                chunk_sec = c.section.replace("-", "").replace(" ", "").upper()
-                if chunk_sec != norm_sec:
-                    continue
-                if act and c.act_short != act:
-                    continue
-                if c.id not in out:
-                    out.append(c.id)
-        return out
+                c_sec_norm = c.section.replace("-", "").replace(" ", "").upper()
+                if c_sec_norm == sec_norm:
+                    if act is None or c.act_short == act:
+                        if c.id not in hits:
+                            hits.append(c.id)
+        return hits
 
     def search(self, query: str, config: RetrievalConfig | None = None) -> list[Hit]:
         cfg = config or self.config
@@ -488,10 +537,29 @@ class Retriever:
             score_map = dict(fused)
             fused = [(i, score_map[i]) for i in order]
 
-        return [
+        hits = [
             Hit(chunk=self.by_id[i], score=sc, channels=channel_of.get(i, []))
             for i, sc in fused[:cfg.top_k]
         ]
+
+        if cfg.use_graph_context and hits:
+            adj = self._get_graph_adjacency()
+            retrieved_ids = {h.chunk.id for h in hits}
+            supp_added = 0
+            for h in hits[:2]:
+                for target_id in adj.get(h.chunk.id, []):
+                    if target_id in self.by_id and target_id not in retrieved_ids and supp_added < 2:
+                        hits.append(
+                            Hit(
+                                chunk=self.by_id[target_id],
+                                score=round(hits[-1].score * 0.5, 5),
+                                channels=["graph"],
+                            )
+                        )
+                        retrieved_ids.add(target_id)
+                        supp_added += 1
+
+        return hits
 
     def refusal_reason(self, query: str, hits: list[Hit],
                        config: RetrievalConfig | None = None) -> str | None:
