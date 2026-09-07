@@ -51,8 +51,29 @@ def health():
     }
 
 
+GREETINGS = {"hi", "hello", "hey", "salam", "assalam o alaikum", "aoa", "help", "start"}
+
+
 @app.post("/api/chat")
 def chat(req: ChatRequest):
+    q_norm = req.question.strip().lower().rstrip("!?.,")
+    if q_norm in GREETINGS:
+        return {
+            "answer": (
+                "Hello! I am PakLegalBench, an AI statute retrieval assistant for Pakistani law.\n\n"
+                "I answer questions strictly grounded in the **Constitution of Pakistan (1973)**, "
+                "the **Pakistan Penal Code (PPC 1860)**, and the **Code of Criminal Procedure (CrPC 1898)** with citations.\n\n"
+                "Try asking:\n"
+                "• *What is the punishment under Section 420 PPC?*\n"
+                "• *When can bail be granted in a non-bailable offence?*\n"
+                "• *What is the difference between 302 and 320 PPC?*\n"
+                "• *Article 199 writ jurisdiction*"
+            ),
+            "refused": False,
+            "sources": [],
+            "provider": "assistant",
+        }
+
     cfg = RetrievalConfig(
         use_exact=req.use_exact,
         use_sparse=req.use_sparse,
@@ -76,13 +97,23 @@ def chat(req: ChatRequest):
     ]
 
     if retriever.should_refuse(hits, cfg, req.question):
+        reason = retriever.refusal_reason(req.question, hits, cfg)
+        if reason and reason.startswith("unknown_provision:"):
+            prov = reason.split(":", 1)[1]
+            msg = (
+                f"I could not find {prov} in the indexed corpus. "
+                "The corpus currently covers the Constitution (1973), PPC (1860), and CrPC (1898) only. "
+                "Please verify the provision number."
+            )
+        else:
+            msg = (
+                "I could not find a provision in the indexed corpus that addresses this. "
+                "The system currently indexes the Constitution, the PPC, and the CrPC only. "
+                "Out-of-scope topics (e.g., civil service pay scales / BPS grades, tax ordinances, corporate rules) "
+                "are intentionally refused to prevent hallucination."
+            )
         return {
-            "answer": (
-                "I could not find a provision in the indexed corpus that "
-                "addresses this. The corpus currently covers the Constitution, "
-                "the PPC and the CrPC only, so the answer may exist elsewhere "
-                "in Pakistani law."
-            ),
+            "answer": msg,
             "refused": True,
             "sources": sources,
             "provider": None,

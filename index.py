@@ -402,6 +402,11 @@ class Retriever:
                 return f"unknown_provision:{labels}"
 
         # 2. top hit barely overlaps the question's content words
+        # If the exact channel matched the provision and it is the top hit, don't false-refuse
+        # on lexical term coverage (e.g. "u/s 497 Cr.P.C." where abbreviation dots dilute word overlap).
+        if "exact" in hits[0].channels:
+            return None
+
         q_terms = {t for t in tokenize(query) if t not in STOPWORDS}
         if q_terms:
             top_terms = set(tokenize(hits[0].chunk.indexed_text()))

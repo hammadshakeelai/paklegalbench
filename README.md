@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/banner.png" alt="PakLegalBench Banner" width="100%" />
+</p>
+
 # PakLegalBench
 
 Statute retrieval over Pakistani law, plus the evaluation harness that measures
