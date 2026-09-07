@@ -1,0 +1,47 @@
+name: tests and eval
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # Core only. Installing torch here would add ~5 min per run for no gain:
+      # the eval config we report on CI is BM25 + exact, which needs neither.
+      - run: pip install -r requirements.txt pytest
+
+      - name: unit tests
+        run: python -m pytest tests/ -q
+
+      - name: retrieval eval
+        run: |
+          python eval.py | tee /tmp/eval.txt
+
+      - name: publish results to job summary
+        run: |
+          echo '## Retrieval eval' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/eval.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      # Fails the build if refusal regresses. This is the guardrail for the bug
+      # that already shipped once: a fused-score threshold that never fired.
+      - name: refusal must not regress
+        run: |
+          python - <<'PY'
+          import json, sys
+          r = json.load(open("results/retrieval.json"))["hybrid+exact"]
+          print(r)
+          assert r["refusal_rate"] >= 0.85, f"trap refusal dropped: {r['refusal_rate']}"
+          assert r["false_refusal"] <= 0.15, f"refusing valid queries: {r['false_refusal']}"
+          assert r["recall@1"] >= 0.90, f"recall@1 dropped: {r['recall@1']}"
+          PY

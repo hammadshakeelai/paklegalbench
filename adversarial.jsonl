@@ -1,0 +1,34 @@
+{"question":"What is the punishment under Section 420 PPC?","gold_ids":["ppc-1860-s420"],"trap":"none"}
+{"question":"punishment for cheating and dishonestly inducing delivery of property","gold_ids":["ppc-1860-s420"],"trap":"none"}
+{"question":"302 PPC","gold_ids":["ppc-1860-s302"],"trap":"citation"}
+{"question":"320 PPC","gold_ids":["ppc-1860-s320"],"trap":"citation_confusion"}
+{"question":"Section 324 PPC attempt to murder","gold_ids":["ppc-1860-s324"],"trap":"citation"}
+{"question":"489-F PPC","gold_ids":["ppc-1860-s489f"],"trap":"citation_hyphen"}
+{"question":"what happens if my cheque bounces","gold_ids":["ppc-1860-s489f"],"trap":"semantic"}
+{"question":"u/s 497 CrPC","gold_ids":["crpc-1898-s497"],"trap":"citation_abbrev"}
+{"question":"can bail be granted in a non-bailable offence","gold_ids":["crpc-1898-s497"],"trap":"semantic"}
+{"question":"how do I get pre-arrest bail","gold_ids":["crpc-1898-s498"],"trap":"semantic"}
+{"question":"Article 199","gold_ids":["const-1973-a199"],"trap":"citation"}
+{"question":"which court has writ jurisdiction in Pakistan","gold_ids":["const-1973-a199"],"trap":"semantic"}
+{"question":"are Supreme Court decisions binding on High Courts","gold_ids":["const-1973-a189"],"trap":"semantic"}
+{"question":"Art. 10A","gold_ids":["const-1973-a10a"],"trap":"citation_alpha"}
+{"question":"right to fair trial in the constitution","gold_ids":["const-1973-a10a"],"trap":"semantic"}
+{"question":"how long can police detain someone before producing them in court","gold_ids":["const-1973-a10"],"trap":"semantic"}
+{"question":"how is an FIR registered","gold_ids":["crpc-1898-s154"],"trap":"semantic"}
+{"question":"Section 154 CrPC","gold_ids":["crpc-1898-s154"],"trap":"citation"}
+{"question":"what is a challan","gold_ids":["crpc-1898-s173"],"trap":"vernacular"}
+{"question":"when can a police officer arrest without a warrant","gold_ids":["crpc-1898-s54"],"trap":"semantic"}
+{"question":"can a magistrate acquit before the trial ends","gold_ids":["crpc-1898-s249a","crpc-1898-s265k"],"trap":"multi_gold"}
+{"question":"265-K CrPC","gold_ids":["crpc-1898-s265k"],"trap":"citation_hyphen"}
+{"question":"punishment for robbery on a highway at night","gold_ids":["ppc-1860-s392"],"trap":"semantic"}
+{"question":"Section 411 PPC stolen property","gold_ids":["ppc-1860-s411"],"trap":"citation"}
+{"question":"is there a right to information in Pakistan","gold_ids":["const-1973-a19a"],"trap":"semantic"}
+{"question":"Article 25 equality","gold_ids":["const-1973-a25"],"trap":"citation"}
+{"question":"can a law that violates fundamental rights stand","gold_ids":["const-1973-a8"],"trap":"semantic"}
+{"question":"What is the penalty under Section 999 PPC?","gold_ids":[],"expect_refusal":true,"trap":"false_premise"}
+{"question":"Explain Article 512 of the Constitution of Pakistan","gold_ids":[],"expect_refusal":true,"trap":"false_premise"}
+{"question":"What does Section 88-Z of the CrPC say about drone surveillance?","gold_ids":[],"expect_refusal":true,"trap":"false_premise"}
+{"question":"Under the Pakistan Cyber Sovereignty Act 2023, what is the fine?","gold_ids":[],"expect_refusal":true,"trap":"fake_statute"}
+{"question":"What is the corporate tax rate for a private limited company?","gold_ids":[],"expect_refusal":true,"trap":"out_of_corpus"}
+{"question":"How do I register a trademark in Pakistan?","gold_ids":[],"expect_refusal":true,"trap":"out_of_corpus"}
+{"question":"What are the grounds for khula under Pakistani family law?","gold_ids":[],"expect_refusal":true,"trap":"out_of_corpus"}

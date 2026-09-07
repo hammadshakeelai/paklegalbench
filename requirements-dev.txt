@@ -1,0 +1,9 @@
+-r requirements.txt
+
+# Dense retrieval + reranking. ~2GB with torch. Local and CI only.
+sentence-transformers>=3.0
+
+# LEGAL-UQA evaluation
+datasets>=3.0
+
+pytest>=8.0

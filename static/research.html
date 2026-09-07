@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legal AI for Pakistan — Research Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEFEA;
+    --paper-deep:#E3E6DF;
+    --ink:#151E19;
+    --ink-soft:#4A554E;
+    --rule:#C6CBC1;
+    --verified:#1B5E3F;
+    --claim:#8C2F1F;
+    --serif:"Spectral",Georgia,"Times New Roman",serif;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  }
+
+  *{box-sizing:border-box}
+
+  html{-webkit-text-size-adjust:100%}
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-weight:300;
+    font-size:1.0625rem;
+    line-height:1.68;
+    font-feature-settings:"onum" 1;
+  }
+
+  .doc{
+    max-width:62rem;
+    margin:0 auto;
+    padding:0 1.5rem 8rem;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead{
+    padding:5rem 0 3rem;
+    border-bottom:2px solid var(--ink);
+  }
+
+  .masthead h1{
+    font-size:clamp(2.1rem,5.2vw,3.4rem);
+    font-weight:600;
+    line-height:1.08;
+    letter-spacing:-0.015em;
+    margin:0 0 1.75rem;
+    max-width:20ch;
+  }
+
+  .filed{
+    font-family:var(--sans);
+    font-size:.8125rem;
+    color:var(--ink-soft);
+    display:flex;
+    flex-wrap:wrap;
+    gap:.35rem 2rem;
+    margin-bottom:2.5rem;
+  }
+
+  .filed span{display:block}
+
+  .holding{
+    border-left:3px solid var(--ink);
+    padding-left:1.4rem;
+    max-width:60ch;
+  }
+
+  .holding .label{
+    font-family:var(--sans);
+    font-size:.75rem;
+    font-weight:600;
+    letter-spacing:.04em;
+    color:var(--ink-soft);
+    display:block;
+    margin-bottom:.6rem;
+  }
+
+  .holding p{
+    font-size:1.3125rem;
+    line-height:1.5;
+    margin:0 0 1rem;
+  }
+
+  .holding p:last-child{margin-bottom:0}
+
+  /* ---------- section scaffolding (bare-act rail) ---------- */
+
+  section{
+    display:grid;
+    grid-template-columns:7.5rem 1fr;
+    gap:0 2.5rem;
+    padding:3.25rem 0;
+    border-bottom:1px solid var(--rule);
+    align-items:start;
+  }
+
+  .rail{
+    font-family:var(--sans);
+    font-size:.8125rem;
+    line-height:1.45;
+    color:var(--ink-soft);
+    position:sticky;
+    top:2rem;
+  }
+
+  .rail .num{
+    display:block;
+    font-weight:600;
+    color:var(--ink);
+    font-size:1rem;
+    margin-bottom:.3rem;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .body{
+    max-width:66ch;
+    min-width:0;
+  }
+
+  h2{
+    font-size:1.6rem;
+    font-weight:600;
+    line-height:1.2;
+    letter-spacing:-0.01em;
+    margin:0 0 1.25rem;
+  }
+
+  h3{
+    font-size:1.125rem;
+    font-weight:600;
+    margin:2.25rem 0 .65rem;
+  }
+
+  p{margin:0 0 1.1rem}
+
+  a{color:var(--verified);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+  a:hover{color:var(--ink)}
+  a:focus-visible{outline:2px solid var(--verified);outline-offset:3px;border-radius:2px}
+
+  ul,ol{margin:0 0 1.1rem;padding-left:1.15rem}
+  li{margin-bottom:.5rem}
+
+  strong{font-weight:600}
+
+  code{
+    font-family:var(--sans);
+    font-size:.875em;
+    background:var(--paper-deep);
+    padding:.1em .35em;
+    border-radius:2px;
+  }
+
+  /* ---------- evidence marks ---------- */
+
+  .measured,.claimed{
+    padding:.9rem 0 .9rem 1.15rem;
+    margin:1.5rem 0;
+    max-width:62ch;
+  }
+
+  .measured{border-left:3px solid var(--verified)}
+  .claimed{border-left:3px solid var(--claim)}
+
+  .measured .mark,.claimed .mark{
+    font-family:var(--sans);
+    font-size:.75rem;
+    font-weight:600;
+    display:block;
+    margin-bottom:.4rem;
+  }
+
+  .measured .mark{color:var(--verified)}
+  .claimed .mark{color:var(--claim)}
+
+  .measured p,.claimed p{margin:0}
+
+  /* ---------- hallucination bars ---------- */
+
+  .bars{
+    margin:1.75rem 0 1rem;
+    max-width:34rem;
+  }
+
+  .bar-row{
+    display:grid;
+    grid-template-columns:11rem 1fr 3rem;
+    align-items:center;
+    gap:.75rem;
+    margin-bottom:.7rem;
+    font-family:var(--sans);
+    font-size:.8125rem;
+  }
+
+  .bar-track{
+    height:.7rem;
+    background:var(--paper-deep);
+  }
+
+  .bar-fill{
+    height:100%;
+    background:var(--claim);
+  }
+
+  .bar-val{
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    font-weight:600;
+  }
+
+  .bar-note{
+    font-family:var(--sans);
+    font-size:.78125rem;
+    color:var(--ink-soft);
+    line-height:1.5;
+    max-width:34rem;
+  }
+
+  /* ---------- tables ---------- */
+
+  .table-wrap{
+    overflow-x:auto;
+    margin:1.5rem 0;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  table{
+    border-collapse:collapse;
+    width:100%;
+    min-width:31rem;
+    font-family:var(--sans);
+    font-size:.84375rem;
+    line-height:1.5;
+  }
+
+  th{
+    text-align:left;
+    font-weight:600;
+    border-bottom:1.5px solid var(--ink);
+    padding:.55rem .75rem .55rem 0;
+    vertical-align:bottom;
+  }
+
+  td{
+    padding:.62rem .75rem .62rem 0;
+    border-bottom:1px solid var(--rule);
+    vertical-align:top;
+  }
+
+  tbody tr:last-child td{border-bottom:none}
+
+  /* ---------- pipeline ---------- */
+
+  .pipeline{
+    margin:1.75rem 0;
+    border-top:1px solid var(--rule);
+  }
+
+  .stage{
+    display:grid;
+    grid-template-columns:1.75rem 1fr;
+    gap:1rem;
+    padding:.95rem 0;
+    border-bottom:1px solid var(--rule);
+  }
+
+  .stage .step{
+    font-family:var(--sans);
+    font-size:.8125rem;
+    font-weight:600;
+    color:var(--ink-soft);
+    font-variant-numeric:tabular-nums;
+    padding-top:.1rem;
+  }
+
+  .stage .what{
+    font-family:var(--sans);
+    font-size:.875rem;
+    line-height:1.55;
+  }
+
+  .stage .what b{font-weight:600}
+
+  .stage .why{
+    display:block;
+    color:var(--ink-soft);
+    margin-top:.15rem;
+  }
+
+  /* ---------- pathologies ---------- */
+
+  .patho{
+    border-top:1px solid var(--rule);
+    margin:1.5rem 0;
+  }
+
+  .patho div{
+    padding:1rem 0;
+    border-bottom:1px solid var(--rule);
+  }
+
+  .patho dt{
+    font-weight:600;
+    margin-bottom:.3rem;
+  }
+
+  .patho dd{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:.9375rem;
+  }
+
+  /* ---------- references ---------- */
+
+  .refs{
+    font-size:.9375rem;
+    line-height:1.55;
+    counter-reset:ref;
+    list-style:none;
+    padding:0;
+  }
+
+  .refs li{
+    counter-increment:ref;
+    display:grid;
+    grid-template-columns:2rem 1fr;
+    gap:.5rem;
+    margin-bottom:.85rem;
+  }
+
+  .refs li::before{
+    content:"[" counter(ref) "]";
+    font-family:var(--sans);
+    font-size:.75rem;
+    color:var(--ink-soft);
+    padding-top:.25rem;
+  }
+
+  .colophon{
+    padding:3rem 0 0;
+    font-family:var(--sans);
+    font-size:.8125rem;
+    color:var(--ink-soft);
+    max-width:60ch;
+  }
+
+  /* ---------- responsive ---------- */
+
+  @media (max-width:44rem){
+    body{font-size:1rem}
+    .doc{padding:0 1.15rem 5rem}
+    .masthead{padding:3rem 0 2.25rem}
+    section{
+      grid-template-columns:1fr;
+      gap:0;
+      padding:2.5rem 0;
+    }
+    .rail{
+      position:static;
+      margin-bottom:1.1rem;
+      padding-bottom:.7rem;
+      border-bottom:1px solid var(--rule);
+    }
+    .rail .num{display:inline;margin-right:.6rem}
+    .bar-row{grid-template-columns:8rem 1fr 2.6rem;font-size:.75rem}
+    h2{font-size:1.375rem}
+    .holding p{font-size:1.125rem}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
+
+  @media print{
+    body{background:#fff}
+    .rail{position:static}
+    section{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+
+<header class="masthead">
+  <h1>Legal AI for Pakistan: what exists, what works, and what nobody has measured</h1>
+
+  <div class="filed">
+    <span>Research dossier</span>
+    <span>Compiled 8 September 2026</span>
+    <span>Prepared for the PakLegal retrieval baseline</span>
+  </div>
+
+  <div class="holding">
+    <span class="label">Finding</span>
+    <p>At least eight commercial legal AI products already serve the Pakistani market. Every one of them advertises an accuracy figure. None of them publishes evidence for it.</p>
+    <p>When the same claims were tested empirically in the United States, the largest incumbents were found to fabricate between 17% and 33% of the time. No equivalent test has ever been run on Pakistani law.</p>
+    <p>The opportunity is therefore not another legal chatbot. It is the first measured baseline, and the evaluation set to measure it against.</p>
+  </div>
+</header>
+
+<section>
+  <div class="rail">
+    <span class="num">1</span>
+    Who is already in this market
+  </div>
+  <div class="body">
+    <h2>The Pakistani landscape is occupied</h2>
+
+    <p>Before writing a line of code, the competitive picture has to be honest. This is not an empty field. A survey of live products as of September 2026:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Product</th><th>Positioning</th><th>Stated scale</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pak Legal Database (Obsidian&nbsp;4.6)</td>
+            <td>Agentic legal research on Grok 4.6, searching structured data, vectors and full judgments with citation verification</td>
+            <td>166,872 cases, 5,103 statutes, 500K context</td>
+          </tr>
+          <tr>
+            <td>QanoonAI</td>
+            <td>Judge, lawyer and citizen tooling across 43 tools</td>
+            <td>5 High Courts, complete judgments</td>
+          </tr>
+          <tr>
+            <td>Wakeel</td>
+            <td>Agentic research path planning, checked against statutes and procedure, bilingual</td>
+            <td>Not disclosed</td>
+          </tr>
+          <tr>
+            <td>Pakistan Law Bot</td>
+            <td>Research, drafting and lawyer marketplace</td>
+            <td>1,200+ acts, 45,000+ judgments</td>
+          </tr>
+          <tr>
+            <td>AI Jurist</td>
+            <td>Semantic search and summarisation over historical case law</td>
+            <td>75 years of judgments</td>
+          </tr>
+          <tr>
+            <td>LawGPT.pk, LexaLawyer, DigiLawyer, CourTex, CaseLaw.pk</td>
+            <td>Research, drafting, case management, court scheduling</td>
+            <td>Not disclosed</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Two conclusions follow. First, building a general-purpose Pakistani legal assistant as a product is a late entry against funded incumbents with better data access. Second, and more usefully, all of them compete on trust claims that none of them has substantiated.</p>
+
+    <div class="claimed">
+      <span class="mark">Unverified vendor claim</span>
+      <p>QanoonAI advertises 99.9% citation accuracy. AI Jurist advertises a 60% reduction in research time. Neither figure is accompanied by a published methodology, a test set, or a definition of what counts as an error.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="rail">
+    <span class="num">2</span>
+    Why the claims deserve scepticism
+  </div>
+  <div class="body">
+    <h2>The same promise was tested elsewhere and it failed</h2>
+
+    <p>LexisNexis marketed Lexis+ AI as delivering citations that were free of hallucination and grounded in authoritative sources. Thomson Reuters made comparable claims for Westlaw. A team at Stanford RegLab and HAI ran the first preregistered empirical evaluation of these tools and published it in the Journal of Empirical Legal Studies.</p>
+
+    <div class="bars">
+      <div class="bar-row">
+        <span>Lexis+ AI</span>
+        <span class="bar-track"><span class="bar-fill" style="width:39.5%"></span></span>
+        <span class="bar-val">17%</span>
+      </div>
+      <div class="bar-row">
+        <span>Westlaw AI Research</span>
+        <span class="bar-track"><span class="bar-fill" style="width:76.7%"></span></span>
+        <span class="bar-val">33%</span>
+      </div>
+      <div class="bar-row">
+        <span>GPT-4, unaided</span>
+        <span class="bar-track"><span class="bar-fill" style="width:100%"></span></span>
+        <span class="bar-val">43%</span>
+      </div>
+    </div>
+    <p class="bar-note">Share of responses containing a hallucination: a false statement, or a false assertion that a source supports a statement.</p>
+
+    <p>The accuracy figures are equally instructive. Lexis+ AI answered 65% of queries accurately and was the best performer tested. Westlaw was accurate 42% of the time. Thomson Reuters' Ask Practical Law returned incomplete answers, meaning refusals or ungrounded responses, on more than 60% of queries.</p>
+
+    <div class="measured">
+      <span class="mark">Measured, peer-reviewed</span>
+      <p>Retrieval augmentation reduces legal hallucination relative to a general-purpose model, but does not eliminate it. Errors enter along the pipeline, most often when the retrieved documents are inappropriate, and legal retrieval is uniquely difficult.</p>
+    </div>
+
+    <p>Transfer that reasoning to Pakistan. The incumbents there work with worse inputs: judgments scattered across PDF archives, the authoritative reporters behind paywalls, inconsistent OCR, and English and Urdu mixed within single documents. There is no basis for assuming the local error rate is lower than 17%, and good reason to expect it is considerably higher.</p>
+
+    <p>Nobody has checked. That absence is the research contribution available here.</p>
+  </div>
+</section>
+
+<section>
+  <div class="rail">
+    <span class="num">3</span>
+    Available corpora and evaluation data
+  </div>
+  <div class="body">
+    <h2>What can actually be obtained</h2>
+
+    <h3>Machine-readable datasets already published</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Dataset</th><th>Contents</th><th>Use</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LEGAL-UQA</td>
+            <td>619 parallel English–Urdu question–answer pairs derived from the Constitution, each with its source article as context</td>
+            <td>Evaluation set with gold retrieval targets</td>
+          </tr>
+          <tr>
+            <td>AyeshaJadoon/Pakistan_Laws_Dataset</td>
+            <td>969 acts and laws from the Ministry of Law and Justice, converted from PDF to JSON</td>
+            <td>Statute corpus</td>
+          </tr>
+          <tr>
+            <td>heyIamUmair/pakistani-law-family-criminal-property</td>
+            <td>Structured extractions from 8 major acts covering criminal, civil, family, property and evidence law</td>
+            <td>Statute corpus, pre-parsed</td>
+          </tr>
+          <tr>
+            <td>Ibtehaj10/supreme-court-of-pak-judgments</td>
+            <td>1,414 documents with case details, citation numbers and precomputed embeddings</td>
+            <td>Case law sample</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="measured">
+      <span class="mark">Decisive for the build</span>
+      <p>LEGAL-UQA supplies question, answer and the exact constitutional article each answer came from. That is a ready-made retrieval ground truth. Recall@k can be computed on 619 real questions without annotating anything by hand.</p>
+    </div>
+
+    <h3>Primary sources for later expansion</h3>
+
+    <ul>
+      <li><strong>CommonLII</strong> hosts Supreme Court of Pakistan judgments from 2002 onward as free-access law.</li>
+      <li><strong>PakCaselaw</strong>, the Pakistan Caselaw Project, publishes full texts of federal and provincial judgments in a consistent format, with the stated aim of making all published decisions freely available.</li>
+      <li><strong>Official court sites</strong> carry judgment search for the Supreme Court, and reported judgments for the Lahore, Sindh and Peshawar High Courts.</li>
+      <li><strong>Paywalled</strong>: pakistanlawsite and EastLaw hold the authoritative reporters (PLD, SCMR, CLC, YLR, MLD, PTD). These are where citation-grade text lives, and they are not scrapeable without a licence.</li>
+    </ul>
+
+    <p>The practical consequence: statutes are freely and cleanly obtainable, case law is obtainable but messy, and reporter-grade citations are not obtainable at all without paying. A first version should therefore be statute-first, which is also where retrieval can be evaluated most rigorously.</p>
+  </div>
+</section>
+
+<section>
+  <div class="rail">
+    <span class="num">4</span>
+    Retrieval architecture
+  </div>
+  <div class="body">
+    <h2>Why pure vector search breaks on law</h2>
+
+    <p>The single most transferable empirical result in this dossier comes from an audit of a production legal retrieval system. Of the queries that failed, 31% were requests for a specific article reference, because the dense embedding model consistently ranked thematically related provisions above the exact one named. Adding sparse keyword retrieval, with no reranking at all, recovered 24 of those 31 failures, because BM25 treats an identifier as an exact token and surfaces the correct provision first.</p>
+
+    <p>This maps directly onto how a Pakistani lawyer phrases a query. <code>Section 302 PPC</code>, <code>Article 199</code>, <code>Order VII Rule 11 CPC</code>. To an embedding model, section 302 and section 320 occupy nearly the same point in vector space. To a keyword index they are unrelated tokens. Any system that omits sparse retrieval will fail on the most common query type in the domain.</p>
+
+    <h3>The pipeline that the literature converges on</h3>
+
+    <div class="pipeline">
+      <div class="stage">
+        <span class="step">1</span>
+        <span class="what"><b>Sparse retrieval, BM25</b>
+        <span class="why">Exact matching on section numbers, act names, party names and citations. For long-form legal text where term repetition carries meaning, raising k1 toward 1.5–2.0 above the 1.2 default improves results.</span></span>
+      </div>
+      <div class="stage">
+        <span class="step">2</span>
+        <span class="what"><b>Dense retrieval</b>
+        <span class="why">Semantic matching for questions phrased in ordinary language, where the user does not know the governing provision.</span></span>
+      </div>
+      <div class="stage">
+        <span class="step">3</span>
+        <span class="what"><b>Reciprocal rank fusion, k = 60</b>
+        <span class="why">Merges the two ranked lists. Weighted variants around 0.7 dense to 0.3 sparse appear in recent legal and statute-retrieval systems.</span></span>
+      </div>
+      <div class="stage">
+        <span class="step">4</span>
+        <span class="what"><b>Cross-encoder reranking</b>
+        <span class="why">Final precision pass over a small fused candidate set. Ranks, not raw scores, should be used when combining, because cross-encoder scores are not comparable across queries.</span></span>
+      </div>
+      <div class="stage">
+        <span class="step">5</span>
+        <span class="what"><b>Grounded generation with mandatory citation</b>
+        <span class="why">Every assertion carries a section reference. Low retrieval confidence produces a refusal rather than a guess.</span></span>
+      </div>
+    </div>
+
+    <h3>Chunking</h3>
+
+    <p>A 2025 study on retrieval reliability over large legal datasets swept chunk sizes of 200, 500 and 800 characters against prepended summaries of 150 or 300 characters. The 500-character chunk with a 150-character summary gave the best balance of precision and recall. Separately, 512 tokens is reported as the sweet spot for mixed technical and legal material, with 1024 preferable for long legal paragraphs, and roughly 20% overlap to handle boundaries.</p>
+
+    <p>The prepended summary matters more than the size. A bare paragraph of a statute does not state which act it belongs to, so both the sparse and the dense index lose the one piece of context a lawyer would consider essential.</p>
+  </div>
+</section>
+
+<section>
+  <div class="rail">
+    <span class="num">5</span>
+    The deeper architectural critique
+  </div>
+  <div class="body">
+    <h2>Hybrid search is necessary and still not sufficient</h2>
+
+    <p>A stronger argument in the recent literature holds that legal RAG failures are not residual noise to be engineered away, but a structural mismatch between probabilistic retrieval and the shape of legal knowledge. Law is hierarchical, it changes over time under its own rules, and every provision has a traceable institutional provenance. Similarity search models none of these.</p>
+
+    <p>Three named pathologies follow from that mismatch:</p>
+
+    <dl class="patho">
+      <div>
+        <dt>Mereological blindness</dt>
+        <dd>A retrieved subsection is returned without the structural container that gives it scope. The text is correct and the meaning is wrong.</dd>
+      </div>
+      <div>
+        <dt>Diachronic blindness</dt>
+        <dd>The system cannot reliably return the version of a provision that was in force on a given date, so amended or repealed law is presented as current.</dd>
+      </div>
+      <div>
+        <dt>Causal opacity</dt>
+        <dd>There is no record of which legislative or judicial event produced the current wording, so the answer cannot be justified or audited.</dd>
+      </div>
+    </dl>
+
+    <p>The proposed remedies move toward graph structure. Structure-Aware Temporal Graph RAG models the hierarchy of a legal norm explicitly, reifies legislative events as queryable nodes, and supports retrieval of the version valid at a specific timestamp. Related work on legislative property graphs represents amendment and abrogation relations between articles and supports valid-time retrieval. A companion line of work proposes a deterministic query layer, confining probabilistic behaviour to intent translation and initial anchoring while retrieval itself stays reproducible and auditable.</p>
+
+    <div class="measured">
+      <span class="mark">Design consequence</span>
+      <p>Full temporal graph modelling is out of scope for a first version. The cheap approximation is metadata discipline: every chunk carries act, section, subsection, enactment year, amendment status and repeal status, and the generator is instructed to surface that status in the answer. This captures most of the value of diachronic awareness at a fraction of the cost, and it establishes the schema a graph would later be built on.</p>
+    </div>
+
+    <p>This also identifies the honest failure mode to disclose. A statute-only, flat-retrieval system can tell a user what a provision says. It cannot tell them, with confidence, whether that provision is still good law. That limitation should be stated in the interface, not hidden.</p>
+  </div>
+</section>
+
+<section>
+  <div class="rail">
+    <span class="num">6</span>
+    Knowledge storage
+  </div>
+  <div class="body">
+    <h2>Choosing storage by corpus size, not by fashion</h2>
+
+    <p>The Constitution, the Pakistan Penal Code and the Code of Criminal Procedure together produce somewhere between twenty and fifty thousand chunks at 500 characters. At that scale, a dedicated vector database contributes operational complexity and nothing else.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Option</th><th>Suits</th><th>Cost of being wrong</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>NumPy array in memory plus a BM25 index</td>
+            <td>Under ~100k chunks. Brute-force cosine is exact and takes milliseconds at this size.</td>
+            <td>None. Every line is readable and debuggable.</td>
+          </tr>
+          <tr>
+            <td>SQLite with a vector extension and full-text search</td>
+            <td>Single-file deployment holding both retrieval modes in one place.</td>
+            <td>Low. Migration from the option above is mechanical.</td>
+          </tr>
+          <tr>
+            <td>Qdrant or a hosted vector store</td>
+            <td>Hundreds of thousands of chunks with filtering by court, year and jurisdiction.</td>
+            <td>Premature adoption costs setup time and hides retrieval behaviour behind an API.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The decision that actually determines quality is the metadata schema, not the index. The characteristic catastrophic failure in legal AI is not a poorly ranked vector. It is a confident citation to a repealed section or an overruled judgment. No approximate nearest neighbour index prevents that. Only recorded status fields, and a generator that is required to read them, do.</p>
+
+    <h3>Minimum viable chunk schema</h3>
+
+    <ul>
+      <li>Act title, short title and year of enactment</li>
+      <li>Chapter and part, preserving hierarchy for the mereological problem</li>
+      <li>Section and subsection identifiers, stored as separate searchable fields, not only inside the text</li>
+      <li>Amendment status, with the amending instrument where known</li>
+      <li>Repeal status and, if repealed, the date</li>
+      <li>Jurisdiction: federal, or the relevant province</li>
+      <li>Source URL and retrieval date, so any answer can be traced back</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="rail">
+    <span class="num">7</span>
+    Zero-cost stack
+  </div>
+  <div class="body">
+    <h2>Running the whole system on free tiers</h2>
+
+    <p>Only the final generation step needs a paid-class model, and free tiers cover it comfortably at research volumes. Everything upstream runs locally.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Component</th><th>Choice</th><th>Free-tier terms</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Generation, primary</td>
+            <td>Groq</td>
+            <td>30 requests per minute, 1,000 per day, 200,000 tokens per day on gpt-oss-120b, no card</td>
+          </tr>
+          <tr>
+            <td>Generation, long context</td>
+            <td>Google Gemini API</td>
+            <td>Zero per-token cost on current Flash models with billing disabled; Search grounding requires billing</td>
+          </tr>
+          <tr>
+            <td>Generation, fallback</td>
+            <td>OpenRouter</td>
+            <td>20 requests per minute, 50 per day free, rising to 1,000 per day after a one-time $10 credit purchase</td>
+          </tr>
+          <tr>
+            <td>Embeddings</td>
+            <td>Local sentence-transformers, bge-small-en-v1.5 or mxbai-embed-large</td>
+            <td>No API, no rate limit, corpus embedded once</td>
+          </tr>
+          <tr>
+            <td>Reranking</td>
+            <td>Local bge-reranker-v2-m3 cross-encoder</td>
+            <td>Runs on CPU over a top-20 candidate list</td>
+          </tr>
+          <tr>
+            <td>Sparse index</td>
+            <td>rank_bm25</td>
+            <td>Pure Python, in process</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Running embeddings locally is not a cost decision, it is a correctness decision. A rate-limited embedding API introduces a failure mode into the indexing step, and re-embedding a corpus after a chunking change becomes something to avoid rather than something to iterate on. Iteration on chunking is exactly what improves retrieval.</p>
+
+    <p>Daily budget check: 619 evaluation questions against three retrieval configurations is 1,857 generation calls, which exceeds the Groq daily cap. Retrieval evaluation, however, requires no generation at all. Recall@k is computed against gold article labels. Only the end-to-end answer quality run needs the model, and that can be scoped to a sample of 150–200 questions per configuration.</p>
+  </div>
+</section>
+
+<section>
+  <div class="rail">
+    <span class="num">8</span>
+    Evaluation methodology
+  </div>
+  <div class="body">
+    <h2>How to measure this credibly</h2>
+
+    <p>The existing benchmark literature supplies both the metrics and the design conventions. Adopting them means the resulting numbers are comparable to published work rather than self-defined.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Benchmark</th><th>Focus</th><th>What to borrow</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LegalBench-RAG</td>
+            <td>Isolates the retrieval stage from generation, mapping queries to exact character spans</td>
+            <td>Precision@k and Recall@k over k from 1 to 64; span-level rather than document-level scoring</td>
+          </tr>
+          <tr>
+            <td>LexRAG</td>
+            <td>Multi-turn legal consultation with citation-based grounding over 17,728 provisions</td>
+            <td>Citation accuracy as a first-class metric; realistic difficulty calibration, with reported Recall@10 near 33%</td>
+          </tr>
+          <tr>
+            <td>LegalCiteBench</td>
+            <td>Citation reliability across retrieval, completion, error detection and verification</td>
+            <td>Citation-level F1 where precision penalises fabrication and recall penalises omission</td>
+          </tr>
+          <tr>
+            <td>SG-LegalCite</td>
+            <td>Citation retrieval in Singapore law, another common law jurisdiction</td>
+            <td>Recall@k with k in {1, 5, 10, 20} plus mean reciprocal rank; fixed random seed for reproducibility</td>
+          </tr>
+          <tr>
+            <td>Stanford hallucination study</td>
+            <td>Preregistered evaluation of commercial legal AI</td>
+            <td>The hallucination definition itself, and the four query categories below</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The Stanford study's query taxonomy is worth replicating exactly, because it is what exposed the vendors: general doctrinal questions, jurisdiction and time-specific questions, false-premise questions, and pure factual recall questions requiring no interpretation.</p>
+
+    <h3>The proposed measurement plan</h3>
+
+    <ol>
+      <li><strong>Retrieval, automated.</strong> Run all 619 LEGAL-UQA pairs. Report Recall@1, @5, @10 and MRR for dense-only, BM25-only and hybrid configurations. Fix the seed.</li>
+      <li><strong>Ablation.</strong> Report the delta contributed by each pipeline stage, so the value of fusion and reranking is separately visible.</li>
+      <li><strong>Adversarial set, hand-written.</strong> Roughly 50 questions across three traps: false premises invoking non-existent sections, questions about repealed provisions, and section-number confusion pairs such as 302 against 320.</li>
+      <li><strong>Hallucination rate.</strong> Score end-to-end answers on a sample using the Stanford definition, so the figure is directly comparable to the 17% and 33% already in the literature.</li>
+      <li><strong>Bilingual probe.</strong> LEGAL-UQA is parallel, so the identical question can be asked in English and Urdu and the retrieval gap measured. This is a publishable result on its own.</li>
+    </ol>
+
+    <div class="measured">
+      <span class="mark">Why this is the contribution</span>
+      <p>An open evaluation set and a reproducible baseline for Pakistani legal retrieval do not currently exist. Publishing modest numbers honestly is worth more than claiming 99.9% without a method, and it is the one asset in this space that a well-funded competitor cannot simply out-build.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="rail">
+    <span class="num">9</span>
+    Risk and scope
+  </div>
+  <div class="body">
+    <h2>Constraints to design around from day one</h2>
+
+    <h3>Professional and legal exposure</h3>
+    <p>Describing the system as an AI lawyer invites unauthorised-practice problems and transfers liability if a user acts on a bad answer. The correct framing is a legal research retrieval system with a measured error rate. Refusal behaviour belongs in the first version, not a later patch, and the interface should state plainly that outputs require verification against the primary source.</p>
+
+    <h3>Language</h3>
+    <p>Urdu embeddings are substantially weaker than English ones, and Pakistani judgments are typically English with Urdu procedural vocabulary interleaved. Build and evaluate in English first. Treat Urdu retrieval as a measured research question rather than a feature, since a bilingual legal retrieval benchmark for a low-resource language is a genuine gap in the literature.</p>
+
+    <h3>Data licensing</h3>
+    <p>Statutes from the Ministry of Law and Justice and free-access judgment collections are usable. The commercial reporters are not. Scraping pakistanlawsite or EastLaw would compromise both the ethics and the publishability of the work. The scope limitation is real and should be stated rather than worked around.</p>
+
+    <h3>Scope discipline</h3>
+    <p>The temptation is to add case law, drafting, case management and a chat interface. Each addition weakens the one defensible claim, which is a rigorously measured statute retrieval baseline. Three statutes measured properly beat forty thousand judgments measured not at all.</p>
+  </div>
+</section>
+
+<section>
+  <div class="rail">
+    <span class="num">10</span>
+    Sources
+  </div>
+  <div class="body">
+    <h2>References</h2>
+
+    <ol class="refs">
+      <li>Magesh, V. et al. Hallucination-Free? Assessing the Reliability of Leading AI Legal Research Tools. <em>Journal of Empirical Legal Studies</em>, 2025. <a href="https://arxiv.org/pdf/2405.20362">arxiv.org/abs/2405.20362</a></li>
+      <li>Faisal, F. and Yousaf, U. LEGAL-UQA: A Low-Resource Urdu-English Dataset for Legal Question Answering. <a href="https://arxiv.org/abs/2410.13013">arxiv.org/abs/2410.13013</a></li>
+      <li>Towards Reliable Retrieval in RAG Systems for Large Legal Datasets, 2025. Chunk size and summary length sweep. <a href="https://arxiv.org/pdf/2510.06999">arxiv.org/abs/2510.06999</a></li>
+      <li>de Martim, H. Beyond Probabilistic Similarity: Structural, Temporal, and Causal Limitations of Retrieval-Augmented Generation in the Legal Domain. <a href="https://arxiv.org/html/2606.09724">arxiv.org/abs/2606.09724</a></li>
+      <li>de Martim, H. An Ontology-Driven Graph RAG for Legal Norms: A Structural, Temporal, and Deterministic Approach. <a href="https://arxiv.org/abs/2505.00039">arxiv.org/abs/2505.00039</a></li>
+      <li>de Martim, H. Deterministic Legal Retrieval: An Action API for Querying the SAT-Graph RAG. <a href="https://arxiv.org/html/2510.06002v1">arxiv.org/abs/2510.06002</a></li>
+      <li>Pipitone, N. and Houir Alami, G. LegalBench-RAG: A Benchmark for Retrieval-Augmented Generation in the Legal Domain.</li>
+      <li>LexRAG: Benchmarking Retrieval-Augmented Generation in Multi-Turn Legal Consultation Conversation. <a href="https://arxiv.org/pdf/2502.20640">arxiv.org/abs/2502.20640</a></li>
+      <li>LegalCiteBench: Evaluating Citation Reliability in Legal Language Models. <a href="https://arxiv.org/pdf/2605.10186">arxiv.org/abs/2605.10186</a></li>
+      <li>SG-LegalCite: A Principle-Augmented Benchmark for Legal Citation Retrieval in Singapore Law. <a href="https://arxiv.org/pdf/2605.21057">arxiv.org/abs/2605.21057</a></li>
+      <li>Hybrid search and reranking field reports on legal corpora, including the article-reference failure analysis. <a href="https://tensoria.fr/en/blog/hybrid-search-reranking">tensoria.fr/en/blog/hybrid-search-reranking</a></li>
+      <li>Hybrid Search for RAG: Combining BM25 and Dense Vector Search. <a href="https://denser.ai/blog/hybrid-search-for-rag/">denser.ai/blog/hybrid-search-for-rag</a></li>
+      <li>Pakistan Laws Dataset. <a href="https://huggingface.co/datasets/AyeshaJadoon/Pakistan_Laws_Dataset">huggingface.co/datasets/AyeshaJadoon/Pakistan_Laws_Dataset</a></li>
+      <li>Supreme Court of Pakistan judgments dataset. <a href="https://huggingface.co/datasets/Ibtehaj10/supreme-court-of-pak-judgments">huggingface.co/datasets/Ibtehaj10/supreme-court-of-pak-judgments</a></li>
+      <li>Pakistani law, family, criminal and property acts dataset. <a href="https://huggingface.co/datasets/heyIamUmair/pakistani-law-family-criminal-property">huggingface.co/datasets/heyIamUmair/pakistani-law-family-criminal-property</a></li>
+      <li>Bodleian Law Library guide to Pakistani case law sources. <a href="https://libguides.bodleian.ox.ac.uk/lawecases/pak">libguides.bodleian.ox.ac.uk/lawecases/pak</a></li>
+      <li>WorldLII Pakistan courts and case law directory, including the Pakistan Caselaw Project. <a href="https://www.worldlii.org/catalog/3062.html">worldlii.org/catalog/3062.html</a></li>
+      <li>Free LLM API tier comparisons, August and September 2026. <a href="https://costbench.com/best/best-llm-api-with-free-tier/">costbench.com</a>, <a href="https://blogs.novita.ai/free-llm-api-comparison-2026/">novita.ai</a></li>
+    </ol>
+
+    <p class="colophon">Compiled 8 September 2026. Vendor scale and accuracy figures in section 1 are as advertised by the vendors and are unverified. Free-tier limits in section 7 change frequently and should be re-checked before relying on them. Findings marked in green are drawn from peer-reviewed or published empirical work; those marked in red are unsubstantiated commercial claims recorded for comparison.</p>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Core. This is what deploys. Deliberately no torch: Render free is 512MB RAM
+# and 0.1 CPU, so dense retrieval cannot run there. BM25 + exact reference
+# reaches recall@1 0.963 on the seed set without it.
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pydantic>=2.9

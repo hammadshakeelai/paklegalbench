@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.pytest_cache/
+.DS_Store
+
+# Built corpus is large and reproducible from parse.py
+chunks.json
+
+# Local artifacts from the originating Claude chat (zip, transcript, stray copies)
+_local/
+
+# Claude Code plugin state
+.remember/

@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: paklegalbench
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      # Free tier is 512MB RAM / 0.1 CPU. Loading sentence-transformers here
+      # will OOM the instance. Retrieval runs BM25 + exact reference only.
+      - key: PLB_NO_DENSE
+        value: "1"
+      - key: PYTHON_VERSION
+        value: "3.12"
+      # Set in the Render dashboard, not here.
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false

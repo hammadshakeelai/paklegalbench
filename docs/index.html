@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PakLegalBench</title>
+<meta name="description" content="A measured retrieval baseline for Pakistani statute law.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@300;400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#EDEFEA;--paper-deep:#E3E6DF;--ink:#151E19;--ink-soft:#4A554E;
+        --rule:#C6CBC1;--verified:#1B5E3F;--claim:#8C2F1F;
+        --serif:"Spectral",Georgia,serif;--sans:"IBM Plex Sans",system-ui,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+       font-weight:300;font-size:1.0625rem;line-height:1.68}
+  .wrap{max-width:52rem;margin:0 auto;padding:0 1.5rem 6rem}
+  header{padding:5rem 0 2.5rem;border-bottom:2px solid var(--ink)}
+  h1{font-size:clamp(2rem,5vw,3rem);font-weight:600;line-height:1.1;
+     letter-spacing:-.015em;margin:0 0 1.5rem;max-width:18ch}
+  .lede{border-left:3px solid var(--ink);padding-left:1.4rem;max-width:58ch}
+  .lede p{font-size:1.25rem;line-height:1.5;margin:0 0 .9rem}
+  .lede p:last-child{margin-bottom:0}
+  section{padding:3rem 0;border-bottom:1px solid var(--rule)}
+  h2{font-size:1.5rem;font-weight:600;margin:0 0 1.1rem;letter-spacing:-.01em}
+  p{margin:0 0 1.1rem;max-width:64ch}
+  a{color:var(--verified);text-decoration:underline;text-underline-offset:2px}
+  a:hover{color:var(--ink)}
+  a:focus-visible{outline:2px solid var(--verified);outline-offset:3px}
+  table{border-collapse:collapse;width:100%;font-family:var(--sans);
+        font-size:.84375rem;margin:1.4rem 0}
+  th{text-align:left;font-weight:600;border-bottom:1.5px solid var(--ink);
+     padding:.5rem .7rem .5rem 0}
+  td{padding:.55rem .7rem .55rem 0;border-bottom:1px solid var(--rule);
+     font-variant-numeric:tabular-nums}
+  tbody tr:last-child td{border-bottom:none}
+  tr.best td{font-weight:600}
+  .caption{font-family:var(--sans);font-size:.78125rem;color:var(--ink-soft);
+           line-height:1.5;max-width:58ch}
+  .links{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.5rem}
+  .links a{font-family:var(--sans);font-size:.875rem;font-weight:500;
+           text-decoration:none;border:1px solid var(--ink);padding:.55rem 1.1rem;
+           color:var(--ink)}
+  .links a:hover{background:var(--ink);color:var(--paper)}
+  .caveat{border-left:3px solid var(--claim);padding:.8rem 0 .8rem 1.15rem;
+          margin:1.4rem 0;max-width:60ch}
+  .caveat .mark{font-family:var(--sans);font-size:.75rem;font-weight:600;
+                color:var(--claim);display:block;margin-bottom:.35rem}
+  .caveat p{margin:0}
+  footer{padding:2.5rem 0 0;font-family:var(--sans);font-size:.8125rem;
+         color:var(--ink-soft);max-width:60ch}
+  @media(max-width:44rem){body{font-size:1rem}header{padding:3rem 0 2rem}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>A measured baseline for Pakistani statute retrieval</h1>
+  <div class="lede">
+    <p>Eight commercial legal AI products serve Pakistan. Every one advertises an accuracy figure. None publishes evidence.</p>
+    <p>When the same claims were tested in the United States, the largest incumbents were found to fabricate between 17% and 33% of the time. No equivalent test has ever been run on Pakistani law.</p>
+    <p>This is an attempt at the first honest number, with the method published so you can check it.</p>
+  </div>
+</header>
+
+<section>
+  <h2>Results</h2>
+  <p>Retrieval over the adversarial set. Regenerated on every push, so this table always matches the code in the repository.</p>
+
+  <table id="results">
+    <thead>
+      <tr><th>config</th><th>recall@1</th><th>recall@5</th><th>MRR</th><th>trap refusal</th><th>false refusal</th></tr>
+    </thead>
+    <tbody><tr><td colspan="6">loading…</td></tr></tbody>
+  </table>
+
+  <p class="caption">Trap refusal is the share of false-premise questions correctly declined. False refusal is the share of valid questions wrongly declined, reported alongside it because a system that refuses everything scores 1.00 on the first metric.</p>
+
+  <div class="caveat">
+    <span class="mark">Not yet a finding</span>
+    <p>These numbers run against a 30-provision demo corpus, not the real statute text. They demonstrate the pipeline works. Real figures require the full corpus and the 619-pair LEGAL-UQA evaluation set.</p>
+  </div>
+</section>
+
+<section>
+  <h2>What the numbers already show</h2>
+  <p>Adding a regex channel for explicit section references lifts recall@1 from 0.852 to 0.963. That reproduces and then fixes a documented failure mode: in a published audit of a legal retrieval system, 31% of failures were requests for a specific article reference, because embedding models rank thematically-similar provisions above the one actually named.</p>
+  <p>To an embedding model, <em>Section 302</em> and <em>Section 320</em> occupy nearly the same point in vector space. To a keyword index they are unrelated tokens. Pakistani legal queries are full of exactly these strings.</p>
+</section>
+
+<section>
+  <h2>Read further</h2>
+  <div class="links">
+    <a href="research.html">Research dossier</a>
+    <a href="https://github.com/hammadshakeelai/paklegalbench">Source and method</a>
+    <a href="retrieval.json">Raw results</a>
+  </div>
+</section>
+
+<footer>
+  <p>Not legal advice and not a lawyer. A research retrieval tool with a measured error rate. Outputs require verification against the primary source.</p>
+</footer>
+
+</div>
+
+<script>
+const ORDER = ['sparse_only','dense_only','hybrid','hybrid+exact'];
+const F = v => v === null || v === undefined ? '—' : Number(v).toFixed(3);
+
+fetch('retrieval.json').then(r => r.json()).then(data => {
+  const rows = ORDER.filter(k => k in data);
+  const best = rows.reduce((a, b) =>
+    (data[b]['recall@1'] ?? 0) > (data[a]?.['recall@1'] ?? -1) ? b : a, rows[0]);
+  document.querySelector('#results tbody').innerHTML = rows.map(k => {
+    const r = data[k];
+    return `<tr class="${k === best ? 'best' : ''}"><td>${k}</td>` +
+      [r['recall@1'], r['recall@5'], r.mrr, r.refusal_rate, r.false_refusal]
+        .map(v => `<td>${F(v)}</td>`).join('') + '</tr>';
+  }).join('');
+}).catch(() => {
+  document.querySelector('#results tbody').innerHTML =
+    '<tr><td colspan="6">Results not available. Run <code>python eval.py</code>.</td></tr>';
+});
+</script>
+</body>
+</html>

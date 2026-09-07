@@ -1,0 +1,35 @@
+{
+  "sparse_only": {
+    "n": 27,
+    "recall@1": 0.8519,
+    "recall@5": 0.963,
+    "recall@10": 0.963,
+    "recall@20": 1.0,
+    "mrr": 0.9039,
+    "refusal_rate": 1.0,
+    "false_refusal": 0.0741,
+    "traps": 7
+  },
+  "hybrid": {
+    "n": 27,
+    "recall@1": 0.8519,
+    "recall@5": 0.963,
+    "recall@10": 0.963,
+    "recall@20": 1.0,
+    "mrr": 0.9039,
+    "refusal_rate": 1.0,
+    "false_refusal": 0.0741,
+    "traps": 7
+  },
+  "hybrid+exact": {
+    "n": 27,
+    "recall@1": 0.963,
+    "recall@5": 0.963,
+    "recall@10": 0.963,
+    "recall@20": 1.0,
+    "mrr": 0.9656,
+    "refusal_rate": 1.0,
+    "false_refusal": 0.0741,
+    "traps": 7
+  }
+}

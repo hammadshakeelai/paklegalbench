@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PakLegalBench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@300;400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEFEA; --paper-deep:#E3E6DF; --ink:#151E19; --ink-soft:#4A554E;
+    --rule:#C6CBC1; --verified:#1B5E3F; --claim:#8C2F1F;
+    --serif:"Spectral",Georgia,serif; --sans:"IBM Plex Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+       font-weight:300;font-size:1rem;line-height:1.62}
+
+  .warn{background:var(--claim);color:#F6F2F0;font-family:var(--sans);
+        font-size:.78125rem;padding:.6rem 1.25rem;line-height:1.45}
+
+  header{border-bottom:2px solid var(--ink);padding:1.6rem 1.25rem 1.1rem;
+         max-width:76rem;margin:0 auto}
+  header h1{font-size:1.4rem;font-weight:600;margin:0 0 .3rem;letter-spacing:-.01em}
+  header p{margin:0;font-family:var(--sans);font-size:.8125rem;color:var(--ink-soft)}
+  #status{margin-top:.5rem}
+
+  main{max-width:76rem;margin:0 auto;padding:1.5rem 1.25rem 3rem;
+       display:grid;grid-template-columns:1fr 21rem;gap:2.5rem;align-items:start}
+
+  /* conversation */
+  #thread{min-height:14rem}
+  .msg{margin-bottom:1.6rem;max-width:62ch}
+  .who{font-family:var(--sans);font-size:.75rem;font-weight:600;
+       color:var(--ink-soft);margin-bottom:.35rem}
+  .msg.q .bubble{border-left:3px solid var(--ink);padding-left:1rem;font-size:1.05rem}
+  .msg.a .bubble{border-left:3px solid var(--verified);padding-left:1rem}
+  .msg.refused .bubble{border-left-color:var(--claim)}
+  .bubble{white-space:pre-wrap}
+  .bubble cite{font-style:normal;font-family:var(--sans);font-size:.84em;
+               font-weight:600;color:var(--verified);white-space:nowrap}
+
+  .empty{color:var(--ink-soft);max-width:52ch}
+  .empty h2{font-family:var(--serif);font-size:1.05rem;font-weight:600;
+            color:var(--ink);margin:0 0 .5rem}
+  .examples{list-style:none;padding:0;margin:.9rem 0 0}
+  .examples li{margin-bottom:.4rem}
+  .examples button{background:none;border:none;border-bottom:1px solid var(--rule);
+                   font-family:var(--serif);font-size:.9375rem;color:var(--ink);
+                   cursor:pointer;padding:.15rem 0;text-align:left}
+  .examples button:hover{border-bottom-color:var(--ink)}
+  .examples button:focus-visible{outline:2px solid var(--verified);outline-offset:3px}
+
+  /* composer */
+  form{display:flex;gap:.6rem;border-top:1px solid var(--rule);padding-top:1.1rem;
+       margin-top:1.5rem;max-width:62ch}
+  input[type=text]{flex:1;font-family:var(--serif);font-size:1rem;padding:.6rem .75rem;
+                   background:#fff;border:1px solid var(--rule);color:var(--ink)}
+  input[type=text]:focus{outline:2px solid var(--verified);outline-offset:-1px;border-color:transparent}
+  button.send{font-family:var(--sans);font-size:.875rem;font-weight:500;
+              background:var(--ink);color:var(--paper);border:none;
+              padding:.6rem 1.15rem;cursor:pointer}
+  button.send:disabled{background:var(--ink-soft);cursor:default}
+
+  /* sources rail */
+  aside{font-family:var(--sans);font-size:.8125rem;position:sticky;top:1.5rem}
+  aside h2{font-size:.8125rem;font-weight:600;margin:0 0 .8rem;
+           padding-bottom:.5rem;border-bottom:1.5px solid var(--ink)}
+  .src{padding:.75rem 0;border-bottom:1px solid var(--rule)}
+  .src .cit{font-weight:600;display:block;margin-bottom:.15rem}
+  .src .note{color:var(--ink-soft);margin-bottom:.35rem;line-height:1.4}
+  .src .meta{display:flex;gap:.6rem;font-size:.6875rem;color:var(--ink-soft);
+             font-variant-numeric:tabular-nums}
+  .chan{color:var(--verified);font-weight:500}
+
+  .toggles{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--rule)}
+  .toggles h2{border:none;padding:0;margin-bottom:.55rem}
+  .toggles label{display:block;margin-bottom:.3rem;cursor:pointer;color:var(--ink-soft)}
+  .toggles input{margin-right:.4rem;accent-color:var(--verified)}
+  .toggles p{font-size:.6875rem;color:var(--ink-soft);margin:.7rem 0 0;line-height:1.45}
+
+  @media (max-width:56rem){
+    main{grid-template-columns:1fr;gap:2rem}
+    aside{position:static}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="warn">Demo corpus. Provision text is paraphrased for testing and is not authentic statutory text. Nothing here may be cited or relied on.</div>
+
+<header>
+  <h1>PakLegalBench</h1>
+  <p>Statute retrieval over the Constitution, the Pakistan Penal Code and the Code of Criminal Procedure.</p>
+  <p id="status">checking…</p>
+</header>
+
+<main>
+  <div>
+    <div id="thread">
+      <div class="empty" id="empty">
+        <h2>Ask about a provision.</h2>
+        <p>Answers are generated only from retrieved sections, with a citation on every claim. When retrieval is weak the system refuses instead of guessing.</p>
+        <ul class="examples">
+          <li><button type="button">What is the punishment under Section 420 PPC?</button></li>
+          <li><button type="button">When can bail be granted in a non-bailable offence?</button></li>
+          <li><button type="button">What is the difference between 302 and 320 PPC?</button></li>
+          <li><button type="button">What is the penalty under Section 999 PPC?</button></li>
+        </ul>
+      </div>
+    </div>
+
+    <form id="composer">
+      <input type="text" id="q" placeholder="Ask a question" autocomplete="off" aria-label="Your question">
+      <button class="send" type="submit">Ask</button>
+    </form>
+  </div>
+
+  <aside>
+    <h2>Retrieved provisions</h2>
+    <div id="sources"><p style="color:var(--ink-soft)">Nothing retrieved yet.</p></div>
+
+    <div class="toggles">
+      <h2>Retrieval channels</h2>
+      <label><input type="checkbox" id="c-exact" checked> Exact reference</label>
+      <label><input type="checkbox" id="c-sparse" checked> BM25 keyword</label>
+      <label><input type="checkbox" id="c-dense" checked> Dense embedding</label>
+      <label><input type="checkbox" id="c-rerank"> Cross-encoder rerank</label>
+      <p>Turn channels off to see what each contributes. Disabling exact reference is the fastest way to reproduce the citation-retrieval failure described in the research.</p>
+    </div>
+  </aside>
+</main>
+
+<script>
+const thread = document.getElementById('thread');
+const empty = document.getElementById('empty');
+const srcBox = document.getElementById('sources');
+const form = document.getElementById('composer');
+const input = document.getElementById('q');
+const sendBtn = form.querySelector('.send');
+let history = [];
+
+fetch('/api/health').then(r => r.json()).then(h => {
+  const gen = h.providers.length ? h.providers.join(', ') : 'none configured, retrieval only';
+  document.getElementById('status').textContent =
+    `${h.chunks} provisions indexed · dense retrieval ${h.dense ? 'on' : 'off'} · generation: ${gen}`;
+}).catch(() => {
+  document.getElementById('status').textContent = 'server unreachable';
+});
+
+document.querySelectorAll('.examples button').forEach(b => {
+  b.addEventListener('click', () => { input.value = b.textContent; form.requestSubmit(); });
+});
+
+function esc(s){ return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+function citations(s){
+  return esc(s).replace(/\[([^\]]{2,60})\]/g, '<cite>[$1]</cite>');
+}
+
+function addMsg(role, text, refused){
+  if (empty) empty.remove();
+  const d = document.createElement('div');
+  d.className = 'msg ' + (role === 'you' ? 'q' : 'a') + (refused ? ' refused' : '');
+  d.innerHTML = `<div class="who">${role}</div><div class="bubble">${
+    role === 'you' ? esc(text) : citations(text)}</div>`;
+  thread.appendChild(d);
+  d.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function renderSources(list){
+  if (!list.length){ srcBox.innerHTML = '<p style="color:var(--ink-soft)">Nothing retrieved.</p>'; return; }
+  srcBox.innerHTML = list.map(s => `
+    <div class="src">
+      <span class="cit">${esc(s.citation)}</span>
+      <div class="note">${esc(s.marginal_note)}</div>
+      <div class="meta">
+        <span>${s.score.toFixed(4)}</span>
+        <span class="chan">${s.channels.join(' + ') || 'fused'}</span>
+      </div>
+    </div>`).join('');
+}
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const question = input.value.trim();
+  if (!question) return;
+  addMsg('you', question);
+  input.value = '';
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'Searching';
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        question, history,
+        use_exact:  document.getElementById('c-exact').checked,
+        use_sparse: document.getElementById('c-sparse').checked,
+        use_dense:  document.getElementById('c-dense').checked,
+        use_rerank: document.getElementById('c-rerank').checked
+      })
+    });
+    const data = await res.json();
+    addMsg('assistant', data.answer, data.refused);
+    renderSources(data.sources || []);
+    history.push({role:'user', content: question});
+    history.push({role:'assistant', content: data.answer});
+    history = history.slice(-6);
+  } catch (err) {
+    addMsg('assistant', 'Request failed: ' + err.message, true);
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'Ask';
+    input.focus();
+  }
+});
+</script>
+</body>
+</html>
