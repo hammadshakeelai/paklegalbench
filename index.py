@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -29,10 +30,13 @@ DEFAULT_CORPUS = ROOT / "seed_corpus.json"
 # Maps how people actually write act names to the act_short field.
 ACT_ALIASES = {
     "ppc": "PPC",
+    "p.p.c": "PPC",
+    "p.p.c.": "PPC",
     "pakistan penal code": "PPC",
     "penal code": "PPC",
     "crpc": "CrPC",
     "cr.p.c": "CrPC",
+    "cr.p.c.": "CrPC",
     "criminal procedure": "CrPC",
     "code of criminal procedure": "CrPC",
     "constitution": "Constitution",
@@ -79,8 +83,15 @@ class Chunk:
         )
 
 
-def load_chunks(path: Path | str = DEFAULT_CORPUS) -> list[Chunk]:
-    raw = json.loads(Path(path).read_text())
+def load_chunks(path: Path | str | None = None) -> list[Chunk]:
+    if path is None:
+        env_path = os.environ.get("PLB_CORPUS_PATH")
+        if env_path:
+            path = Path(env_path)
+        else:
+            chunks_json = ROOT / "chunks.json"
+            path = chunks_json if chunks_json.exists() else DEFAULT_CORPUS
+    raw = json.loads(Path(path).read_text(encoding="utf-8"))
     rows = raw["chunks"] if isinstance(raw, dict) else raw
     return [Chunk(**{k: v for k, v in r.items() if not k.startswith("_")}) for r in rows]
 
@@ -109,12 +120,12 @@ def tokenize(text: str) -> list[str]:
 
 
 REFERENCE_PATTERNS = [
-    # "Article 199", "Art. 10A"
-    re.compile(r"\b(?:article|art\.?)\s*([0-9]+[a-z]?(?:-[a-z])?)\b", re.I),
+    # "Article 199", "Art. 10A", "Article 10-A"
+    re.compile(r"\b(?:article|art\.?)\s*([0-9]+(?:[-–]?[a-z])?)\b", re.I),
     # "Section 302 PPC", "s. 497 CrPC", "u/s 154"
-    re.compile(r"\b(?:section|sec\.?|s\.|u/s)\s*([0-9]+[a-z]?(?:-[a-z])?)\b", re.I),
-    # bare "302 PPC" / "497 CrPC"
-    re.compile(r"\b([0-9]+[a-z]?(?:-[a-z])?)\s*(?:of\s+the\s+)?(ppc|crpc|cr\.?p\.?c)\b", re.I),
+    re.compile(r"\b(?:section|sec\.?|s\.|u/s)\s*([0-9]+(?:[-–]?[a-z])?)\b", re.I),
+    # bare "302 PPC" / "497 CrPC" / "489-F P.P.C."
+    re.compile(r"\b([0-9]+(?:[-–]?[a-z])?)\s*(?:of\s+the\s+)?(ppc|crpc|cr\.?p\.?c\.?|p\.?p\.?c\.?)\b", re.I),
 ]
 
 
@@ -135,7 +146,8 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
     seen = set()
     for pat in REFERENCE_PATTERNS:
         for m in pat.finditer(query):
-            sec = m.group(1).upper()
+            raw_sec = m.group(1).upper()
+            sec = re.sub(r"[–\s]", "-", raw_sec)
             act = act_hint
             if m.lastindex and m.lastindex >= 2:
                 tail = (m.group(2) or "").lower().replace(".", "")
@@ -320,8 +332,10 @@ class Retriever:
             return []
         out = []
         for sec, act in refs:
+            norm_sec = sec.replace("-", "").replace(" ", "").upper()
             for c in self.chunks:
-                if c.section.upper() != sec:
+                chunk_sec = c.section.replace("-", "").replace(" ", "").upper()
+                if chunk_sec != norm_sec:
                     continue
                 if act and c.act_short != act:
                     continue

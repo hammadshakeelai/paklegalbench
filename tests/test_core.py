@@ -45,3 +45,21 @@ def test_rrf_weights_applied():
 
 def test_rrf_empty():
     assert rrf([]) == []
+
+
+def test_reference_variants():
+    assert ("489F", "PPC") in extract_references("489F PPC")
+    assert ("10-A", "Constitution") in extract_references("Article 10-A")
+    assert ("302", "PPC") in extract_references("Section 302 P.P.C.")
+    assert ("497", "CrPC") in extract_references("u/s 497 Cr.P.C.")
+
+
+def test_exact_channel_normalization():
+    from index import Retriever, load_chunks
+    r = Retriever(load_chunks())
+    assert "ppc-1860-s489f" in r._exact_channel("489F PPC")
+    assert "ppc-1860-s489f" in r._exact_channel("Section 489-F PPC")
+    assert "const-1973-a10a" in r._exact_channel("Article 10-A")
+    assert "const-1973-a10a" in r._exact_channel("Article 10A")
+    assert "crpc-1898-s265k" in r._exact_channel("265K CrPC")
+

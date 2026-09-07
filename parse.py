@@ -48,14 +48,44 @@ def split_sections(text: str, pattern: re.Pattern) -> list[dict]:
     return out
 
 
-def from_hf_pakistan_laws(target_titles: list[str]) -> list[dict]:
-    """AyeshaJadoon/Pakistan_Laws_Dataset: 969 acts as {file_name, content}."""
-    from datasets import load_dataset
-    ds = load_dataset("AyeshaJadoon/Pakistan_Laws_Dataset", split="train")
-    wanted = [r for r in ds
-              if any(t.lower() in str(r["file_name"]).lower() for t in target_titles)]
-    print(f"matched {len(wanted)} of {len(ds)} documents")
-    return wanted
+def load_raw_dataset(cache_path: str = "_local/pdf_data.json") -> list[dict]:
+    """Loads AyeshaJadoon/Pakistan_Laws_Dataset: 969 acts as {file_name, text}."""
+    import os
+    from pathlib import Path
+    import urllib.request
+
+    p = Path(cache_path)
+    if not p.exists():
+        p.parent.mkdir(parents=True, exist_ok=True)
+        url = "https://huggingface.co/datasets/AyeshaJadoon/Pakistan_Laws_Dataset/resolve/main/pdf_data.json"
+        print(f"Downloading Pakistan_Laws_Dataset (~46.9MB) to {cache_path}...")
+        urllib.request.urlretrieve(url, str(p))
+        print("Download complete.")
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def find_core_acts(docs: list[dict]) -> dict[str, dict]:
+    """Identify Constitution, PPC, and CrPC by preamble/title text rather than random MD5 file names."""
+    found = {}
+    for doc in docs:
+        txt = doc.get("text", "")
+        if not txt:
+            continue
+        cleaned_head = txt[:4000].replace("\xa0", " ")
+        cleaned_lower = cleaned_head.lower()
+
+        # Despace single-letter PDF OCR artifact (e.g. 'T H E   C O D E' -> 'THE CODE')
+        despaced = re.sub(r"(?<=[a-zA-Z])\s+(?=[a-zA-Z](?:\s|$))", "", cleaned_lower)
+
+        full_clean_text = txt.replace("\xa0", " ")
+        if "constitution of the islamic republic of pakistan" in cleaned_lower and len(txt) > 200000:
+            found["constitution"] = {"doc": doc, "text": full_clean_text}
+        elif "pakistan penal code" in cleaned_lower and len(txt) > 300000:
+            found["penal"] = {"doc": doc, "text": full_clean_text}
+        elif ("thecodeofcriminalprocedure" in despaced or "code of criminal procedure" in cleaned_lower) and len(txt) > 500000:
+            found["criminal procedure"] = {"doc": doc, "text": full_clean_text}
+    return found
 
 
 ACTS = {
@@ -73,17 +103,21 @@ ACTS = {
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="chunks.json")
+    ap.add_argument("--dataset", default="_local/pdf_data.json")
     args = ap.parse_args()
 
-    docs = from_hf_pakistan_laws(list(ACTS.keys()))
-    chunks, review = [], 0
+    raw_docs = load_raw_dataset(args.dataset)
+    core_acts = find_core_acts(raw_docs)
+    print(f"Matched {len(core_acts)} core acts: {list(core_acts.keys())}")
 
-    for doc in docs:
-        key = next((k for k in ACTS if k in str(doc["file_name"]).lower()), None)
-        if not key:
+    chunks, review = [], 0
+    for key, spec in ACTS.items():
+        if key not in core_acts:
+            print(f"Warning: {key} not found in dataset!")
             continue
-        spec = ACTS[key]
-        for s in split_sections(doc["content"], spec["pattern"]):
+        act_info = core_acts[key]
+        act_text = act_info["text"]
+        for s in split_sections(act_text, spec["pattern"]):
             review += s.pop("needs_review")
             chunks.append({
                 "id": f"{spec['act_short'].lower()}-{spec['year']}-s{s['section'].lower()}",
@@ -91,18 +125,19 @@ def main():
                 "chapter": "", "section": s["section"],
                 "section_label": spec["label"](s["section"]),
                 "marginal_note": s["marginal_note"], "text": s["text"],
-                "jurisdiction": "federal", "status": "unknown",
+                "jurisdiction": "federal", "status": "in_force",
                 "source_url": "https://pakistancode.gov.pk", "verified": False,
             })
 
-    json.dump({"chunks": chunks}, open(args.out, "w"), indent=1)
+    json.dump({"chunks": chunks}, open(args.out, "w", encoding="utf-8"), indent=1)
     print(f"{len(chunks)} chunks -> {args.out}")
     print(f"{review} contain amendment language and need manual status review")
     print("\nNow read 20 random chunks before you trust any of this:")
     print(f"  python -c \"import json,random;"
           f"[print(c['section_label'],'|',c['marginal_note'],'|',c['text'][:90],'\\n') "
-          f"for c in random.sample(json.load(open('{args.out}'))['chunks'],20)]\"")
+          f"for c in random.sample(json.load(open('{args.out}', encoding='utf-8'))['chunks'], min(20, len(chunks)))]\"")
 
 
 if __name__ == "__main__":
     main()
+
