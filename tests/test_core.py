@@ -1,6 +1,6 @@
 """Tests for the pure functions. These are what let you refactor retrieval
 without re-running the whole app to find out you broke it."""
-import sys, pathlib
+import sys, pathlib, re
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
 
 from index import extract_references, rrf, tokenize
@@ -284,6 +284,45 @@ def test_law_gat_benchmark():
     assert stats["overall"]["recall@5"] >= 0.95
     assert stats["overall"]["mrr"] >= 0.95
     assert stats["overall"]["false_refusal_rate"] == 0.0
+
+
+def test_clean_chunks_corpus():
+    import json
+    from pathlib import Path
+    chunks_path = Path("chunks.json")
+    assert chunks_path.exists(), "chunks.json missing"
+    chunks = json.load(open(chunks_path, encoding="utf-8"))["chunks"]
+    assert len(chunks) >= 1200, f"Expected >= 1200 chunks, got {len(chunks)}"
+
+    # Ensure no TOC dotted lines exist in any chunk
+    dotted = [c for c in chunks if re.search(r"\.{4,}", c["marginal_note"]) or re.search(r"\.{4,}", c["text"][:100])]
+    assert len(dotted) == 0, f"Found {len(dotted)} dotted TOC artifacts in chunks.json"
+
+    # Ensure all IDs are uniquely defined
+    ids = [c["id"] for c in chunks]
+    assert len(ids) == len(set(ids)), "Duplicate chunk IDs found in chunks.json"
+
+    # Ensure essential statutory provisions are present and populated with substantive text
+    by_id = {c["id"]: c for c in chunks}
+    required = [
+        "const-1973-a8", "const-1973-a9", "const-1973-a10", "const-1973-a10a",
+        "const-1973-a184", "const-1973-a189", "const-1973-a199", "const-1973-a228",
+        "ppc-1860-s300", "ppc-1860-s302", "ppc-1860-s420", "ppc-1860-s489f",
+        "crpc-1898-s154", "crpc-1898-s173", "crpc-1898-s496", "crpc-1898-s497", "crpc-1898-s498"
+    ]
+    for req in required:
+        assert req in by_id, f"Missing required provision {req}"
+        assert len(by_id[req]["text"]) > 50, f"Provision {req} has insufficient substantive text"
+
+
+def test_legal_uqa_benchmark_mapping():
+    from eval import load_legal_uqa
+    cases = load_legal_uqa("validation")
+    assert len(cases) == 124, f"Expected 124 validation cases, got {len(cases)}"
+    for c in cases:
+        assert c.get("gold_ids"), f"Missing gold_ids for case {c.get('id')}"
+        assert c["gold_ids"][0].startswith("const-1973-a"), f"Invalid gold_id format: {c['gold_ids'][0]}"
+
 
 
 

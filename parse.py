@@ -17,9 +17,9 @@ import argparse
 import json
 import re
 
-# Matches "302. Punishment of qatl-i-amd." and "489-F. Dishonestly issuing..."
+# Matches "302. Punishment of qatl-i-amd.", "4[489F. Dishonestly issuing a cheque.__", and "497. When bail may be taken.\xad(1)"
 SECTION_RE = re.compile(
-    r"^\s*(?P<num>\d+[-–]?[A-Z]{0,2})\.\s+(?P<note>[^\n.]{3,120})\.",
+    r"^\s*(?:\[|\d{1,3}\[|\d{1,3}\s+)?(?P<num>\d+[-–]?[A-Z]{0,2})\.\s+(?P<note>[^\n.]{3,120})\.(?:__|--|\s*[\xad–—\-]?\s*\(|\s+)",
     re.M,
 )
 ARTICLE_RE = re.compile(
@@ -100,6 +100,58 @@ ACTS = {
 }
 
 
+def parse_constitution(text: str) -> list[dict]:
+    """Parse the 1973 Constitution cleanly:
+    - Strips the extensive Table of Contents (pages 1-47).
+    - Stops before the First Schedule to prevent schedule line numbers colliding with Articles.
+    - Merges adjacent marginal note and body lines.
+    - Filters out any TOC dotted line artifacts.
+    """
+    m_start = re.search(r"\bPART\s+I\s+Introductory\b", text, re.I)
+    sub = text[m_start.start():] if m_start else text
+    m280 = re.search(r"^\s*(?:\d{1,3}\s+)?280\.\s+", sub, re.M)
+    if m280:
+        m_sched = re.search(r"\bFIRST\s+SCHEDULE\b", sub[m280.start():], re.I)
+        if m_sched:
+            sub = sub[:m280.start() + m_sched.start()]
+
+    art_pat = re.compile(
+        r"^\s*(?:\d{1,3}\s+)?(?P<num>\d+[A-Z]?)\.\s+(?P<note>[A-Z][A-Za-z0-9\s,\-\(\)\'\’\–]{2,100}?)\s*(?:\.|\s*[\r\n])(?!\s*\(|\s*shall|\s*provided|\s*every|\s*no\b)",
+        re.M
+    )
+    raw = split_sections(sub, art_pat)
+    merged = []
+    i = 0
+    while i < len(raw):
+        curr = raw[i]
+        if i + 1 < len(raw) and raw[i + 1]["section"] == curr["section"]:
+            nxt = raw[i + 1]
+            body = (nxt["marginal_note"] + ". " + nxt["text"]).strip()
+            merged.append({
+                "section": curr["section"],
+                "marginal_note": curr["marginal_note"].strip(),
+                "text": body,
+                "needs_review": curr["needs_review"] or nxt["needs_review"]
+            })
+            i += 2
+        else:
+            merged.append(curr)
+            i += 1
+
+    # Final guard: drop any residual dotted TOC fragments
+    return [
+        s for s in merged
+        if not re.search(r"\.{4,}", s["marginal_note"]) and not re.search(r"\.{4,}", s["text"][:100])
+    ]
+
+
+def make_chunk_id(act_short: str, year: int, section: str) -> str:
+    sec_clean = section.lower().replace("-", "").replace("–", "").strip()
+    if act_short == "Constitution":
+        return f"const-{year}-a{sec_clean}"
+    return f"{act_short.lower()}-{year}-s{sec_clean}"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="chunks.json")
@@ -117,10 +169,22 @@ def main():
             continue
         act_info = core_acts[key]
         act_text = act_info["text"]
-        for s in split_sections(act_text, spec["pattern"]):
+
+        if key == "constitution":
+            sections = parse_constitution(act_text)
+        else:
+            sections = split_sections(act_text, spec["pattern"])
+            sections = [
+                s for s in sections
+                if not re.search(r"\.{4,}", s["marginal_note"]) and not re.search(r"\.{4,}", s["text"][:100])
+            ]
+
+        for s in sections:
+            if not re.match(r"^\d+[-–]?[A-Z]{0,2}$", s["section"]):
+                continue
             review += s.pop("needs_review")
             chunks.append({
-                "id": f"{spec['act_short'].lower()}-{spec['year']}-s{s['section'].lower()}",
+                "id": make_chunk_id(spec["act_short"], spec["year"], s["section"]),
                 "act": spec["act"], "act_short": spec["act_short"], "year": spec["year"],
                 "chapter": "", "section": s["section"],
                 "section_label": spec["label"](s["section"]),
@@ -129,13 +193,21 @@ def main():
                 "source_url": "https://pakistancode.gov.pk", "verified": False,
             })
 
-    json.dump({"chunks": chunks}, open(args.out, "w", encoding="utf-8"), indent=1)
-    print(f"{len(chunks)} chunks -> {args.out}")
+    # Deduplicate provisions by canonical ID, retaining the substantive body (longest text)
+    by_id = {}
+    for c in chunks:
+        cid = c["id"]
+        if cid not in by_id or len(c["text"]) > len(by_id[cid]["text"]):
+            by_id[cid] = c
+    deduped_chunks = list(by_id.values())
+
+    json.dump({"chunks": deduped_chunks}, open(args.out, "w", encoding="utf-8"), indent=1)
+    print(f"{len(deduped_chunks)} unique chunks -> {args.out} (from {len(chunks)} raw matches)")
     print(f"{review} contain amendment language and need manual status review")
     print("\nNow read 20 random chunks before you trust any of this:")
     print(f"  python -c \"import json,random;"
           f"[print(c['section_label'],'|',c['marginal_note'],'|',c['text'][:90],'\\n') "
-          f"for c in random.sample(json.load(open('{args.out}', encoding='utf-8'))['chunks'], min(20, len(chunks)))]\"")
+          f"for c in random.sample(json.load(open('{args.out}', encoding='utf-8'))['chunks'], min(20, len(deduped_chunks)))]\"")
 
 
 if __name__ == "__main__":

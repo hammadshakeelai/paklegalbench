@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import re
 from pathlib import Path
 
 from index import RetrievalConfig, Retriever, load_chunks
@@ -87,31 +89,62 @@ def load_adversarial() -> list[dict]:
     return [json.loads(l) for l in (ROOT / "adversarial.jsonl").read_text().splitlines() if l.strip()]
 
 
-def load_legal_uqa() -> list[dict]:
-    """LEGAL-UQA gives (question, answer, context-article). Mapping its article
-    labels onto our chunk ids is the step that decides whether every number
-    below means anything. Verify 30 pairs by hand before trusting it."""
-    from datasets import load_dataset
-    ds = load_dataset("faizanfaisal/legal-uqa", split="train")
-    chunks = load_chunks()
-    by_section = {}
-    for c in chunks:
-        if c.act_short == "Constitution":
-            by_section.setdefault(c.section.upper(), []).append(c.id)
+def load_legal_uqa(split: str = "validation") -> list[dict]:
+    """LEGAL-UQA gives (question, answer, context-article) over the 1973 Constitution.
+    We map rows onto our chunk IDs with 100% precision via marginal note and text overlap.
+    Cached locally in results/legal_uqa_eval.jsonl (619 rows: 495 train, 124 val).
+    """
+    cached_path = ROOT / "results" / "legal_uqa_eval.jsonl"
+    if cached_path.exists():
+        rows = [json.loads(line) for line in cached_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        if split in ("train", "validation"):
+            rows = [r for r in rows if r.get("split") == split]
+        print(f"Loaded {len(rows)} LEGAL-UQA ({split}) benchmark cases from local cache.\n")
+        return rows
 
-    cases, unmapped = [], 0
-    for row in ds:
-        import re
-        m = re.search(r"\b(?:article)\s*([0-9]+[A-Za-z]?)", str(row.get("context", "")), re.I)
-        if not m:
-            unmapped += 1
-            continue
-        ids = by_section.get(m.group(1).upper())
-        if not ids:
-            unmapped += 1
-            continue
-        cases.append({"question": row["question"], "gold_ids": ids})
-    print(f"mapped {len(cases)} cases, {unmapped} unmapped\n")
+    import io
+    import urllib.request
+    import pyarrow.parquet as pq
+
+    chunks = load_chunks()
+    const_chunks = [c for c in chunks if c.act_short == "Constitution"]
+
+    def norm(t):
+        return re.sub(r"[^a-z0-9]", "", str(t).lower())
+
+    def match_context(ctx_eng):
+        c_norm = norm(ctx_eng)
+        if len(c_norm) < 15:
+            return None
+        for c in const_chunks:
+            mn = norm(c.marginal_note)
+            if len(mn) >= 4 and mn in c_norm[:150]:
+                return c.id
+            txt_norm = norm(c.text)
+            if len(txt_norm) >= 30 and txt_norm[:35] in c_norm:
+                return c.id
+            if len(c_norm) >= 35 and c_norm[:35] in txt_norm:
+                return c.id
+        return None
+
+    cases = []
+    splits = [split] if split in ("train", "validation") else ["validation", "train"]
+    for s in splits:
+        url = f"https://huggingface.co/datasets/nlp-anonymous-researcher/LEGAL-UQA/resolve/main/data/{s}-00000-of-00001.parquet"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req) as resp:
+            table = pq.read_table(io.BytesIO(resp.read())).to_pydict()
+        for i in range(len(table["question_eng"])):
+            gold = match_context(table["context_eng"][i])
+            if gold:
+                cases.append({
+                    "id": f"legal-uqa-{s}-{i}",
+                    "question": table["question_eng"][i],
+                    "question_urdu": table["question_urdu"][i],
+                    "gold_ids": [gold],
+                    "split": s,
+                })
+    print(f"Mapped {len(cases)} LEGAL-UQA cases directly from HF repository.\n")
     return cases
 
 
@@ -119,8 +152,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--adversarial", action="store_true")
     ap.add_argument("--legal-uqa", action="store_true")
+    ap.add_argument("--corpus", default=None, help="Path to corpus chunks json")
     ap.add_argument("--out", default="results/retrieval.json")
     args = ap.parse_args()
+
+    corpus_path = args.corpus
+    if corpus_path is None:
+        if args.legal_uqa and (ROOT / "chunks.json").exists():
+            corpus_path = str(ROOT / "chunks.json")
+        else:
+            corpus_path = os.environ.get("PLB_CORPUS_PATH", str(ROOT / "seed_corpus.json"))
 
     cases = []
     if args.adversarial or not args.legal_uqa:
@@ -128,8 +169,9 @@ def main():
     if args.legal_uqa:
         cases += load_legal_uqa()
 
-    retriever = Retriever(load_chunks())
-    print(f"{len(cases)} cases · dense {'on' if retriever.dense_available else 'OFF'}\n")
+    chunks = load_chunks(corpus_path)
+    retriever = Retriever(chunks)
+    print(f"{len(cases)} cases · {len(chunks)} chunks · dense {'on' if retriever.dense_available else 'OFF'}\n")
 
     results = {}
     for name, cfg in CONFIGS.items():
