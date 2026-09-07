@@ -1,7 +1,7 @@
 """
 Generation layer. Free tiers only, with fallback.
 
-Order: Groq (fast, 30 rpm / 1000 rpd) -> Gemini (big context) -> OpenRouter.
+Order: Agnes -> Groq (fast) -> Gemini (big context) -> OpenRouter.
 Whichever has a key set gets tried first, in that order.
 
 Model IDs move around on free tiers. Override with env vars rather than
@@ -12,10 +12,35 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 import urllib.error
 import urllib.request
 
 TIMEOUT = 45
+
+
+def _load_env():
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except Exception:
+        pass
+    env_file = Path(__file__).parent / ".env"
+    if env_file.exists():
+        try:
+            for line in env_file.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                k, v = k.strip(), v.strip().strip("'\"")
+                if k not in os.environ and v:
+                    os.environ[k] = v
+        except Exception:
+            pass
+
+
+_load_env()
 
 SYSTEM_PROMPT = """You are a legal research assistant for Pakistani law. You answer \
 ONLY from the provisions supplied to you in CONTEXT.
@@ -54,6 +79,17 @@ def _post(url: str, payload: dict, headers: dict) -> dict:
     )
     with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
         return json.loads(r.read().decode())
+
+
+def _agnes(messages: list[dict]) -> str:
+    key = os.environ["AGNES_API_KEY"]
+    model = os.environ.get("AGNES_MODEL", "agnes-2.5-flash")
+    data = _post(
+        "https://apihub.agnes-ai.com/v1/chat/completions",
+        {"model": model, "messages": messages, "temperature": 0.1, "max_tokens": 700},
+        {"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+    )
+    return data["choices"][0]["message"]["content"]
 
 
 def _groq(messages: list[dict]) -> str:
@@ -100,6 +136,7 @@ def _openrouter(messages: list[dict]) -> str:
 
 
 PROVIDERS = [
+    ("agnes", "AGNES_API_KEY", _agnes),
     ("groq", "GROQ_API_KEY", _groq),
     ("gemini", "GEMINI_API_KEY", _gemini),
     ("openrouter", "OPENROUTER_API_KEY", _openrouter),
