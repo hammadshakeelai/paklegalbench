@@ -19,7 +19,7 @@ import re
 
 # Matches "302. Punishment of qatl-i-amd.", "4[489F. Dishonestly issuing a cheque.__", and "497. When bail may be taken.\xad(1)"
 SECTION_RE = re.compile(
-    r"^\s*(?:\[|\d{1,3}\[|\d{1,3}\s+)?(?P<num>\d+[-–]?[A-Z]{0,2})\.\s+(?P<note>[^\n.]{3,120})\.(?:__|--|\s*[\xad–—\-]?\s*\(|\s+)",
+    r"^\s*(?:\[|\d{1,3}\[|\d{1,3}\s+)?(?P<num>\d+[-–]?[A-Z]{0,2})\s*\.\s+(?P<note>[^\n.]{3,120})\.(?:__|--|\s*[\xad–—\-]?\s*\(|\s+)",
     re.M,
 )
 ARTICLE_RE = re.compile(
@@ -145,6 +145,23 @@ def parse_constitution(text: str) -> list[dict]:
     ]
 
 
+def clean_crpc_ocr(text: str) -> str:
+    """Repair widespread PDF OCR intra-word spacing in Code of Criminal Procedure (1898).
+    In official gazette scans, words are separated by 2+ spaces, while individual letters
+    or syllables are spaced by single spaces (e.g. 'Exam i n ati on   of   w i tn e s s e s').
+    """
+    lines = text.split("\n")
+    cleaned_lines = []
+    for line in lines:
+        words = re.split(r"\s{2,}", line.strip())
+        fixed_words = []
+        for w in words:
+            fixed_w = re.sub(r"(?<=[a-zA-Z0-9])\s+(?=[a-zA-Z0-9])", "", w)
+            fixed_words.append(fixed_w)
+        cleaned_lines.append(" ".join(fixed_words))
+    return "\n".join(cleaned_lines)
+
+
 def make_chunk_id(act_short: str, year: int, section: str) -> str:
     sec_clean = section.lower().replace("-", "").replace("–", "").strip()
     if act_short == "Constitution":
@@ -172,6 +189,13 @@ def main():
 
         if key == "constitution":
             sections = parse_constitution(act_text)
+        elif key == "criminal procedure":
+            cleaned_crpc = clean_crpc_ocr(act_text)
+            sections = split_sections(cleaned_crpc, spec["pattern"])
+            sections = [
+                s for s in sections
+                if not re.search(r"\.{4,}", s["marginal_note"]) and not re.search(r"\.{4,}", s["text"][:100])
+            ]
         else:
             sections = split_sections(act_text, spec["pattern"])
             sections = [

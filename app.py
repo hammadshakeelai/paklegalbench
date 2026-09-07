@@ -11,6 +11,7 @@ Endpoints:
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -28,10 +29,12 @@ app = FastAPI(title="PakLegalBench")
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
 # Loading the embedding model takes ~10s. Set PLB_NO_DENSE=1 for fast restarts.
-retriever = build_default() if not os.environ.get("PLB_NO_DENSE") else None
+default_corpus = ROOT / "chunks.json" if (ROOT / "chunks.json").exists() else ROOT / "seed_corpus.json"
+corpus_path = os.environ.get("PLB_CORPUS_PATH", str(default_corpus))
+retriever = build_default(corpus_path) if not os.environ.get("PLB_NO_DENSE") else None
 if retriever is None:
     from index import Retriever, load_chunks
-    retriever = Retriever(load_chunks(), load_dense=False)
+    retriever = Retriever(load_chunks(corpus_path), load_dense=False)
 
 
 class ChatRequest(BaseModel):
@@ -170,6 +173,50 @@ def chat(req: ChatRequest):
         }
 
     return {"answer": text, "refused": False, "sources": sources, "provider": provider}
+
+
+@app.get("/api/benchmarks")
+def benchmarks():
+    data = {}
+    files = {
+        "retrieval": ROOT / "results" / "retrieval.json",
+        "law_gat": ROOT / "results" / "law_gat_report.json",
+        "stanford": ROOT / "results" / "stanford_eval_report.json",
+        "redteam": ROOT / "results" / "redteam_report.json",
+        "legal_uqa_eng": ROOT / "results" / "legal_uqa_eng.json",
+        "legal_uqa_urdu": ROOT / "results" / "legal_uqa_urdu.json",
+    }
+    for k, p in files.items():
+        if p.exists():
+            try:
+                data[k] = json.loads(p.read_text(encoding="utf-8"))
+            except Exception:
+                data[k] = None
+    return data
+
+
+@app.get("/api/graph")
+def get_graph(provision: str | None = None):
+    """
+    Returns statutory reference graph.
+    If ?provision=PPC:302 is passed, returns adjacency for that provision.
+    Otherwise returns graph summary metrics.
+    """
+    graph = llm._get_statute_graph()
+    if provision:
+        p_clean = provision.upper().replace("-", "").strip()
+        edges = graph.get(p_clean, [])
+        inbound = [src for src, dsts in graph.items() if p_clean in dsts]
+        return {
+            "provision": p_clean,
+            "outbound_citations": edges,
+            "inbound_citations": inbound,
+        }
+    return {
+        "total_provisions_with_edges": len(graph),
+        "total_directed_edges": sum(len(dsts) for dsts in graph.values()),
+        "sample_nodes": list(graph.keys())[:15],
+    }
 
 
 @app.get("/")

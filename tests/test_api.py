@@ -190,5 +190,34 @@ def test_openapi_schema_definitions():
     paths = schema["paths"]
     assert "/api/chat" in paths
     assert "/api/health" in paths
+    assert "/api/benchmarks" in paths
+    assert "/api/graph" in paths
     assert "/" in paths
     assert "/research" in paths
+
+
+def test_benchmarks_endpoint():
+    resp = client.get("/api/benchmarks")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert isinstance(data, dict)
+    for expected_key in ["retrieval", "law_gat", "stanford", "redteam"]:
+        assert expected_key in data
+
+
+def test_graph_endpoint():
+    # Summary
+    resp = client.get("/api/graph")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total_provisions_with_edges"] > 0
+    assert data["total_directed_edges"] > 0
+    assert isinstance(data["sample_nodes"], list)
+
+    # Specific provision query
+    resp_prov = client.get("/api/graph?provision=PPC:302")
+    assert resp_prov.status_code == 200
+    data_prov = resp_prov.json()
+    assert data_prov["provision"] == "PPC:302"
+    assert isinstance(data_prov["outbound_citations"], list)
+    assert isinstance(data_prov["inbound_citations"], list)

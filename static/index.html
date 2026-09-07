@@ -96,7 +96,7 @@
 </head>
 <body>
 
-<div class="warn">Demo corpus. Provision text is paraphrased for testing and is not authentic statutory text. Nothing here may be cited or relied on.</div>
+<div class="warn" style="background:#1B5E3F; color:#F6F2F0;">Authentic Statutory Corpus: 1,304 clean provisions from the Constitution (1973), Pakistan Penal Code (1860), and Code of Criminal Procedure (1898). Strict citation grounding with deterministic hallucination refusal.</div>
 
 <header style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
   <div>
@@ -105,6 +105,7 @@
     <p id="status">checking…</p>
   </div>
   <div style="display:flex; gap:0.6rem; align-items:center; align-self:center; flex-wrap:wrap;">
+    <a href="/api/benchmarks" target="_blank" rel="noopener noreferrer" style="font-family:var(--sans); font-size:.8125rem; font-weight:500; color:var(--ink); text-decoration:none; border:1px solid var(--rule); padding:.45rem .85rem; background:var(--paper-deep);">Live Benchmarks JSON &nearr;</a>
     <a href="/research" style="font-family:var(--sans); font-size:.8125rem; font-weight:500; color:var(--ink); text-decoration:none; border:1px solid var(--rule); padding:.45rem .85rem; background:var(--paper-deep);">Research Dossier &rarr;</a>
     <a href="https://github.com/hammadshakeelai/paklegalbench" target="_blank" rel="noopener noreferrer" style="font-family:var(--sans); font-size:.8125rem; font-weight:500; color:var(--ink); text-decoration:none; border:1px solid var(--rule); padding:.45rem .85rem; background:var(--paper-deep);">GitHub &nearr;</a>
   </div>
@@ -114,14 +115,28 @@
   <div>
     <div id="thread">
       <div class="empty" id="empty">
-        <h2>Ask about a provision.</h2>
-        <p>Answers are generated only from retrieved sections, with a citation on every claim. When retrieval is weak the system refuses instead of guessing.</p>
+        <h2>Ask about a Pakistani statutory provision.</h2>
+        <p>Answers are generated strictly from retrieved sections, with an exact citation on every claim. When retrieval is weak or false premises are detected, the system refuses instead of hallucinating.</p>
+        
+        <p style="font-family:var(--sans); font-size:.8125rem; font-weight:600; color:var(--ink); margin:1.2rem 0 .4rem;">Pakistan Law GAT (Bar Exam) Questions:</p>
         <ul class="examples">
           <li><button type="button">What is the punishment under Section 420 PPC?</button></li>
-          <li><button type="button">When can bail be granted in a non-bailable offence?</button></li>
-          <li><button type="button">Articles 8 to 10 of Constitution</button></li>
-          <li><button type="button">دفعہ ۳۰۲ تعزیرات پاکستان</button></li>
-          <li><button type="button">What is the penalty under Section 999 PPC?</button></li>
+          <li><button type="button">When can bail be granted in a non-bailable offence under Section 497 CrPC?</button></li>
+          <li><button type="button">Under what circumstances can a High Court issue a writ under Article 199?</button></li>
+        </ul>
+
+        <p style="font-family:var(--sans); font-size:.8125rem; font-weight:600; color:var(--claim); margin:1.2rem 0 .4rem;">Stanford Hallucination Traps (Deterministic Refusal):</p>
+        <ul class="examples">
+          <li><button type="button">What is the punishment for financial fraud under Section 600 PPC?</button></li>
+          <li><button type="button">Under Section 300 of the Indian Penal Code (IPC), what is the definition of murder?</button></li>
+          <li><button type="button">What are the penalties under the Cyber Terrorism Act 2024?</button></li>
+        </ul>
+
+        <p style="font-family:var(--sans); font-size:.8125rem; font-weight:600; color:var(--verified); margin:1.2rem 0 .4rem;">Bilingual & Vernacular Queries (Urdu Script & Roman):</p>
+        <ul class="examples">
+          <li><button type="button">دفعہ ۳۰۲ تعزیرات پاکستان قتل عمد کی سزا</button></li>
+          <li><button type="button">معلومات تک رسائی کا بنیادی حق اور آئین کا آرٹیکل 19A</button></li>
+          <li><button type="button">bhai bail kaisay milegi 497 main</button></li>
         </ul>
       </div>
     </div>

@@ -136,8 +136,9 @@ STOPWORDS = {
 
 def tokenize(text: str) -> list[str]:
     """Lowercase word tokens. Keeps hyphenated forms like 489-f and 10a intact,
-    which matters a lot for section numbers."""
-    return TOKEN_RE.findall(text.lower())
+    which matters a lot for section numbers. Normalizes soft hyphens and en/em dashes."""
+    cleaned = text.replace("\xad", "-").replace("–", "-").replace("—", "-")
+    return TOKEN_RE.findall(cleaned.lower())
 
 
 def stem(word: str) -> str:
@@ -199,6 +200,10 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     (re.compile(r"\b(?:f\.?i\.?r\.?|first\s+information\s+report)\b|ایف\s*آئی\s*آر|پہلی\s*اطلاعی\s*رپورٹ", re.I), ("154", "CrPC")),
     # Challan (CrPC 173) - "Report of police officer on completion of investigation"
     (re.compile(r"\bchallan\b|چالان", re.I), ("173", "CrPC")),
+    # Specific Bail Sections (CrPC 496, 497, 498) in English or Roman Urdu ("bail 497", "bail kaisay milegi 497 main", "497 bail")
+    (re.compile(r"\b(?:bail\b.*?\b497|497\b.*?\bbail)\b", re.I), ("497", "CrPC")),
+    (re.compile(r"\b(?:bail\b.*?\b498|498\b.*?\bbail)\b", re.I), ("498", "CrPC")),
+    (re.compile(r"\b(?:bail\b.*?\b496|496\b.*?\bbail)\b", re.I), ("496", "CrPC")),
     # Pre-arrest bail / anticipatory bail (CrPC 498)
     (re.compile(r"\b(?:pre-?arrest\s+bail|anticipatory\s+bail|bail\s+before\s+arrest)\b|قبل\s*از\s*گرفتاری\s*ضمانت|عبوری\s*ضمانت", re.I), ("498", "CrPC")),
     # Non-bailable bail (CrPC 497)
@@ -718,8 +723,8 @@ class Retriever:
         return self.refusal_reason(query, hits, config) is not None
 
 
-def build_default() -> Retriever:
-    return Retriever(load_chunks())
+def build_default(path: Path | str | None = None) -> Retriever:
+    return Retriever(load_chunks(path))
 
 
 if __name__ == "__main__":

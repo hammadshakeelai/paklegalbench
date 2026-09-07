@@ -76,7 +76,8 @@ def test_tokenize_empty_and_whitespace():
 def test_tokenize_special_symbols():
     assert tokenize("!@#$%^&*()_+=-`~[]\\{}|;':\",./<>?") == []
     assert tokenize("Section @#$ 302 !!! PPC ???") == ["section", "302", "ppc"]
-    assert tokenize("Section 489—F PPC") == ["section", "489", "f", "ppc"]
+    assert tokenize("Section 489 / F PPC") == ["section", "489", "f", "ppc"]
+    assert tokenize("Section 489—F PPC") == ["section", "489-f", "ppc"]
 
 
 def test_extract_references_empty_and_whitespace():
