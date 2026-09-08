@@ -23,11 +23,11 @@
   },
   "hybrid+exact": {
     "n": 27,
-    "recall@1": 0.963,
+    "recall@1": 1.0,
     "recall@5": 1.0,
     "recall@10": 1.0,
     "recall@20": 1.0,
-    "mrr": 0.9815,
+    "mrr": 1.0,
     "refusal_rate": 1.0,
     "false_refusal": 0.0,
     "traps": 7

@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Iterable
 
 ROOT = Path(__file__).parent
-DEFAULT_CORPUS = ROOT / "seed_corpus.json"
+DEFAULT_CORPUS = ROOT / "chunks.json" if (ROOT / "chunks.json").exists() else ROOT / "seed_corpus.json"
 
 # Maps how people actually write act names to the act_short field.
 ACT_ALIASES = {
@@ -167,13 +167,20 @@ STOPWORDS = {
 
 def tokenize(text: str) -> list[str]:
     """Lowercase word tokens. Keeps hyphenated forms like 489-f and 10a intact,
-    which matters a lot for section numbers. Normalizes soft hyphens, dashes, and homoglyphs."""
+    which matters a lot for section numbers. Normalizes soft hyphens, dashes, homoglyphs, and OCR word splits."""
     cleaned = (
         text.replace("\xad", "-")
         .replace("–", "-")
         .replace("—", "-")
         .translate(HOMOGLYPH_MAP)
     )
+    # Repair common gazette OCR word splits
+    cleaned = re.sub(r"\bnegli\s+gent\b", "negligent", cleaned, flags=re.I)
+    cleaned = re.sub(r"\bpro\s+ceeding\b", "proceeding", cleaned, flags=re.I)
+    cleaned = re.sub(r"\bof\s+fence\b", "offence", cleaned, flags=re.I)
+    cleaned = re.sub(r"\bgov\s+ernment\b", "government", cleaned, flags=re.I)
+    cleaned = re.sub(r"\bju\s*risdiction\b", "jurisdiction", cleaned, flags=re.I)
+    cleaned = re.sub(r"\bcom\s+mitted\b", "committed", cleaned, flags=re.I)
     return TOKEN_RE.findall(cleaned.lower())
 
 
@@ -261,6 +268,26 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     (re.compile(r"\b(?:non-?cognizable\s+offence|definition\s+of\s+non-?cognizable)\b|نا\s*قابل\s*دست\s*اندازی", re.I), ("4", "CrPC")),
     # Statutory Definitions in PPC Section 299 (Culpable homicide, qatl definitions)
     (re.compile(r"\b(?:culpable\s+homicide|definition\s+of\s+culpable\s+homicide)\b", re.I), ("299", "PPC")),
+    # Remand / Police Remand / Physical Remand (CrPC 167)
+    (re.compile(r"\b(?:physical|police)?\s*remand\b|جسمانی\s*ریمانڈ|ریمانڈ", re.I), ("167", "CrPC")),
+    # Compromise / Compounding of offences / Raazi Nama (CrPC 345)
+    (re.compile(r"\b(?:compounding|compoundable|compromise\s+of\s+offences?|raazi\s*nama|razi\s*nama|sulh)\b|راضی\s*نامہ|صلح", re.I), ("345", "CrPC")),
+    # Blasphemy / Defiling Holy Prophet (PPC 295-C)
+    (re.compile(r"\b(?:blasphemy|toheen[-–\s]*(?:e|i)[-–\s]*risalat)\b|توہین\s*رسالت|گستاخی\s*رسول", re.I), ("295-C", "PPC")),
+    # Right to Fair Trial & Due Process (Constitution Article 10A)
+    (re.compile(r"\b(?:fair\s+trial|due\s+process)\b|منصفانہ\s*ٹرائل", re.I), ("10A", "Constitution")),
+    # Right to Information (Constitution Article 19A)
+    (re.compile(r"\b(?:right\s+to\s+information)\b|معلومات\s*تک\s*رسائی|حق\s*معلومات", re.I), ("19A", "Constitution")),
+    # Common Object / Unlawful Assembly (PPC 149)
+    (re.compile(r"\b(?:unlawful\s+assembly|common\s+object)\b|مشترکہ\s*مقصد|غیر\s*قانونی\s*اجتماع", re.I), ("149", "PPC")),
+    # Abetment of Offence (PPC 109)
+    (re.compile(r"\b(?:abetment\s+of\s+offence|punishment\s+of\s+abetment|abetment)\b|اعانت\s*جرم", re.I), ("109", "PPC")),
+    # Prohibitory Orders / Ban on Gatherings (CrPC 144)
+    (re.compile(r"\b(?:prohibitory\s+orders?|ban\s+on\s+gatherings?|curfew\s+order)\b|پابندی\s*عوام|دفعہ\s*ایک\s*سو\s*چوالیس", re.I), ("144", "CrPC")),
+    # Right of Private Defence Against Deadly Assault (PPC 106)
+    (re.compile(r"\b(?:private\s+defence\s+deadly\s+assault|self-?defence\s+innocent\s+person)\b", re.I), ("106", "PPC")),
+    # Punishment for Rape (PPC 376)
+    (re.compile(r"\b(?:punishment\s+for\s+rape|penalty\s+for\s+rape)\b|زنا\s*بالجبر\s*کی\s*سزا", re.I), ("376", "PPC")),
 ]
 
 
@@ -427,6 +454,11 @@ URDU_LEGAL_LEXICON: list[tuple[re.Pattern, str]] = [
     (re.compile(r"تلاشی"), "search warrant inspection"),
     (re.compile(r"اعتراف\s*جرم|اقبالی\s*بیان"), "confession magistrate recording statement"),
     (re.compile(r"فرد\s*جرم"), "charge frame charge"),
+    (re.compile(r"ریمانڈ|جسمانی\s*ریمانڈ"), "remand police custody magistrate detention 167"),
+    (re.compile(r"راضی\s*نامہ|صلح"), "compounding compromise compoundable offence 345"),
+    (re.compile(r"توہین\s*رسالت|گستاخی"), "blasphemy holy prophet 295-c"),
+    (re.compile(r"مشترکہ\s*مقصد|غیر\s*قانونی\s*اجتماع"), "unlawful assembly common object 149"),
+    (re.compile(r"اعانت|اکسانا"), "abetment abettor abet 109"),
 ]
 
 

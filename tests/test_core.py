@@ -444,6 +444,80 @@ def test_reranker_fallback():
     assert reranker.rank("query", []) == []
 
 
+def test_new_vernacular_references():
+    from index import extract_references
+    # CrPC 167 Remand
+    assert ("167", "CrPC") in extract_references("police remand duration")
+    assert ("167", "CrPC") in extract_references("physical remand by magistrate")
+    assert ("167", "CrPC") in extract_references("جسمانی ریمانڈ کی مدت")
+
+    # CrPC 345 Compounding / Compromise
+    assert ("345", "CrPC") in extract_references("compounding of offences")
+    assert ("345", "CrPC") in extract_references("raazi nama procedure")
+    assert ("345", "CrPC") in extract_references("صلح اور راضی نامہ")
+
+    # PPC 295-C Blasphemy
+    assert ("295-C", "PPC") in extract_references("blasphemy law in Pakistan")
+    assert ("295-C", "PPC") in extract_references("toheen-e-risalat penalty")
+    assert ("295-C", "PPC") in extract_references("توہین رسالت کی سزا")
+
+    # Constitution 10A Fair Trial
+    assert ("10A", "Constitution") in extract_references("right to a fair trial")
+    assert ("10A", "Constitution") in extract_references("due process of law")
+    assert ("10A", "Constitution") in extract_references("منصفانہ ٹرائل کا بنیادی حق")
+
+    # Constitution 19A Right to Information
+    assert ("19A", "Constitution") in extract_references("right to information")
+    assert ("19A", "Constitution") in extract_references("معلومات تک رسائی کا حق")
+
+    # PPC 149 Common Object
+    assert ("149", "PPC") in extract_references("unlawful assembly common object")
+    assert ("149", "PPC") in extract_references("مشترکہ مقصد کے تحت جرم")
+
+    # PPC 109 Abetment
+    assert ("109", "PPC") in extract_references("punishment of abetment of offence")
+    assert ("109", "PPC") in extract_references("اعانت جرم کی سزا")
+
+    # CrPC 144 Prohibitory Orders
+    assert ("144", "CrPC") in extract_references("prohibitory orders ban on gatherings")
+    assert ("144", "CrPC") in extract_references("دفعہ ایک سو چوالیس کا نفاذ")
+
+    # PPC 376 Rape
+    assert ("376", "PPC") in extract_references("punishment for rape")
+
+
+def test_recovered_sections_in_chunks():
+    from index import load_chunks
+    chunks = load_chunks()
+    by_act = {}
+    for c in chunks:
+        by_act.setdefault(c.act_short, {})[c.section] = c
+
+    # PPC provisions recovered by enhanced multiline parser
+    assert "76" in by_act["PPC"], "PPC 76 (General Exceptions) should be present"
+    assert "109" in by_act["PPC"], "PPC 109 (Abetment) should be present"
+    assert "149" in by_act["PPC"], "PPC 149 (Common Object) should be present"
+    assert "295C" in by_act["PPC"] or "295-C" in by_act["PPC"], "PPC 295C should be present"
+    assert "376" in by_act["PPC"], "PPC 376 (Punishment for rape) should be present"
+
+    # CrPC provisions recovered
+    assert "144" in by_act["CrPC"], "CrPC 144 (Urgent cases of nuisance) should be present"
+    assert "145" in by_act["CrPC"], "CrPC 145 (Land disputes) should be present"
+    assert "167" in by_act["CrPC"], "CrPC 167 (Remand) should be present"
+    assert "345" in by_act["CrPC"], "CrPC 345 (Compounding) should be present"
+
+
+def test_exact_channel_new_vernacular():
+    from index import Retriever, load_chunks
+    r = Retriever(load_chunks(), load_dense=False)
+    assert "crpc-1898-s167" in r._exact_channel("what is physical remand")
+    assert "crpc-1898-s345" in r._exact_channel("can parties file a raazi nama")
+    assert "ppc-1860-s295c" in r._exact_channel("toheen-e-risalat")
+    assert "const-1973-a10a" in r._exact_channel("right to fair trial")
+    assert "const-1973-a19a" in r._exact_channel("right to information")
+
+
+
 
 
 

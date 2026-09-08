@@ -17,9 +17,12 @@ import argparse
 import json
 import re
 
-# Matches "302. Punishment of qatl-i-amd.", "4[489F. Dishonestly issuing a cheque.__", and "497. When bail may be taken.\xad(1)"
+# Matches "302. Punishment of qatl-i-amd.", "4[489F. Dishonestly issuing a cheque.__", "8[295B. Defiling, etc., of copy of Holy Quran.",
+# multiline marginal notes, and asterisks/footnotes like "*276." or "5[295A."
 SECTION_RE = re.compile(
-    r"^\s*(?:\[|\d{1,3}\[|\d{1,3}\s+)?(?P<num>\d+[-–]?[A-Z]{0,2})\s*\.\s+(?P<note>[^\n.]{3,120})\.(?:__|--|\s*[\xad–—\-]?\s*\(|\s+)",
+    r"^\s*(?:[\d*]+\s*\[|\[|\d{1,3}\s+|\*\s*)?(?P<num>\d+[-–]?[A-Z]{0,2})\s*\.\s*(?:\]\s*)?"
+    r"(?P<note>(?:[^\n.]|\.(?![_\-\s]*(?:__|--|[\xad–—\-]?\s*\(|\n|\s{2,}))|\n(?!\s*(?:(?:\d{1,3}\s+)?\d+[A-Z]?\.|\b(?:CHAPTER|PART)\b))){3,180})"
+    r"\.\s*(?:__|--|[\xad–—\-]?\s*\(|\s+)",
     re.M,
 )
 ARTICLE_RE = re.compile(
@@ -169,6 +172,30 @@ def make_chunk_id(act_short: str, year: int, section: str) -> str:
     return f"{act_short.lower()}-{year}-s{sec_clean}"
 
 
+MAX_SECTIONS = {
+    "Constitution": 280,
+    "PPC": 511,
+    "CrPC": 565,
+}
+
+
+def clean_statutory_section(sec: str, act_short: str) -> str | None:
+    m = re.match(r"^(\d+)([-–]?[A-Z]{0,2})$", sec)
+    if not m:
+        return None
+    num, suffix = int(m.group(1)), m.group(2)
+    max_s = MAX_SECTIONS.get(act_short, 999)
+    if 0 < num <= max_s:
+        return sec
+    # Strip glued footnote digits (e.g. footnote 11 on section 198 -> '11198' -> '198')
+    s_str = str(num)
+    for cut in range(1, min(3, len(s_str))):
+        tail = int(s_str[cut:])
+        if 0 < tail <= max_s:
+            return f"{tail}{suffix}"
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="chunks.json")
@@ -204,8 +231,10 @@ def main():
             ]
 
         for s in sections:
-            if not re.match(r"^\d+[-–]?[A-Z]{0,2}$", s["section"]):
+            sec_clean = clean_statutory_section(s["section"], spec["act_short"])
+            if not sec_clean:
                 continue
+            s["section"] = sec_clean
             review += s.pop("needs_review")
             chunks.append({
                 "id": make_chunk_id(spec["act_short"], spec["year"], s["section"]),
