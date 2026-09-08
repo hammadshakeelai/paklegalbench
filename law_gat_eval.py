@@ -1,4 +1,4 @@
-﻿"""
+"""
 Pakistan Law GAT (Graduate Assessment Test) & Bar Exam Benchmark Runner.
 
 Evaluates statute retrieval and multi-choice legal reasoning across:
@@ -31,7 +31,7 @@ def load_dataset() -> list[dict[str, Any]]:
     return [json.loads(line) for line in DATASET_PATH.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def evaluate_retrieval(retriever: Retriever, questions: list[dict[str, Any]], cfg: RetrievalConfig) -> dict[str, Any]:
+def evaluate_retrieval(retriever: Retriever, questions: list[dict[str, Any]], cfg: RetrievalConfig, use_urdu: bool = False) -> dict[str, Any]:
     hits_at_1 = 0
     hits_at_5 = 0
     mrr_total = 0.0
@@ -45,10 +45,11 @@ def evaluate_retrieval(retriever: Retriever, questions: list[dict[str, Any]], cf
         by_subject[subj]["total"] += 1
 
         gold_ids = set(q["gold_ids"])
-        results = retriever.search(q["question"], cfg)
+        q_text = (q.get("question_ur") if use_urdu else None) or q["question"]
+        results = retriever.search(q_text, cfg)
         retrieved_ids = [h.chunk.id for h in results]
 
-        is_refused = retriever.should_refuse(results, cfg, q["question"])
+        is_refused = retriever.should_refuse(results, cfg, q_text)
         if is_refused:
             false_refusals += 1
             by_subject[subj]["refusals"] += 1
@@ -94,7 +95,7 @@ def evaluate_retrieval(retriever: Retriever, questions: list[dict[str, Any]], cf
     return {"overall": overall, "by_subject": subject_breakdown}
 
 
-def evaluate_llm_answers(retriever: Retriever, questions: list[dict[str, Any]], cfg: RetrievalConfig) -> dict[str, Any]:
+def evaluate_llm_answers(retriever: Retriever, questions: list[dict[str, Any]], cfg: RetrievalConfig, use_urdu: bool = False) -> dict[str, Any]:
     providers = llm.available_providers()
     if not providers:
         return {"error": "No LLM provider key configured"}
@@ -105,9 +106,10 @@ def evaluate_llm_answers(retriever: Retriever, questions: list[dict[str, Any]], 
 
     print(f"\nEvaluating LLM Answering on {total} Law GAT questions via {providers[0]}...")
     for idx, q in enumerate(questions, start=1):
-        results = retriever.search(q["question"], cfg)
+        q_text = (q.get("question_ur") if use_urdu else None) or q["question"]
+        results = retriever.search(q_text, cfg)
         prompt_q = (
-            f"{q['question']}\n\n"
+            f"{q_text}\n\n"
             f"OPTIONS:\n"
             f"A) {q['options']['A']}\n"
             f"B) {q['options']['B']}\n"
@@ -118,35 +120,22 @@ def evaluate_llm_answers(retriever: Retriever, questions: list[dict[str, Any]], 
 
         try:
             ans, prov = llm.answer(prompt_q, results)
+            is_correct = f"({q['correct_option']})" in ans or f"Option {q['correct_option']}" in ans or ans.strip().startswith(q['correct_option'])
+            if is_correct:
+                correct += 1
+            details.append({
+                "id": q["id"],
+                "question": q_text,
+                "correct_option": q["correct_option"],
+                "llm_answer": ans[:200],
+                "is_correct": is_correct,
+            })
+            print(f"[{idx:02d}/{total}] {q['id']}: {'CORRECT' if is_correct else 'INCORRECT'}")
         except Exception as e:
+            print(f"[{idx:02d}/{total}] {q['id']}: ERROR ({e})")
             details.append({"id": q["id"], "error": str(e), "is_correct": False})
-            continue
 
-        # Check if chosen option matches correct_option
-        ans_upper = ans.upper()
-        expected = q["correct_option"]
-        # Basic heuristic: option appears clearly as "Option A", "(A)", "A)", "**A**"
-        is_match = (
-            f"({expected})" in ans_upper
-            or f"OPTION {expected}" in ans_upper
-            or f"**{expected}**" in ans_upper
-            or f"{expected})" in ans_upper
-            or ans.strip().startswith(expected)
-        )
-        if is_match:
-            correct += 1
-
-        details.append({
-            "id": q["id"],
-            "subject": q["subject"],
-            "expected": expected,
-            "is_correct": is_match,
-            "response_snippet": ans[:140],
-            "provider": prov,
-        })
-        print(f"[{idx:02d}/{total}] {q['id']} ({q['subject']}) -> {'CORRECT' if is_match else 'INCORRECT'}")
-
-    accuracy = round(correct / total, 4) if total else 0
+    accuracy = round(correct / total, 4) if total else 0.0
     return {
         "total": total,
         "correct": correct,
@@ -157,24 +146,29 @@ def evaluate_llm_answers(retriever: Retriever, questions: list[dict[str, Any]], 
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate PakLegalBench on Law GAT & Bar Exam questions")
+    parser.add_argument("--corpus", default=None, help="Path to corpus JSON (default chunks.json if present, else seed_corpus.json)")
+    parser.add_argument("--urdu", action="store_true", help="Evaluate on authentic Urdu Law GAT bar exam questions")
     parser.add_argument("--llm", action="store_true", help="Run LLM question answering evaluation")
-    parser.add_argument("--out", default=str(DEFAULT_OUT), help="Output JSON report path")
+    parser.add_argument("--out", default=None, help="Output JSON report path")
     args = parser.parse_args()
 
     questions = load_dataset()
-    print(f"Loaded {len(questions)} Law GAT questions across PPC, CrPC, and Constitution.")
+    edition_label = "Urdu Edition" if args.urdu else "English Edition"
+    print(f"Loaded {len(questions)} Law GAT questions across PPC, CrPC, and Constitution ({edition_label}).")
 
-    retriever = Retriever(load_chunks(), load_dense=False)
+    corpus_file = args.corpus or ("chunks.json" if Path("chunks.json").exists() else None)
+    retriever = Retriever(load_chunks(corpus_file), load_dense=False)
     cfg = RetrievalConfig()
 
     t0 = time.perf_counter()
-    retrieval_stats = evaluate_retrieval(retriever, questions, cfg)
+    retrieval_stats = evaluate_retrieval(retriever, questions, cfg, use_urdu=args.urdu)
     duration = time.perf_counter() - t0
 
     ov = retrieval_stats["overall"]
-    print("\n=======================================================")
-    print("      PAKLEGALBENCH LAW GAT BENCHMARK RESULTS          ")
-    print("=======================================================")
+    header = f"PAKLEGALBENCH LAW GAT BENCHMARK RESULTS ({edition_label.upper()})"
+    print("\n" + "=" * len(header))
+    print(f"      {header}          ")
+    print("=" * len(header))
     print(f"Questions Evaluated: {ov['total_questions']}")
     print(f"Recall@1:           {ov['recall@1'] * 100:.1f}%")
     print(f"Recall@5:           {ov['recall@5'] * 100:.1f}%")
@@ -187,17 +181,20 @@ def main():
 
     llm_stats = None
     if args.llm:
-        llm_stats = evaluate_llm_answers(retriever, questions, cfg)
+        llm_stats = evaluate_llm_answers(retriever, questions, cfg, use_urdu=args.urdu)
         if "accuracy" in llm_stats:
             print(f"\nLLM Exam Score: {llm_stats['correct']}/{llm_stats['total']} ({llm_stats['accuracy']*100:.1f}%)")
 
+    default_output = ROOT / "results" / ("law_gat_urdu_report.json" if args.urdu else "law_gat_report.json")
+    out_path = Path(args.out) if args.out else default_output
     report = {
+        "benchmark": "Pakistan Law GAT (Bar Exam) Benchmark",
+        "edition": "urdu" if args.urdu else "english",
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "retrieval": retrieval_stats,
         "llm_answering": llm_stats,
     }
 
-    out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\nReport written to: {out_path}")

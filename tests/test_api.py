@@ -202,7 +202,7 @@ def test_benchmarks_endpoint():
     assert resp.status_code == 200
     data = resp.json()
     assert isinstance(data, dict)
-    for expected_key in ["retrieval", "law_gat", "stanford", "redteam"]:
+    for expected_key in ["retrieval", "law_gat", "law_gat_urdu", "stanford", "redteam"]:
         assert expected_key in data
 
 

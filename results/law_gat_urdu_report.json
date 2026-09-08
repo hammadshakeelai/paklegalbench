@@ -1,13 +1,13 @@
 {
   "benchmark": "Pakistan Law GAT (Bar Exam) Benchmark",
-  "edition": "english",
-  "timestamp": "2026-09-08T00:23:28Z",
+  "edition": "urdu",
+  "timestamp": "2026-09-08T00:23:32Z",
   "retrieval": {
     "overall": {
       "total_questions": 30,
-      "recall@1": 0.9667,
+      "recall@1": 1.0,
       "recall@5": 1.0,
-      "mrr": 0.9833,
+      "mrr": 1.0,
       "false_refusal_rate": 0.0
     },
     "by_subject": {
@@ -20,9 +20,9 @@
       },
       "CrPC": {
         "n": 10,
-        "recall@1": 0.9,
+        "recall@1": 1.0,
         "recall@5": 1.0,
-        "mrr": 0.95,
+        "mrr": 1.0,
         "false_refusals": 0
       },
       "Constitution": {

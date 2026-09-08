@@ -221,7 +221,7 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     # Bailable bail (CrPC 496)
     (re.compile(r"(?<!non-)(?<!non )\bbailable\b.*?\bbail|\bbail\b.*?(?<!non-)(?<!non )\bbailable\b", re.I), ("496", "CrPC")),
     # General bail (CrPC 497 default)
-    (re.compile(r"ضمانت", re.I), ("497", "CrPC")),
+    (re.compile(r"(?<!کی\s)ضمانت(?!\s*دیتا)", re.I), ("497", "CrPC")),
     # Writ Petition / Writ jurisdiction (Constitution Article 199)
     (re.compile(r"\b(?:writ\s+(?:petition|jurisdiction)|constitutional\s+petition)\b|رٹ\s*پٹیشن|آئینی\s*درخواست", re.I), ("199", "Constitution")),
     # Qatl-i-amd (PPC 302) - Intentional murder

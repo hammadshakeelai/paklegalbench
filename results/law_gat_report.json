@@ -1,5 +1,7 @@
 {
-  "timestamp": "2026-09-08T00:18:37Z",
+  "benchmark": "Pakistan Law GAT (Bar Exam) Benchmark",
+  "edition": "english",
+  "timestamp": "2026-09-08T00:23:28Z",
   "retrieval": {
     "overall": {
       "total_questions": 30,

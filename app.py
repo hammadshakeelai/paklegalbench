@@ -186,6 +186,7 @@ def benchmarks():
     files = {
         "retrieval": ROOT / "results" / "retrieval.json",
         "law_gat": ROOT / "results" / "law_gat_report.json",
+        "law_gat_urdu": ROOT / "results" / "law_gat_urdu_report.json",
         "stanford": ROOT / "results" / "stanford_eval_report.json",
         "redteam": ROOT / "results" / "redteam_report.json",
         "legal_uqa_eng": ROOT / "results" / "legal_uqa_eng.json",

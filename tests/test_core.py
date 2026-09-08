@@ -287,6 +287,21 @@ def test_law_gat_benchmark():
     assert stats["overall"]["false_refusal_rate"] == 0.0
 
 
+def test_law_gat_urdu_benchmark():
+    import law_gat_eval
+    from pathlib import Path
+    from index import Retriever, load_chunks, RetrievalConfig
+    questions = law_gat_eval.load_dataset()
+    assert len(questions) == 30
+    corpus = "chunks.json" if Path("chunks.json").exists() else None
+    r = Retriever(load_chunks(corpus), load_dense=False)
+    stats = law_gat_eval.evaluate_retrieval(r, questions, RetrievalConfig(), use_urdu=True)
+    assert stats["overall"]["recall@1"] >= 0.90
+    assert stats["overall"]["recall@5"] >= 0.95
+    assert stats["overall"]["mrr"] >= 0.95
+    assert stats["overall"]["false_refusal_rate"] == 0.0
+
+
 def test_clean_chunks_corpus():
     import json
     from pathlib import Path
