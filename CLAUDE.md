@@ -19,8 +19,8 @@ it is not acceptable.
 
 These were settled during research. Reopening them wastes tokens.
 
-- **Statutes only.** Constitution, PPC, CrPC. No case law, no drafting, no case
-  management, no lawyer marketplace. Scope creep kills the one defensible claim.
+- **Statutes only.** Constitution, PPC, CrPC, QSO, CPC. No case law, no drafting,
+  no case management, no lawyer marketplace. Scope creep kills the one defensible claim.
 - **English only** for now. Urdu is a later measured question, not a feature.
 - **No vector database.** At 20k–50k chunks, NumPy brute force is exact and
   takes milliseconds. Qdrant/Chroma would add ops complexity and nothing else.

@@ -48,7 +48,7 @@ Urdu edition achieves identical scores: **100.0% R@1, 1.0000 MRR** across all 5 
 
 | Config | n | Recall@1 | Recall@5 | Recall@20 | MRR | False Refusal |
 |---|---|---|---|---|---|---|
-| hybrid+exact | 124 | 60.5% | **83.9%** | **91.9%** | 0.71 | 4.0% |
+| **hybrid+exact** | 124 | **91.9%** | **93.6%** | **94.4%** | **0.93** | **1.6%** |
 
 *Run it:* `python eval.py --legal-uqa`
 

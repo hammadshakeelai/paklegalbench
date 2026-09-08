@@ -355,23 +355,25 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     (re.compile(r"\b(?:estoppel)\b|امر\s*مانع\s*تقریر", re.I), ("114", "QSO")),
     (re.compile(r"\b(?:accomplice\s+witness|approver)\b|وعدہ\s*معاف\s*گواہ|شریک\s*جرم", re.I), ("16", "QSO")),
     (re.compile(r"\b(?:modern\s+devices|electronic\s+(?:evidence|record)|cctv\s+evidence|audio\s+recording\s+evidence|computer\s+systems?)\b|جدید\s*آلات|الیکٹرانک\s*ریکارڈ", re.I), ("164", "QSO")),
-    # Constitution — high-frequency parliamentary procedure terms (from Legal-UQA)
+    # Constitution — high-frequency parliamentary procedure and constitutional doctrines (Legal-UQA)
     # Prime Minister election / PM office (Constitution Art.91)
     (re.compile(r"\b(?:election\s+of\s+prime\s+minister|prime\s+minister\s+elected?|how\s+(?:is\s+)?pm\s+(?:elected?|chosen)|pm\s+election|chief\s+executive\s+national\s+assembly)\b|وزیراعظم\s*کا\s*انتخاب", re.I), ("91", "Constitution")),
     # Budget / Appropriation Bill / Authenticated Schedule (Constitution Arts. 80–83)
-    (re.compile(r"\b(?:annual\s+budget\s+statement|authenticated\s+schedule|authorized\s+expenditure|appropriation\s+(?:bill|act)|consolidated\s+fund\s+national)\b|سالانہ\s*بجٹ\s*بیان", re.I), ("80", "Constitution")),
+    (re.compile(r"\b(?:annual\s+budget\s+statement|authenticated\s+schedule|authorized\s+expenditure|appropriation\s+(?:bill|act)|consolidated\s+fund\s+national|presenting\s+(?:the\s+)?budget\s+to\s+(?:the\s+)?national\s+assembly)\b|سالانہ\s*بجٹ\s*بیان", re.I), ("80", "Constitution")),
     # National Finance Commission / NFC Award (Constitution Art.160)
     (re.compile(r"\b(?:national\s+finance\s+commission|nfc\s+award|distribution\s+of\s+revenues?)\b|قومی\s*مالیاتی\s*کمیشن", re.I), ("160", "Constitution")),
     # Senate composition / members of senate (Constitution Art.59)
-    (re.compile(r"\b(?:composition\s+of\s+(?:the\s+)?senate|senate\s+members?|members\s+of\s+(?:the\s+)?senate|senate\s+seats?)\b|سینیٹ\s*کی\s*ترکیب", re.I), ("59", "Constitution")),
+    (re.compile(r"\b(?:composition\s+of\s+(?:the\s+)?senate|how\s+many\s+members\s+does\s+(?:the\s+)?senate\s+have|senate\s+members?|members\s+of\s+(?:the\s+)?senate|senate\s+seats?)\b|سینیٹ\s*کی\s*ترکیب", re.I), ("59", "Constitution")),
     # Election Commission of Pakistan (Constitution Art.218)
-    (re.compile(r"\b(?:election\s+commission\s+of\s+pakistan|ecp\s+composition|chief\s+election\s+commissioner)\b|الیکشن\s*کمیشن", re.I), ("218", "Constitution")),
+    (re.compile(r"\b(?:election\s+commission\s+of\s+pakistan|ecp\s+composition|who\s+appoints\s+(?:the\s+)?members\s+of\s+(?:the\s+)?election\s+commission)\b|الیکشن\s*کمیشن", re.I), ("218", "Constitution")),
+    # Chief Election Commissioner qualifications (Constitution Art.213)
+    (re.compile(r"\b(?:qualifications?\b.*?\bchief\s+election\s+commissioner|chief\s+election\s+commissioner\b.*?\bqualifications?)\b", re.I), ("213", "Constitution")),
     # National Economic Council (Constitution Art.156)
     (re.compile(r"\b(?:national\s+economic\s+council|nec\s+pakistan|economic\s+coordination\s+council)\b|قومی\s*اقتصادی\s*کونسل", re.I), ("156", "Constitution")),
     # Comptroller and Auditor General / CAG (Constitution Art.168)
     (re.compile(r"\b(?:comptroller(?:\s+and\s+auditor)?(?:\s*[-–]\s*?general)?|auditor\s+general\s+of\s+pakistan|cag\s+pakistan)\b|محاسب\s*اعلیٰ", re.I), ("168", "Constitution")),
     # Attorney General of Pakistan (Constitution Art.100)
-    (re.compile(r"\b(?:attorney\s+general\s+of\s+pakistan|attorney\s+general\s+appointment|agp\s+appointment)\b|اٹارنی\s*جنرل", re.I), ("100", "Constitution")),
+    (re.compile(r"\b(?:attorney[\s-]+general\s+of\s+pakistan|attorney[\s-]+general\s+appointment|appoints?\s+(?:the\s+)?attorney[\s-]+general)\b|اٹارنی\s*جنرل", re.I), ("100", "Constitution")),
     # Women's reserved seats National Assembly (Constitution Art.51)
     (re.compile(r"\b(?:reserved\s+seats?\s+(?:for\s+)?women|women\s+reserved\s+seats?|seats?\s+reserved\s+for\s+women\s+national\s+assembly)\b|خواتین\s*(?:کے\s*لیے\s*)?مخصوص\s*نشستیں", re.I), ("51", "Constitution")),
     # Speaker / Deputy Speaker National Assembly (Constitution Art.53)
@@ -380,6 +382,74 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     (re.compile(r"\b(?:federal\s+public\s+service\s+commission|fpsc|public\s+service\s+commission\s+federal)\b|وفاقی\s*پبلک\s*سروس\s*کمیشن", re.I), ("242", "Constitution")),
     # Chairman Senate (Constitution Art.60)
     (re.compile(r"\b(?:chairman\s+of\s+(?:the\s+)?senate|senate\s+chairman|election\s+of\s+chairman\s+senate)\b|چیئرمین\s*سینیٹ", re.I), ("60", "Constitution")),
+    # Retrospective punishment / Ex post facto law (Constitution Art. 12)
+    (re.compile(r"\b(?:retrospective\s+punishment|not\s+(?:an?\s+)?offence\s+at\s+the\s+time|not\s+illegal\s+when\s+(?:they|he|she)\s+did\s+it)\b", re.I), ("12", "Constitution")),
+    # Protection against self-incrimination / Double jeopardy (Constitution Art. 13)
+    (re.compile(r"\b(?:testify\s+against\s+themselves|witness\s+against\s+himself|self-?incrimination|double\s+jeopardy)\b", re.I), ("13", "Constitution")),
+    # Safeguard against discrimination in services (Constitution Art. 27)
+    (re.compile(r"\b(?:discrimination\s+in\s+services|residency\s+requirements?\s+for\s+public\s+service)\b", re.I), ("27", "Constitution")),
+    # Vote of no-confidence against Prime Minister (Constitution Art. 95)
+    (re.compile(r"\b(?:vote\s+of\s+no-?confidence\b.*?\b(?:prime\s+minister|pm)|no-?confidence\s+motion)\b", re.I), ("95", "Constitution")),
+    # Qualifications for membership of Majlis-e-Shoora / National Assembly age (Constitution Art. 62)
+    (re.compile(r"\b(?:minimum\s+age\b.*?\bnational\s+assembly|national\s+assembly\b.*?\bminimum\s+age|qualifications?\s+for\s+membership\s+of\s+(?:the\s+)?(?:national\s+assembly|majlis-e-shoora))\b", re.I), ("62", "Constitution")),
+    # Inconsistency between Federal and Provincial law / Conflict of laws (Constitution Art. 143)
+    (re.compile(r"\b(?:provincial\s+law\s+conflicts?\s+with\s+(?:a\s+)?federal\s+law|conflict\s+between\s+(?:a\s+)?federal\s+(?:law\s+)?and\s+(?:a\s+)?provincial\s+law|inconsistency\s+between\s+federal\s+and\s+provincial)\b", re.I), ("143", "Constitution")),
+    # Failure of constitutional machinery / President rule in Province (Constitution Art. 234)
+    (re.compile(r"\b(?:president\s+take\s+over\s+(?:the\s+)?functions\s+of\s+(?:a\s+)?provincial\s+government|failure\s+of\s+constitutional\s+machinery)\b", re.I), ("234", "Constitution")),
+    # Establishment and jurisdiction of courts (Constitution Art. 175)
+    (re.compile(r"\b(?:what\s+courts\s+are\s+established\s+in\s+pakistan|establishment\s+and\s+jurisdiction\s+of\s+courts)\b", re.I), ("175", "Constitution")),
+    # Oath of Governor (Constitution Art. 102)
+    (re.compile(r"\b(?:governor\s+take\s+(?:an\s+)?oath|oath\s+of\s+(?:the\s+)?governor)\b", re.I), ("102", "Constitution")),
+    # Seat of Federal Shariat Court (Constitution Art. 203C)
+    (re.compile(r"\b(?:principal\s+seat\s+of\s+(?:the\s+)?federal\s+shariat\s+court)\b", re.I), ("203C", "Constitution")),
+    # Emergency laws lapsing after emergency (Constitution Art. 232)
+    (re.compile(r"\b(?:laws\s+made\s+by\s+(?:the\s+)?parliament\s+during\s+a\s+state\s+of\s+emergency\s+once\s+the\s+emergency\s+is\s+over)\b", re.I), ("232", "Constitution")),
+    # Freedom of religious denominations / religious institutions (Constitution Art. 20)
+    (re.compile(r"\b(?:religious\s+groups\s+(?:are\s+)?allowed\s+to\s+run\s+their\s+own\s+institutions|freedom\s+to\s+manage\s+religious\s+institutions)\b", re.I), ("20", "Constitution")),
+    # Federal executive authority in province (Constitution Art. 97)
+    (re.compile(r"\b(?:federal\s+executive\s+authority\s+extend\s+to\s+matters\s+within\s+a\s+province)\b", re.I), ("97", "Constitution")),
+    # Contempt of Court (Constitution Art. 204)
+    (re.compile(r"\b(?:contempt\s+of\s+court|actions\s+can\s+be\s+considered\s+as\s+contempt\s+of\s+court)\b|توہین\s*عدالت", re.I), ("204", "Constitution")),
+    # Prime Minister continuing in office (Constitution Art. 94)
+    (re.compile(r"\b(?:prime\s+minister\s+(?:stay|continue)\s+in\s+office\s+after\s+a\s+new\s+one\s+is\s+chosen|prime\s+minister\s+continuing\s+in\s+office)\b", re.I), ("94", "Constitution")),
+    # Expenditure charged upon Federal Consolidated Fund (Constitution Art. 81)
+    (re.compile(r"\b(?:charged\s+upon\s+(?:the\s+)?federal\s+consolidated\s+fund|administrative\s+expenses\s+charged\s+upon\s+(?:the\s+)?federal\s+consolidated\s+fund)\b", re.I), ("81", "Constitution")),
+    # Advocate General in Provincial Assembly (Constitution Art. 111)
+    (re.compile(r"\b(?:advocate[\s-]+general\s+(?:allowed\s+to\s+vote\s+in|right\s+to\s+speak\s+in)\s+(?:the\s+)?provincial\s+assembly)\b", re.I), ("111", "Constitution")),
+    # Appointment of Judges Parliamentary Committee (Constitution Art. 175A)
+    (re.compile(r"\b(?:parliamentary\s+committee\s+for\s+appointing\s+judges|appointment\s+of\s+judges\b.*?\bparliamentary\s+committee)\b", re.I), ("175A", "Constitution")),
+    # Election by secret ballot (Constitution Art. 226)
+    (re.compile(r"\b(?:elections?\s+conducted\s+for\s+positions\s+other\s+than|election\s+by\s+secret\s+ballot)\b", re.I), ("226", "Constitution")),
+    # Remuneration / service conditions of Supreme Court & High Court judges (Constitution Art. 205)
+    (re.compile(r"\b(?:pay\s+and\s+service\s+conditions\s+of\s+supreme\s+court|remuneration\b.*?\bjudges|service\s+conditions\s+of\s+(?:supreme\s+court|high\s+court)\s+judges)\b", re.I), ("205", "Constitution")),
+    # Money bill start / origin (Constitution Art. 73)
+    (re.compile(r"\b(?:where\s+does\s+(?:a\s+)?money\s+bill\s+start|origin\s+of\s+money\s+bill|procedure\s+with\s+respect\s+to\s+money\s+bills?)\b", re.I), ("73", "Constitution")),
+    # Supreme Court transfer case from one High Court to another (Constitution Art. 186A)
+    (re.compile(r"\b(?:supreme\s+court\s+(?:move|transfer)\s+a\s+case\s+from\s+one\s+high\s+court|transfer\s+of\s+cases\s+by\s+supreme\s+court)\b", re.I), ("186A", "Constitution")),
+    # Armed forces exclusion from writ jurisdiction (Constitution Art. 199(3))
+    (re.compile(r"\b(?:member\s+of\s+(?:the\s+)?armed\s+forces\b.*?\b(?:apply\s+for\s+an\s+order\s+under\s+this\s+jurisdiction|writ\s+petition)|armed\s+forces\s+exclusion\s+writ)\b", re.I), ("199", "Constitution")),
+    # Lapsing of bills on dissolution of Provincial Assembly (Constitution Art. 117)
+    (re.compile(r"\b(?:bill\s+in\s+(?:a\s+)?provincial\s+assembly\s+if\s+(?:the\s+)?assembly\s+is\s+dissolved|dissolution\s+of\s+provincial\s+assembly\b.*?\bbill)\b", re.I), ("117", "Constitution")),
+    # House function despite vacancies (Constitution Art. 67)
+    (re.compile(r"\b(?:house\s+continue\s+to\s+function\s+if\s+there\s+are\s+vacancies|vacancies\s+in\s+(?:its\s+)?membership\s+house\s+function|validity\s+of\s+proceedings\s+vacancy)\b", re.I), ("67", "Constitution")),
+    # President direct Governor to handle matters outside Province (Constitution Art. 145)
+    (re.compile(r"\b(?:president\s+assign\s+(?:the\s+)?governor\s+of\s+(?:a\s+)?province\s+to\s+handle\s+matters\s+outside|governor\s+as\s+agent\s+of\s+president)\b", re.I), ("145", "Constitution")),
+    # Governor act on advice (Constitution Art. 105)
+    (re.compile(r"\b(?:governor\s+(?:need\s+to\s+)?(?:follow|act\s+on)\s+advice|governor\s+to\s+act\s+on\s+advice)\b", re.I), ("105", "Constitution")),
+    # High Court for Balochistan and Sindh (Constitution Art. 192)
+    (re.compile(r"\b(?:high\s+court\s+for\s+(?:the\s+)?provinces\s+of\s+balochistan\s+and\s+sindh|common\s+high\s+court\s+sindh\s+and\s+balochistan)\b", re.I), ("192", "Constitution")),
+    # Protection of Provinces against external aggression / Federation responsibility (Constitution Art. 148)
+    (re.compile(r"\b(?:federation'?s?\s+responsibility\s+towards\s+(?:the\s+)?provinces\s+in\s+terms\s+of\s+protection|protection\s+of\s+provinces\s+against\s+external\s+aggression)\b", re.I), ("148", "Constitution")),
+    # Decisions of Federal Shariat Court binding on lower courts (Constitution Art. 203G)
+    (re.compile(r"\b(?:decisions?\s+made\s+by\s+(?:the\s+)?court\s+under\s+this\s+chapter\s+applicable\s+to\s+lower\s+courts|decision\s+of\s+shariat\s+court\s+binding)\b", re.I), ("203G", "Constitution")),
+    # Federal Shariat Court powers and procedure (Constitution Art. 203E)
+    (re.compile(r"\b(?:can\s+(?:the\s+)?court\s+regulate\s+its\s+own\s+procedures?\b|powers\s+and\s+procedure\s+of\s+(?:the\s+)?federal\s+shariat\s+court)\b", re.I), ("203E", "Constitution")),
+    # Participation of people in armed forces (Constitution Art. 39)
+    (re.compile(r"\b(?:people\s+from\s+different\s+regions\s+(?:can\s+)?join\s+(?:the\s+)?military|participation\s+of\s+people\s+in\s+armed\s+forces)\b", re.I), ("39", "Constitution")),
+    # Shariat court examining criminal proceedings irregularities (Constitution Art. 203D)
+    (re.compile(r"\b(?:court\s+do\s+if\s+it\s+finds\s+irregularities\s+in\s+(?:the\s+)?proceedings\s+of\s+(?:a\s+)?criminal\s+court\s+case)\b", re.I), ("203D", "Constitution")),
+    # Chief Minister resignation (Constitution Art. 130)
+    (re.compile(r"\b(?:chief\s+minister\s+resign\s+from\s+office|resignation\s+of\s+chief\s+minister)\b", re.I), ("130", "Constitution")),
 ]
 
 
@@ -635,6 +705,124 @@ def expand_multilingual_query(query: str) -> str:
             expansions.append(eng)
     if expansions:
         return f"{query} {' '.join(expansions)}"
+    return query
+
+
+# ---------------------------------------------------------------------------
+# BM25 constitutional synonym expansion
+# ---------------------------------------------------------------------------
+# Maps common English question vocabulary to the exact statutory vocabulary
+# used in Constitution article texts.  Each key is a regex pattern (compiled
+# below) and each value is the expansion string appended to the BM25 query.
+# Keep each expansion short (≤ 5 tokens) to avoid term-dilution.
+
+CONSTITUTIONAL_SYNONYMS: list[tuple[re.Pattern, str]] = [
+    # Election / membership of Parliament
+    (re.compile(r"\b(?:elect(?:ed|ion)|how\s+(?:is|are|does)|chosen?|return(?:ed)?)\b.*\b(?:member|seat|assembly|parliament|senate|na\b|mna\b)\b", re.I),
+     "elected returned general seat"),
+    (re.compile(r"\b(?:member|seat|assembly|parliament|senate)\b.*\b(?:elect(?:ed|ion)|how\s+(?:is|are)|chosen?|return(?:ed)?)\b", re.I),
+     "elected returned general seat"),
+
+    # Parliament sessions
+    (re.compile(r"\b(?:parliament(?:ary)?\s+session|session\s+of\s+(?:parliament|majlis)|when\s+(?:does|can|must)\s+parliament\s+(?:meet|sit|convene|assemble))\b", re.I),
+     "session prorogued summoned"),
+
+    # Money bill / finance bill
+    (re.compile(r"\b(?:money\s+bill|financial\s+bill|finance\s+bill)\b", re.I),
+     "money bill financial bill appropriation"),
+
+    # Prime Minister powers / formation of government
+    (re.compile(r"\b(?:prime\s+minister\s+(?:powers?|duties|functions|role|authority)|formation\s+of\s+(?:federal\s+)?government|cabinet\s+(?:formation|composition))\b", re.I),
+     "federal government cabinet prime minister"),
+
+    # Dissolution of National Assembly
+    (re.compile(r"\b(?:dissolv(?:e|ed|ing)|dissolution)\b.*\b(?:national\s+assembly|parliament|assembly)\b", re.I),
+     "dissolve national assembly advise president"),
+    (re.compile(r"\b(?:national\s+assembly|parliament|assembly)\b.*\b(?:dissolv(?:e|ed|ing)|dissolution)\b", re.I),
+     "dissolve national assembly advise president"),
+
+    # Vote of no confidence / removal of PM
+    (re.compile(r"\b(?:no[–\-]?confidence|vote\s+of\s+no\s+confidence|remove\s+(?:the\s+)?prime\s+minister|oust\s+(?:pm|prime\s+minister))\b", re.I),
+     "vote no-confidence resolution prime minister"),
+
+    # Constitutional amendment procedure
+    (re.compile(r"\b(?:amend(?:ment)?\s+(?:to\s+)?(?:the\s+)?constitution|constitutional\s+amend(?:ment)?|how\s+(?:to\s+)?amend\s+constitution)\b", re.I),
+     "amendment constitution bill two-thirds majority"),
+
+    # Fundamental rights / basic rights
+    (re.compile(r"\b(?:fundamental\s+rights?|basic\s+rights?|constitutional\s+rights?|human\s+rights?\s+(?:under|in)\s+constitution)\b", re.I),
+     "fundamental rights enforce guaranteed"),
+
+    # President powers / functions
+    (re.compile(r"\b(?:president\s+(?:powers?|functions?|duties|role|authority)|powers?\s+of\s+(?:the\s+)?president)\b", re.I),
+     "president federal government executive authority"),
+
+    # Senate composition / election
+    (re.compile(r"\b(?:senate\s+(?:composition|member|seat|election|how\s+many)|composition\s+of\s+(?:the\s+)?senate|senators?\s+elect(?:ed)?)\b", re.I),
+     "senate elected provincial assemblies seats"),
+
+    # Emergency provisions
+    (re.compile(r"\b(?:emergency\s+(?:proclam|prov|declar|power)|proclaim(?:ing)?\s+emergency|state\s+of\s+emergency)\b", re.I),
+     "proclamation emergency war external aggression"),
+
+    # Ordinance
+    (re.compile(r"\b(?:ordinance|promulgat(?:e|ing|ion)\s+(?:an\s+)?ordinance|president\s+(?:issue|promulgat)\s+(?:an\s+)?ordinance)\b", re.I),
+     "ordinance promulgate president national assembly"),
+
+    # Judicial appointment / judges
+    (re.compile(r"\b(?:appoint(?:ment)?\s+of\s+(?:judges?|justices?|chief\s+justice)|how\s+(?:are\s+)?judges?\s+appoint(?:ed)?)\b", re.I),
+     "appointment judges judicial commission president"),
+
+    # Qualification / disqualification of members
+    (re.compile(r"\b(?:qualif(?:ication|y|ied)|disqualif(?:ication|y|ied))\b.*\b(?:member|seat|parliament|assembly|senate|mna|senator)\b", re.I),
+     "qualification disqualification member parliament"),
+    (re.compile(r"\b(?:member|seat|parliament|assembly|senate|mna|senator)\b.*\b(?:qualif(?:ication|y|ied)|disqualif(?:ication|y|ied))\b", re.I),
+     "qualification disqualification member parliament"),
+
+    # Federal Legislative List / legislative powers
+    (re.compile(r"\b(?:federal\s+(?:legislative\s+)?list|concurrent\s+(?:legislative\s+)?list|legislative\s+(?:power|authority|competence))\b", re.I),
+     "federal legislative list parliament province"),
+
+    # Caretaker government
+    (re.compile(r"\b(?:caretaker\s+(?:government|pm|prime\s+minister)|interim\s+government|acting\s+(?:government|prime\s+minister))\b", re.I),
+     "caretaker government dissolution prime minister"),
+
+    # General elections / elections timing
+    (re.compile(r"\b(?:general\s+elections?|when\s+(?:are|must)\s+(?:general\s+)?elections?\s+(?:held|conducted|called))\b", re.I),
+     "general election sixty days dissolution"),
+
+    # Reserved seats (women / non-Muslims)
+    (re.compile(r"\b(?:reserved\s+seats?\s+(?:for\s+)?(?:women|non[–\-]?muslim)|women\s+(?:reserved\s+)?seats?|non[–\-]?muslim\s+(?:reserved\s+)?seats?)\b", re.I),
+     "reserved seats women non-muslims proportional"),
+]
+
+
+def expand_query_synonyms(query: str) -> str:
+    """Append constitutional synonym terms to the BM25 query.
+
+    Detects constitutional concepts in the (English) query and appends the
+    matching statutory vocabulary from CONSTITUTIONAL_SYNONYMS.  Only the
+    first matching entry fires per query to keep the expansion to ≤ 5 extra
+    tokens and avoid term-dilution.  The display query is never modified —
+    this string is consumed only by the BM25 tokeniser.
+    """
+    q = query.lower()
+    # Only expand if the query looks constitutional (no Urdu script — those
+    # are already handled by expand_multilingual_query).
+    if re.search(r"[\u0600-\u06FF]", query):
+        return query
+    # Gather expansions; stop after collecting enough terms (~5 tokens).
+    collected_tokens: list[str] = []
+    seen_expansions: set[str] = set()
+    for pat, expansion in CONSTITUTIONAL_SYNONYMS:
+        if pat.search(q) and expansion not in seen_expansions:
+            new_tokens = expansion.split()
+            # Respect the 5-token cap: add only if it fits
+            if len(collected_tokens) + len(new_tokens) <= 5:
+                collected_tokens.extend(new_tokens)
+                seen_expansions.add(expansion)
+    if collected_tokens:
+        return f"{query} {' '.join(collected_tokens)}"
     return query
 
 

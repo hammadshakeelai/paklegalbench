@@ -23,13 +23,13 @@
   },
   "hybrid+exact": {
     "n": 124,
-    "recall@1": 0.6048,
-    "recall@5": 0.8387,
-    "recall@10": 0.9113,
-    "recall@20": 0.9194,
-    "mrr": 0.7105,
+    "recall@1": 0.9194,
+    "recall@5": 0.9355,
+    "recall@10": 0.9435,
+    "recall@20": 0.9435,
+    "mrr": 0.9288,
     "refusal_rate": null,
-    "false_refusal": 0.0403,
+    "false_refusal": 0.0161,
     "traps": 0
   }
 }
