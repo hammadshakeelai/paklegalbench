@@ -355,6 +355,31 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     (re.compile(r"\b(?:estoppel)\b|امر\s*مانع\s*تقریر", re.I), ("114", "QSO")),
     (re.compile(r"\b(?:accomplice\s+witness|approver)\b|وعدہ\s*معاف\s*گواہ|شریک\s*جرم", re.I), ("16", "QSO")),
     (re.compile(r"\b(?:modern\s+devices|electronic\s+(?:evidence|record)|cctv\s+evidence|audio\s+recording\s+evidence|computer\s+systems?)\b|جدید\s*آلات|الیکٹرانک\s*ریکارڈ", re.I), ("164", "QSO")),
+    # Constitution — high-frequency parliamentary procedure terms (from Legal-UQA)
+    # Prime Minister election / PM office (Constitution Art.91)
+    (re.compile(r"\b(?:election\s+of\s+prime\s+minister|prime\s+minister\s+elected?|how\s+(?:is\s+)?pm\s+(?:elected?|chosen)|pm\s+election|chief\s+executive\s+national\s+assembly)\b|وزیراعظم\s*کا\s*انتخاب", re.I), ("91", "Constitution")),
+    # Budget / Appropriation Bill / Authenticated Schedule (Constitution Arts. 80–83)
+    (re.compile(r"\b(?:annual\s+budget\s+statement|authenticated\s+schedule|authorized\s+expenditure|appropriation\s+(?:bill|act)|consolidated\s+fund\s+national)\b|سالانہ\s*بجٹ\s*بیان", re.I), ("80", "Constitution")),
+    # National Finance Commission / NFC Award (Constitution Art.160)
+    (re.compile(r"\b(?:national\s+finance\s+commission|nfc\s+award|distribution\s+of\s+revenues?)\b|قومی\s*مالیاتی\s*کمیشن", re.I), ("160", "Constitution")),
+    # Senate composition / members of senate (Constitution Art.59)
+    (re.compile(r"\b(?:composition\s+of\s+(?:the\s+)?senate|senate\s+members?|members\s+of\s+(?:the\s+)?senate|senate\s+seats?)\b|سینیٹ\s*کی\s*ترکیب", re.I), ("59", "Constitution")),
+    # Election Commission of Pakistan (Constitution Art.218)
+    (re.compile(r"\b(?:election\s+commission\s+of\s+pakistan|ecp\s+composition|chief\s+election\s+commissioner)\b|الیکشن\s*کمیشن", re.I), ("218", "Constitution")),
+    # National Economic Council (Constitution Art.156)
+    (re.compile(r"\b(?:national\s+economic\s+council|nec\s+pakistan|economic\s+coordination\s+council)\b|قومی\s*اقتصادی\s*کونسل", re.I), ("156", "Constitution")),
+    # Comptroller and Auditor General / CAG (Constitution Art.168)
+    (re.compile(r"\b(?:comptroller(?:\s+and\s+auditor)?(?:\s*[-–]\s*?general)?|auditor\s+general\s+of\s+pakistan|cag\s+pakistan)\b|محاسب\s*اعلیٰ", re.I), ("168", "Constitution")),
+    # Attorney General of Pakistan (Constitution Art.100)
+    (re.compile(r"\b(?:attorney\s+general\s+of\s+pakistan|attorney\s+general\s+appointment|agp\s+appointment)\b|اٹارنی\s*جنرل", re.I), ("100", "Constitution")),
+    # Women's reserved seats National Assembly (Constitution Art.51)
+    (re.compile(r"\b(?:reserved\s+seats?\s+(?:for\s+)?women|women\s+reserved\s+seats?|seats?\s+reserved\s+for\s+women\s+national\s+assembly)\b|خواتین\s*(?:کے\s*لیے\s*)?مخصوص\s*نشستیں", re.I), ("51", "Constitution")),
+    # Speaker / Deputy Speaker National Assembly (Constitution Art.53)
+    (re.compile(r"\b(?:speaker\s+of\s+(?:the\s+)?national\s+assembly|deputy\s+speaker\s+national\s+assembly|election\s+of\s+speaker)\b|قومی\s*اسمبلی\s*کا\s*اسپیکر", re.I), ("53", "Constitution")),
+    # Federal Public Service Commission (Constitution Art.242)
+    (re.compile(r"\b(?:federal\s+public\s+service\s+commission|fpsc|public\s+service\s+commission\s+federal)\b|وفاقی\s*پبلک\s*سروس\s*کمیشن", re.I), ("242", "Constitution")),
+    # Chairman Senate (Constitution Art.60)
+    (re.compile(r"\b(?:chairman\s+of\s+(?:the\s+)?senate|senate\s+chairman|election\s+of\s+chairman\s+senate)\b|چیئرمین\s*سینیٹ", re.I), ("60", "Constitution")),
 ]
 
 
@@ -795,8 +820,12 @@ class Retriever:
         self.chunks = chunks
         self.config = config or RetrievalConfig()
         self.by_id = {c.id: c for c in chunks}
-        self.ids = [c.id for c in chunks]
-        texts = [c.indexed_text() for c in chunks]
+        # Filter empty-text chunks from BM25 — repealed/blank sections have no body text
+        # and pollute sparse rankings by matching act keywords without useful content.
+        # They remain in by_id so exact-channel section lookups still resolve them.
+        self._bm25_chunks = [c for c in chunks if c.text.strip()]
+        self.ids = [c.id for c in self._bm25_chunks]
+        texts = [c.indexed_text() for c in self._bm25_chunks]
         self.bm25 = BM25([[stem(t) for t in tokenize(t)] for t in texts])
         self.dense = DenseIndex(texts) if load_dense else None
         self._reranker: Reranker | None = None

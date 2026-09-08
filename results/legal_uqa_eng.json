@@ -2,10 +2,10 @@
   "sparse_only": {
     "n": 124,
     "recall@1": 0.6048,
-    "recall@5": 0.8306,
+    "recall@5": 0.8387,
     "recall@10": 0.9113,
     "recall@20": 0.9194,
-    "mrr": 0.7118,
+    "mrr": 0.7105,
     "refusal_rate": null,
     "false_refusal": 0.0403,
     "traps": 0
@@ -13,10 +13,10 @@
   "hybrid": {
     "n": 124,
     "recall@1": 0.6048,
-    "recall@5": 0.8306,
+    "recall@5": 0.8387,
     "recall@10": 0.9113,
     "recall@20": 0.9194,
-    "mrr": 0.7118,
+    "mrr": 0.7105,
     "refusal_rate": null,
     "false_refusal": 0.0403,
     "traps": 0
@@ -24,10 +24,10 @@
   "hybrid+exact": {
     "n": 124,
     "recall@1": 0.6048,
-    "recall@5": 0.8306,
+    "recall@5": 0.8387,
     "recall@10": 0.9113,
     "recall@20": 0.9194,
-    "mrr": 0.7118,
+    "mrr": 0.7105,
     "refusal_rate": null,
     "false_refusal": 0.0403,
     "traps": 0
