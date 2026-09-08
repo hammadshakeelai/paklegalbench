@@ -406,6 +406,29 @@ def test_statutory_definitions():
     assert ("4", "CrPC") in extract_references("قابل دست اندازی جرم کی تعریف")
 
 
+def test_knowledge_graph_1hop_traversal():
+    from index import Retriever, load_chunks, RetrievalConfig
+    from pathlib import Path
+    corpus_path = "chunks.json" if Path("chunks.json").exists() else None
+    r = Retriever(load_chunks(corpus_path), load_dense=False)
+    cfg = RetrievalConfig(use_graph_context=True, top_k=3)
+    hits = r.search("Section 302 PPC murder", cfg)
+    assert len(hits) >= 1
+    assert hits[0].chunk.id == "ppc-1860-s302"
+    if Path("chunks.json").exists():
+        graph_hits = [h for h in hits if "graph" in h.channels or "graph_context" in h.channels]
+        assert len(graph_hits) > 0
+
+
+def test_reranker_fallback():
+    from index import Reranker
+    reranker = Reranker()
+    candidates = [("doc1", "text one"), ("doc2", "text two")]
+    res = reranker.rank("query", candidates)
+    assert res == ["doc1", "doc2"]
+    assert reranker.rank("query", []) == []
+
+
 
 
 

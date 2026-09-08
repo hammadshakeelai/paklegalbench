@@ -483,11 +483,13 @@ class BM25:
 # --------------------------------------------------------------------------
 
 class DenseIndex:
-    """Wraps sentence-transformers. Absent library -> available=False and the
-    pipeline just runs without this channel."""
+    """Wraps sentence-transformers. Absent library or PLB_NO_DENSE -> available=False
+    and the pipeline just runs without this channel."""
 
     def __init__(self, texts: list[str], model_name: str = "BAAI/bge-small-en-v1.5"):
         self.available = False
+        if os.environ.get("PLB_NO_DENSE") == "1":
+            return
         try:
             from sentence_transformers import SentenceTransformer  # noqa
             import numpy as np  # noqa
@@ -497,16 +499,19 @@ class DenseIndex:
         from sentence_transformers import SentenceTransformer
 
         self.np = np
-        self.model = SentenceTransformer(model_name)
-        emb = self.model.encode(texts, normalize_embeddings=True,
-                                show_progress_bar=False)
-        self.matrix = np.asarray(emb, dtype="float32")
-        self.available = True
+        try:
+            self.model = SentenceTransformer(model_name)
+            self.matrix = self.model.encode(
+                texts, normalize_embeddings=True, show_progress_bar=False
+            )
+            self.available = True
+        except Exception:
+            self.available = False
 
     def scores(self, query: str) -> list[float]:
         if not self.available:
             return []
-        q = self.model.encode([query], normalize_embeddings=True)
+        q = self.model.encode([query], normalize_embeddings=True, show_progress_bar=False)
         return (self.matrix @ self.np.asarray(q, dtype="float32").T).ravel().tolist()
 
 
@@ -515,12 +520,17 @@ class Reranker:
 
     def __init__(self, model_name: str = "BAAI/bge-reranker-base"):
         self.available = False
+        if os.environ.get("PLB_NO_DENSE") == "1" or os.environ.get("PLB_NO_RERANKER") == "1":
+            return
         try:
             from sentence_transformers import CrossEncoder
         except ImportError:
             return
-        self.model = CrossEncoder(model_name)
-        self.available = True
+        try:
+            self.model = CrossEncoder(model_name)
+            self.available = True
+        except Exception:
+            self.available = False
 
     def rank(self, query: str, candidates: list[tuple[str, str]]) -> list[str]:
         """candidates: [(doc_id, text)] -> doc_ids best first."""
