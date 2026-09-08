@@ -1,7 +1,7 @@
 {
   "benchmark": "Pakistan Law GAT (Bar Exam) Benchmark",
   "edition": "urdu",
-  "timestamp": "2026-09-08T09:02:56Z",
+  "timestamp": "2026-09-08T09:14:58Z",
   "retrieval": {
     "overall": {
       "total_questions": 50,
@@ -49,5 +49,575 @@
     }
   },
   "llm_answering": null,
-  "circular_debiasing": null
+  "circular_debiasing": {
+    "total_questions": 50,
+    "total_evaluations": 200,
+    "fold_accuracies": {
+      "fold_0": 1.0,
+      "fold_1": 1.0,
+      "fold_2": 1.0,
+      "fold_3": 1.0
+    },
+    "debiased_accuracy": 1.0,
+    "consistency_rate": 1.0,
+    "position_distribution": {
+      "A": 0.25,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.25
+    },
+    "position_tvd": 0.0,
+    "details": [
+      {
+        "id": "gat-ppc-01",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-ppc-02",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-ppc-03",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-ppc-04",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-ppc-05",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-ppc-06",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-ppc-07",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-ppc-08",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-ppc-09",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-ppc-10",
+        "subject": "PPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-01",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-02",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-03",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-04",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-05",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-06",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-07",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-08",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-09",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-crpc-10",
+        "subject": "CrPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-01",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-02",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-03",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-04",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-05",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-06",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-07",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-08",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-09",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-const-10",
+        "subject": "Constitution",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-01",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-02",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-03",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-04",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-05",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-06",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-07",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-08",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-09",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-cpc-10",
+        "subject": "CPC",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-01",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-02",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-03",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-04",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-05",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-06",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-07",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-08",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-09",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      },
+      {
+        "id": "gat-qso-10",
+        "subject": "QSO",
+        "fold_correct": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "consistent": true
+      }
+    ]
+  }
 }

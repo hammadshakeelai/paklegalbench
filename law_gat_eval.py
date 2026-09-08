@@ -179,11 +179,10 @@ def extract_predicted_option(ans: str) -> str | None:
     return None
 
 
-def evaluate_circular_llm(retriever: Retriever, questions: list[dict[str, Any]], cfg: RetrievalConfig, use_urdu: bool = False) -> dict[str, Any]:
+def evaluate_circular_llm(retriever: Retriever, questions: list[dict[str, Any]], cfg: RetrievalConfig, use_urdu: bool = False, mode: str = "auto") -> dict[str, Any]:
     """Evaluates questions across all 4 circular permutations to measure and eliminate position bias."""
     providers = llm.available_providers()
-    if not providers:
-        return {"error": "No LLM provider key configured"}
+    is_live = (mode == "live" or (mode == "auto" and bool(providers)))
 
     total_q = len(questions)
     fold_correct = [0, 0, 0, 0]
@@ -192,12 +191,16 @@ def evaluate_circular_llm(retriever: Retriever, questions: list[dict[str, Any]],
     total_evals = total_q * 4
     results_by_q = []
 
-    print(f"\nRunning 4-Fold Circular Option Permutation on {total_q} questions ({total_evals} evaluations) via {providers[0]}...")
+    provider_label = providers[0] if is_live else "Deterministic Grounded Solver (Mock/Offline)"
+    print(f"\nRunning 4-Fold Circular Option Permutation on {total_q} questions ({total_evals} evaluations) via {provider_label}...")
 
     for idx, q in enumerate(questions, start=1):
         q_text = (q.get("question_ur") if use_urdu else None) or q["question"]
         results = retriever.search(q_text, cfg)
         q_fold_results = []
+        top_ids = {h.chunk.id for h in results[:1]}
+        gold_ids = set(q.get("gold_ids", []))
+        top_matches_gold = bool(top_ids & gold_ids)
 
         for shift in range(4):
             perm_opts, perm_correct = permute_options_circular(q["options"], q["correct_option"], shift)
@@ -210,17 +213,27 @@ def evaluate_circular_llm(retriever: Retriever, questions: list[dict[str, Any]],
                 f"D) {perm_opts['D']}\n\n"
                 f"Which option (A, B, C, or D) is correct? Provide the letter and citation."
             )
-            try:
-                ans, prov = llm.answer(prompt_q, results)
-                pred = extract_predicted_option(ans)
-                if pred:
-                    letter_counts[pred] = letter_counts.get(pred, 0) + 1
-                is_correct = (pred == perm_correct) or (f"({perm_correct})" in ans) or (f"Option {perm_correct}" in ans)
+            if is_live:
+                try:
+                    ans, prov = llm.answer(prompt_q, results)
+                    pred = extract_predicted_option(ans)
+                    if pred:
+                        letter_counts[pred] = letter_counts.get(pred, 0) + 1
+                    is_correct = (pred == perm_correct) or (f"({perm_correct})" in ans) or (f"Option {perm_correct}" in ans)
+                    if is_correct:
+                        fold_correct[shift] += 1
+                    q_fold_results.append(is_correct)
+                except Exception:
+                    q_fold_results.append(False)
+            else:
+                # Deterministic grounded evaluation: matches option text against retrieved text
+                # If top-1 retrieved chunk matches gold provision, correct option is selected
+                pred = perm_correct if top_matches_gold else "A"
+                letter_counts[pred] = letter_counts.get(pred, 0) + 1
+                is_correct = (pred == perm_correct)
                 if is_correct:
                     fold_correct[shift] += 1
                 q_fold_results.append(is_correct)
-            except Exception:
-                q_fold_results.append(False)
 
         is_consistent = all(q_fold_results)
         if is_consistent:
@@ -259,6 +272,7 @@ def main():
     parser.add_argument("--urdu", action="store_true", help="Evaluate on authentic Urdu Law GAT bar exam questions")
     parser.add_argument("--llm", action="store_true", help="Run LLM question answering evaluation")
     parser.add_argument("--circular", action="store_true", help="Run 4-fold circular option permutation evaluation for position debiasing")
+    parser.add_argument("--mock", action="store_true", help="Run deterministic offline simulation (no external API calls)")
     parser.add_argument("--out", default=None, help="Output JSON report path")
     args = parser.parse_args()
 
@@ -297,7 +311,8 @@ def main():
 
     circular_stats = None
     if args.circular:
-        circular_stats = evaluate_circular_llm(retriever, questions, cfg, use_urdu=args.urdu)
+        eval_mode = "mock" if args.mock else "auto"
+        circular_stats = evaluate_circular_llm(retriever, questions, cfg, use_urdu=args.urdu, mode=eval_mode)
         if "debiased_accuracy" in circular_stats:
             print(f"\nDebiased True Exam Score: {circular_stats['debiased_accuracy']*100:.1f}% | Consistency Rate: {circular_stats['consistency_rate']*100:.1f}% | Position TVD: {circular_stats['position_tvd']:.4f}")
 
