@@ -41,8 +41,8 @@ def split_sections(text: str, pattern: re.Pattern) -> list[dict]:
         body = text[m.end():end].strip()
         out.append({
             "section": m.group("num").replace("–", "-").upper(),
-            "marginal_note": m.group("note").strip(),
-            "text": re.sub(r"\s+", " ", body),
+            "marginal_note": m.group("note").replace("\xad", "-").strip(),
+            "text": re.sub(r"\s+", " ", body.replace("\xad", "-")),
             "needs_review": bool(AMENDMENT_HINTS.search(body)),
         })
     return out

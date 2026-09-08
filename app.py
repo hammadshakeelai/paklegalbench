@@ -20,8 +20,9 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+import index
 import llm
-from index import RetrievalConfig, build_default
+from index import RetrievalConfig, build_default, extract_references
 
 ROOT = Path(__file__).parent
 
@@ -54,6 +55,7 @@ class HealthResponse(BaseModel):
 
 
 class SourceItem(BaseModel):
+    id: str = ""
     citation: str
     formal_citation: str = ""
     marginal_note: str
@@ -122,6 +124,7 @@ def chat(req: ChatRequest):
         key = f"{c.act_short}:{sec_norm}"
         refs = graph.get(key, [])
         sources.append({
+            "id": c.id,
             "citation": c.citation(),
             "formal_citation": c.formal_citation(),
             "marginal_note": c.marginal_note,
@@ -197,27 +200,99 @@ def benchmarks():
     return data
 
 
+_STATUTE_GRAPH_DATA: dict | None = None
+
+
+def _get_full_graph_data() -> dict:
+    global _STATUTE_GRAPH_DATA
+    if _STATUTE_GRAPH_DATA is None:
+        graph_file = ROOT / "statute_graph.json"
+        if graph_file.exists():
+            try:
+                _STATUTE_GRAPH_DATA = json.loads(graph_file.read_text(encoding="utf-8"))
+            except Exception:
+                _STATUTE_GRAPH_DATA = {}
+        else:
+            _STATUTE_GRAPH_DATA = {}
+    return _STATUTE_GRAPH_DATA
+
+
 @app.get("/api/graph")
 def get_graph(provision: str | None = None):
     """
     Returns statutory reference graph.
-    If ?provision=PPC:302 is passed, returns adjacency for that provision.
+    If ?provision=PPC:302 is passed, returns adjacency and node metadata for that provision.
     Otherwise returns graph summary metrics.
     """
-    graph = llm._get_statute_graph()
+    graph_data = _get_full_graph_data()
+    citation_graph = graph_data.get("citation_adjacency", {})
+    adj = graph_data.get("adjacency", {})
+    rev = graph_data.get("reverse_adjacency", {})
+
     if provision:
-        p_clean = provision.upper().replace("-", "").strip()
-        edges = graph.get(p_clean, [])
-        inbound = [src for src, dsts in graph.items() if p_clean in dsts]
+        p_clean = provision.strip()
+        chunk = None
+        if retriever:
+            # Try matching chunk id or normalized key directly
+            for c in retriever.chunks:
+                if (c.id.lower() == p_clean.lower() or
+                        f"{c.act_short}:{c.section}".upper().replace("-", "") == p_clean.upper().replace("-", "").replace(" ", "")):
+                    chunk = c
+                    break
+            if not chunk:
+                refs = index.extract_references(p_clean)
+                if refs:
+                    sec, act = refs[0]
+                    target_sec = sec.strip().lower()
+                    for c in retriever.chunks:
+                        if c.act_short == act and c.section.strip().lower() == target_sec:
+                            chunk = c
+                            break
+
+        key = f"{chunk.act_short}:{chunk.section.upper().replace('-', '')}" if chunk else p_clean.upper().replace("-", "")
+        edges = citation_graph.get(key, [])
+        inbound = [src for src, dsts in citation_graph.items() if key in dsts]
+
+        outbound_details = []
+        inbound_details = []
+        if chunk and retriever:
+            chunk_map = {c.id: c for c in retriever.chunks}
+            for out_id in adj.get(chunk.id, []):
+                if out_id in chunk_map:
+                    outbound_details.append({
+                        "id": out_id,
+                        "citation": chunk_map[out_id].citation(),
+                        "formal_citation": chunk_map[out_id].formal_citation(),
+                        "marginal_note": chunk_map[out_id].marginal_note
+                    })
+            for in_id in rev.get(chunk.id, []):
+                if in_id in chunk_map:
+                    inbound_details.append({
+                        "id": in_id,
+                        "citation": chunk_map[in_id].citation(),
+                        "formal_citation": chunk_map[in_id].formal_citation(),
+                        "marginal_note": chunk_map[in_id].marginal_note
+                    })
+
         return {
-            "provision": p_clean,
+            "provision": key,
+            "found": chunk is not None,
+            "chunk_id": chunk.id if chunk else None,
+            "citation": chunk.citation() if chunk else key,
+            "formal_citation": chunk.formal_citation() if chunk else f"Statutory Provision {key}",
+            "marginal_note": chunk.marginal_note if chunk else None,
             "outbound_citations": edges,
             "inbound_citations": inbound,
+            "outbound_details": outbound_details,
+            "inbound_details": inbound_details,
+            "text_snippet": (chunk.text[:300] + "...") if chunk and len(chunk.text) > 300 else (chunk.text if chunk else "")
         }
+
     return {
-        "total_provisions_with_edges": len(graph),
-        "total_directed_edges": sum(len(dsts) for dsts in graph.values()),
-        "sample_nodes": list(graph.keys())[:15],
+        "total_provisions_with_edges": len(citation_graph),
+        "total_directed_edges": sum(len(dsts) for dsts in citation_graph.values()),
+        "sample_nodes": list(citation_graph.keys())[:15],
+        "metadata": graph_data.get("metadata", {})
     }
 
 

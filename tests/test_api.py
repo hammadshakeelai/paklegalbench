@@ -222,3 +222,15 @@ def test_graph_endpoint():
     assert data_prov["provision"] == "PPC:302"
     assert isinstance(data_prov["outbound_citations"], list)
     assert isinstance(data_prov["inbound_citations"], list)
+    assert "formal_citation" in data_prov
+    assert isinstance(data_prov["outbound_details"], list)
+    assert isinstance(data_prov["inbound_details"], list)
+
+    # Natural citation query resolution
+    resp_nat = client.get("/api/graph?provision=Article 199")
+    assert resp_nat.status_code == 200
+    data_nat = resp_nat.json()
+    assert data_nat["provision"] == "Constitution:199"
+    assert data_nat["found"] is True
+    assert "High Court" in (data_nat["marginal_note"] or "")
+

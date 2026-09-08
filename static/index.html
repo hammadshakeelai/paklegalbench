@@ -87,6 +87,14 @@
   .toggles input{margin-right:.4rem;accent-color:var(--verified)}
   .toggles p{font-size:.6875rem;color:var(--ink-soft);margin:.7rem 0 0;line-height:1.45}
 
+  /* graph modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(18,17,16,0.65);display:flex;align-items:center;justify-content:center;z-index:100;padding:1.2rem}
+  .modal-card{background:#fff;border:1px solid var(--ink);width:100%;max-width:42rem;padding:1.5rem;box-shadow:0 12px 40px rgba(0,0,0,0.18);max-height:88vh;display:flex;flex-direction:column}
+  .graph-node-btn{display:flex;flex-direction:column;text-align:left;background:var(--paper-deep);border:1px solid var(--rule);padding:.4rem .6rem;font-size:.75rem;cursor:pointer;font-family:var(--sans);color:var(--ink);border-radius:2px;width:100%}
+  .graph-node-btn:hover{border-color:var(--ink);background:#fff}
+  .graph-node-btn strong{font-size:.75rem;color:var(--ink)}
+  .graph-node-btn span{font-size:.6875rem;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
   @media (max-width:56rem){
     main{grid-template-columns:1fr;gap:2rem}
     aside{position:static}
@@ -211,7 +219,10 @@ function renderSources(list){
   if (!list.length){ srcBox.innerHTML = '<p style="color:var(--ink-soft)">Nothing retrieved.</p>'; return; }
   srcBox.innerHTML = list.map(s => `
     <div class="src">
-      <span class="cit">${esc(s.citation)}</span>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:.5rem;">
+        <span class="cit">${esc(s.citation)}</span>
+        <button type="button" class="ref-pill" style="border-color:var(--ink); font-weight:600;" onclick="inspectGraph('${esc(s.id || s.citation)}')">&#9881; Graph</button>
+      </div>
       ${s.formal_citation ? `<div style="font-size:.6875rem; color:var(--ink-soft); margin-bottom:.25rem; font-style:italic;">${esc(s.formal_citation)}</div>` : ''}
       <div class="note">${esc(s.marginal_note)}</div>
       <div class="meta">
@@ -221,7 +232,7 @@ function renderSources(list){
       ${s.cross_references && s.cross_references.length ? `
         <div class="cross-refs">
           <span class="cross-refs-title">Cross-references:</span>
-          ${s.cross_references.slice(0, 5).map(r => `<button type="button" class="ref-pill" onclick="lookupRef('${esc(r)}')">${esc(r)}</button>`).join('')}
+          ${s.cross_references.slice(0, 5).map(r => `<button type="button" class="ref-pill" onclick="inspectGraph('${esc(r)}')">${esc(r)} &nearr;</button>`).join('')}
         </div>` : ''}
     </div>`).join('');
 }
@@ -229,6 +240,73 @@ function renderSources(list){
 window.lookupRef = function(ref) {
   input.value = ref;
   form.requestSubmit();
+};
+
+window.inspectGraph = async function(prov) {
+  try {
+    const res = await fetch(`/api/graph?provision=${encodeURIComponent(prov)}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    document.getElementById('modalTitle').textContent = data.marginal_note ? `${data.citation}: ${data.marginal_note}` : data.citation;
+    document.getElementById('modalFormal').textContent = data.formal_citation || '';
+    document.getElementById('modalSnippet').textContent = data.text_snippet || 'Statutory provision indexed in knowledge graph.';
+    
+    const outBox = document.getElementById('modalOutbound');
+    const inBox = document.getElementById('modalInbound');
+    const outCount = (data.outbound_details && data.outbound_details.length) || (data.outbound_citations && data.outbound_citations.length) || 0;
+    const inCount = (data.inbound_details && data.inbound_details.length) || (data.inbound_citations && data.inbound_citations.length) || 0;
+    document.getElementById('modalOutCount').textContent = outCount;
+    document.getElementById('modalInCount').textContent = inCount;
+    
+    if (data.outbound_details && data.outbound_details.length) {
+      outBox.innerHTML = data.outbound_details.map(d => `
+        <button type="button" class="graph-node-btn" onclick="inspectGraph('${esc(d.id)}')">
+          <strong>${esc(d.citation)}</strong>
+          <span>${esc(d.marginal_note || '')}</span>
+        </button>
+      `).join('');
+    } else if (data.outbound_citations && data.outbound_citations.length) {
+      outBox.innerHTML = data.outbound_citations.map(c => `
+        <button type="button" class="graph-node-btn" onclick="inspectGraph('${esc(c)}')">
+          <strong>${esc(c)}</strong>
+        </button>
+      `).join('');
+    } else {
+      outBox.innerHTML = '<span style="font-size:.75rem; color:var(--ink-soft); font-style:italic;">No direct outbound references</span>';
+    }
+    
+    if (data.inbound_details && data.inbound_details.length) {
+      inBox.innerHTML = data.inbound_details.map(d => `
+        <button type="button" class="graph-node-btn" onclick="inspectGraph('${esc(d.id)}')">
+          <strong>${esc(d.citation)}</strong>
+          <span>${esc(d.marginal_note || '')}</span>
+        </button>
+      `).join('');
+    } else if (data.inbound_citations && data.inbound_citations.length) {
+      inBox.innerHTML = data.inbound_citations.map(c => `
+        <button type="button" class="graph-node-btn" onclick="inspectGraph('${esc(c)}')">
+          <strong>${esc(c)}</strong>
+        </button>
+      `).join('');
+    } else {
+      inBox.innerHTML = '<span style="font-size:.75rem; color:var(--ink-soft); font-style:italic;">No inbound citations in corpus</span>';
+    }
+    
+    document.getElementById('modalAskBtn').onclick = () => {
+      closeGraphModal();
+      input.value = `Explain ${data.citation}`;
+      form.requestSubmit();
+    };
+    
+    document.getElementById('graphModal').style.display = 'flex';
+  } catch(err) {
+    console.error(err);
+  }
+};
+
+window.closeGraphModal = function(e) {
+  if (e && e.target !== e.currentTarget && !e.target.classList.contains('close-btn')) return;
+  document.getElementById('graphModal').style.display = 'none';
 };
 
 form.addEventListener('submit', async e => {
@@ -267,5 +345,34 @@ form.addEventListener('submit', async e => {
   }
 });
 </script>
+
+<div id="graphModal" class="modal-backdrop" style="display:none;" onclick="closeGraphModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.75rem;">
+      <div>
+        <span class="chan" style="font-size:.75rem; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;">Statutory Knowledge Graph</span>
+        <h3 id="modalTitle" style="font-size:1.15rem; font-family:var(--serif); margin:.25rem 0 .1rem;"></h3>
+        <p id="modalFormal" style="font-size:.75rem; color:var(--ink-soft); font-style:italic; margin:0;"></p>
+      </div>
+      <button type="button" class="close-btn" onclick="closeGraphModal()" style="background:none; border:1px solid var(--rule); cursor:pointer; font-size:1.1rem; line-height:1; padding:.2rem .5rem;">&times;</button>
+    </div>
+    <div id="modalSnippet" style="font-size:.8125rem; font-family:var(--serif); background:var(--paper-deep); padding:.6rem .8rem; border-left:2.5px solid var(--ink); margin-bottom:1rem; line-height:1.45; max-height:140px; overflow-y:auto;"></div>
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1rem; flex:1; min-height:0;">
+      <div>
+        <h4 style="font-size:.75rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin:0 0 .4rem;">Outbound References (<span id="modalOutCount">0</span>)</h4>
+        <div id="modalOutbound" style="display:flex; flex-direction:column; gap:.35rem; max-height:160px; overflow-y:auto;"></div>
+      </div>
+      <div>
+        <h4 style="font-size:.75rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin:0 0 .4rem;">Inbound Citations (<span id="modalInCount">0</span>)</h4>
+        <div id="modalInbound" style="display:flex; flex-direction:column; gap:.35rem; max-height:160px; overflow-y:auto;"></div>
+      </div>
+    </div>
+    
+    <div style="display:flex; justify-content:flex-end; gap:.5rem; border-top:1px solid var(--rule); padding-top:.75rem;">
+      <button type="button" id="modalAskBtn" class="send" style="padding:.45rem .9rem; font-size:.8125rem;">Ask About This Provision &rarr;</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
