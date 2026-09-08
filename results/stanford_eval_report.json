@@ -1,6 +1,6 @@
 {
   "benchmark": "Stanford Legal Hallucination Benchmark",
-  "eval_date": "2026-09-08T12:41:52Z",
+  "eval_date": "2026-09-08T13:03:33Z",
   "mode": "mock",
   "total_cases": 21,
   "factual_cases": 10,
