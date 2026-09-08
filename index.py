@@ -27,6 +27,15 @@ from typing import Iterable
 ROOT = Path(__file__).parent
 DEFAULT_CORPUS = ROOT / "chunks.json" if (ROOT / "chunks.json").exists() else ROOT / "seed_corpus.json"
 
+# Statutory upper boundaries for primary enactments (sections / articles)
+MAX_SECTIONS = {
+    "Constitution": 280,
+    "PPC": 511,
+    "CrPC": 565,
+    "CPC": 158,
+    "QSO": 166,
+}
+
 # Maps how people actually write act names to the act_short field.
 ACT_ALIASES = {
     "pakistan penal code": "PPC",
@@ -39,16 +48,40 @@ ACT_ALIASES = {
     "crpc": "CrPC",
     "cr.p.c": "CrPC",
     "cr.p.c.": "CrPC",
+    # CPC aliases
+    "code of civil procedure": "CPC",
+    "civil procedure code": "CPC",
+    "civil procedure": "CPC",
+    "pakistan code of civil procedure": "CPC",
+    "cpc": "CPC",
+    "c.p.c": "CPC",
+    "c.p.c.": "CPC",
+    # QSO aliases
+    "qanun-e-shahadat order": "QSO",
+    "qanun-e-shahadat order 1984": "QSO",
+    "qanun-e-shahadat order, 1984": "QSO",
+    "qanun-e-shahadat": "QSO",
+    "qanun e shahadat": "QSO",
+    "qanun-i-shahadat": "QSO",
+    "qanun i shahadat": "QSO",
+    "evidence act": "QSO",
+    "qso": "QSO",
+    "q.s.o": "QSO",
+    "q.s.o.": "QSO",
     "constitution": "Constitution",
     "article": "Constitution",
     "art": "Constitution",
     # Urdu act aliases
     "تعزیرات پاکستان": "PPC",
     "ضابطہ فوجداری": "CrPC",
+    "ضابطہ دیوانی": "CPC",
+    "قانون شہادت": "QSO",
     "آئین پاکستان": "Constitution",
     "آئین": "Constitution",
     "پی پی سی": "PPC",
     "سی آر پی سی": "CrPC",
+    "سی پی سی": "CPC",
+    "کیو ایس او": "QSO",
 }
 
 # Explicitly track foreign acts to prevent cross-jurisdictional confusion (e.g. IPC vs PPC, UK/US statutes)
@@ -58,7 +91,22 @@ FOREIGN_ACTS = {
     "ipc": "IPC",
     "i.p.c": "IPC",
     "i.p.c.": "IPC",
+    "indian code of civil procedure": "Indian CPC",
+    "indian cpc": "Indian CPC",
+    "cpc india": "Indian CPC",
+    "code of civil procedure (india)": "Indian CPC",
+    "code of civil procedure 1908 (india)": "Indian CPC",
+    "indian code of criminal procedure": "Indian CrPC",
+    "indian crpc": "Indian CrPC",
+    "crpc india": "Indian CrPC",
+    "code of criminal procedure (india)": "Indian CrPC",
+    "indian evidence act 1872": "Indian Evidence Act",
     "indian evidence act": "Indian Evidence Act",
+    "evidence act 1872": "Indian Evidence Act",
+    "evidence act, 1872": "Indian Evidence Act",
+    "iea": "Indian Evidence Act",
+    "i.e.a": "Indian Evidence Act",
+    "i.e.a.": "Indian Evidence Act",
     "bharatiya nyaya sanhita": "BNS",
     "bharatiya nagarik suraksha sanhita": "BNSS",
     "bharatiya sakshya adhiniyam": "BSA",
@@ -120,6 +168,10 @@ class Chunk:
             return f"{self.section_label}, Pakistan Penal Code, 1860 (Act XLV of 1860)"
         elif self.act_short == "CrPC":
             return f"{self.section_label}, Code of Criminal Procedure, 1898 (Act V of 1898)"
+        elif self.act_short == "CPC":
+            return f"{self.section_label}, Code of Civil Procedure, 1908 (Act V of 1908)"
+        elif self.act_short == "QSO":
+            return f"{self.section_label}, Qanun-e-Shahadat Order, 1984 (President's Order No. 10 of 1984)"
         return f"{self.section_label}, {self.act}"
 
     def indexed_text(self) -> str:
@@ -204,24 +256,24 @@ def resolve_act_name(raw: str) -> str:
 
 
 REFERENCE_PATTERNS = [
-    # 1. Qualified enactment reference: "Section 10 of the Cyber Terrorism Act 2024"
+    # 1. Qualified enactment reference: "Section 10 of the Cyber Terrorism Act 2024", "Article 180 of Qanun-e-Shahadat Order"
     re.compile(
-        r"\b(?:section|sec\.?|s\.|u/s)\s*([0-9]+(?:[-–]?[a-z])?)\s*(?:of\s+(?:the\s+)?)?([a-z0-9\s–-]+?\b(?:act|ordinance|code|rules|order|regulation|statute))\b",
+        r"\b(?:section|sec\.?|s\.|u/s|article|art\.?|آرٹیکل)\s*([0-9]+(?:[-–]?[a-z])?)\s*(?:of\s+(?:the\s+)?)?((?:code\s+of\s+[a-z]+(?:\s+[a-z]+)*|[a-z0-9\s–-]+?\b(?:act|ordinance|code|rules|order|regulation|statute)))\b",
         re.I,
     ),
-    # 2. Act preceding section: "Cyber Terrorism Act Section 10"
+    # 2. Act preceding section: "Cyber Terrorism Act Section 10", "Qanun-e-Shahadat Order Article 180"
     re.compile(
-        r"\b([a-z0-9\s–-]+?\b(?:act|ordinance|code|rules|order|regulation|statute))\s*(?:section|sec\.?|s\.)\s*([0-9]+(?:[-–]?[a-z])?)\b",
+        r"\b((?:code\s+of\s+[a-z]+(?:\s+[a-z]+)*|[a-z0-9\s–-]+?\b(?:act|ordinance|code|rules|order|regulation|statute)))\s*(?:section|sec\.?|s\.|article|art\.?|آرٹیکل)\s*([0-9]+(?:[-–]?[a-z])?)\b",
         re.I,
     ),
-    # 3. Act prefix: "PPC 302", "CrPC 497", "PPC 303-A", "IPC 302"
+    # 3. Act prefix: "PPC 302", "CrPC 497", "CPC 200", "QSO 180", "IPC 302", "IEA 25"
     re.compile(
-        r"\b(ppc|crpc|cr\.?p\.?c\.?|p\.?p\.?c\.?|ipc|i\.?p\.?c\.?)\s*(?:section|sec\.?|s\.)?\s*([0-9]+(?:[-–]?[a-z])?)\b",
+        r"\b(ppc|crpc|cr\.?p\.?c\.?|p\.?p\.?c\.?|cpc|c\.?p\.?c\.?|qso|q\.?s\.?o\.?|ipc|i\.?p\.?c\.?|iea|i\.?e\.?a\.?)\s*(?:section|sec\.?|s\.|article|art\.?|آرٹیکل)?\s*([0-9]+(?:[-–]?[a-z])?)\b",
         re.I,
     ),
-    # 4. Act suffix: "302 PPC", "497 CrPC", "489-F P.P.C.", "302 IPC"
+    # 4. Act suffix: "302 PPC", "497 CrPC", "200 CPC", "180 QSO", "302 IPC", "25 IEA"
     re.compile(
-        r"\b([0-9]+(?:[-–]?[a-z])?)\s*(?:of\s+the\s+)?(ppc|crpc|cr\.?p\.?c\.?|p\.?p\.?c\.?|ipc|i\.?p\.?c\.?)\b",
+        r"\b([0-9]+(?:[-–]?[a-z])?)\s*(?:of\s+(?:the\s+)?)?(ppc|crpc|cr\.?p\.?c\.?|p\.?p\.?c\.?|cpc|c\.?p\.?c\.?|qso|q\.?s\.?o\.?|ipc|i\.?p\.?c\.?|iea|i\.?e\.?a\.?)\b",
         re.I,
     ),
     # 5. "Article 199", "Art. 10A", "Article 10-A", Urdu "آرٹیکل 199"
@@ -232,7 +284,7 @@ REFERENCE_PATTERNS = [
 
 RANGE_PATTERNS = [
     re.compile(
-        r"\b(?:sections?|articles?|secs?\.?|arts?\.?|دفعات|آرٹیکلز)\s*([0-9]+)\s*(?:to|-|–|تا)\s*([0-9]+)(?:\s*(?:of\s+(?:the\s+)?)?([a-z0-9\s–-]+?\b(?:act|ordinance|code|rules|order|regulation|statute|ppc|crpc|constitution|تعزیرات\s*پاکستان|ضابطہ\s*فوجداری|آئین)))?\b",
+        r"\b(?:sections?|articles?|secs?\.?|arts?\.?|دفعات|آرٹیکلز)\s*([0-9]+)\s*(?:to|-|–|تا)\s*([0-9]+)(?:\s*(?:of\s+(?:the\s+)?)?([a-z0-9\s–-]+?\b(?:act|ordinance|code|rules|order|regulation|statute|ppc|crpc|cpc|qso|constitution|تعزیرات\s*پاکستان|ضابطہ\s*فوجداری|ضابطہ\s*دیوانی|قانون\s*شہادت|آئین)))?\b",
         re.I,
     ),
 ]
@@ -289,6 +341,20 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     (re.compile(r"\b(?:private\s+defence\s+deadly\s+assault|self-?defence\s+innocent\s+person)\b", re.I), ("106", "PPC")),
     # Punishment for Rape (PPC 376)
     (re.compile(r"\b(?:punishment\s+for\s+rape|penalty\s+for\s+rape)\b|زنا\s*بالجبر\s*کی\s*سزا", re.I), ("376", "PPC")),
+    # Civil Procedure (CPC 1908) key doctrines
+    (re.compile(r"\b(?:res\s*judicata)\b|امر\s*مانع\s*تجویز", re.I), ("11", "CPC")),
+    (re.compile(r"\b(?:res\s*sub-?judice|stay\s+of\s+suit)\b|التوائے\s*مقدمہ", re.I), ("10", "CPC")),
+    (re.compile(r"\b(?:inherent\s+powers?\s+(?:of\s+)?court)\b|باطنی\s*اختیارات", re.I), ("151", "CPC")),
+    (re.compile(r"\b(?:pecuniary\s+jurisdiction|lowest\s+grade\s+court)\b|مالیتی\s*دائرہ\s*اختیار", re.I), ("15", "CPC")),
+    (re.compile(r"\b(?:challenge\s+decree\s+fraud|fraud\s+misrepresentation\s+decree|12\(2\))\b|دھوکہ\s*دہی\s*سے\s*حاصل\s*ڈگری", re.I), ("12", "CPC")),
+    # Evidence Law (QSO 1984) key doctrines
+    (re.compile(r"\b(?:dying\s+declaration)\b|نزعی\s*بیان", re.I), ("46", "QSO")),
+    (re.compile(r"\b(?:identification\s+parade|test\s+identification\s+parade|tip)\b|شناختی\s*پریڈ", re.I), ("22", "QSO")),
+    (re.compile(r"\b(?:confession\s+to\s+police|police\s+confession)\b|پولیس\s*کے\s*سامنے\s*اعتراف", re.I), ("38", "QSO")),
+    (re.compile(r"\b(?:hostile\s+witness)\b|منحرف\s*گواہ", re.I), ("150", "QSO")),
+    (re.compile(r"\b(?:estoppel)\b|امر\s*مانع\s*تقریر", re.I), ("114", "QSO")),
+    (re.compile(r"\b(?:accomplice\s+witness|approver)\b|وعدہ\s*معاف\s*گواہ|شریک\s*جرم", re.I), ("16", "QSO")),
+    (re.compile(r"\b(?:modern\s+devices|electronic\s+(?:evidence|record)|cctv\s+evidence|audio\s+recording\s+evidence|computer\s+systems?)\b|جدید\s*آلات|الیکٹرانک\s*ریکارڈ", re.I), ("164", "QSO")),
 ]
 
 
@@ -343,7 +409,10 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
                 act = resolve_act_name(raw_act)
             else:
                 raw_sec = groups[0]
-                act = "Constitution" if re.search(r"(?:\barticle\b|\bart\.?\b|آرٹیکل)", m.group(0), re.I) else act_hint
+                if re.search(r"(?:\barticle\b|\bart\.?\b|آرٹیکل)", m.group(0), re.I):
+                    act = "QSO" if act_hint == "QSO" else "Constitution"
+                else:
+                    act = act_hint
 
             sec = re.sub(r"[–\s]", "-", raw_sec.upper())
             # If we already recorded this section, do not add redundant/conflicting references for it
@@ -755,6 +824,10 @@ class Retriever:
         for sec, act in extract_references(query):
             if act in FOREIGN_ACTS.values():
                 continue
+            m_sec = re.match(r"^(\d+)", sec)
+            if m_sec and act in MAX_SECTIONS:
+                if int(m_sec.group(1)) > MAX_SECTIONS[act]:
+                    continue
             sec_norm = sec.replace("-", "").replace(" ", "").upper()
             for c in self.chunks:
                 c_sec_norm = c.section.replace("-", "").replace(" ", "").upper()
@@ -849,6 +922,13 @@ class Retriever:
         for f_alias, f_short in FOREIGN_ACTS.items():
             if re.search(rf"\b{re.escape(f_alias)}\b", q_lower):
                 return f"foreign_jurisdiction:{f_short}"
+
+        # 0.5 statutory boundary check for non-existent provisions
+        for sec, act in refs:
+            if act in MAX_SECTIONS:
+                m_sec = re.match(r"^(\d+)", sec)
+                if m_sec and int(m_sec.group(1)) > MAX_SECTIONS[act]:
+                    return f"unknown_provision:{act} {sec}"
 
         # 1. named a provision we do not have
         if cfg.refuse_on_missing_reference:

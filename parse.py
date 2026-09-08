@@ -88,6 +88,10 @@ def find_core_acts(docs: list[dict]) -> dict[str, dict]:
             found["penal"] = {"doc": doc, "text": full_clean_text}
         elif ("thecodeofcriminalprocedure" in despaced or "code of criminal procedure" in cleaned_lower) and len(txt) > 500000:
             found["criminal procedure"] = {"doc": doc, "text": full_clean_text}
+        elif "qanun" in cleaned_lower and "shahadat" in cleaned_lower and len(txt) > 100000:
+            found["qso"] = {"doc": doc, "text": txt.replace("\xad", "-")}
+        elif "civil procedure" in cleaned_lower and len(txt) > 800000:
+            found["cpc"] = {"doc": doc, "text": txt.replace("\xad", "-")}
     return found
 
 
@@ -100,6 +104,10 @@ ACTS = {
     "criminal procedure": dict(act="Code of Criminal Procedure, 1898", act_short="CrPC",
                                year=1898, pattern=SECTION_RE,
                                label=lambda n: f"Section {n}"),
+    "qso": dict(act="Qanun-e-Shahadat Order, 1984", act_short="QSO", year=1984,
+                pattern=ARTICLE_RE, label=lambda n: f"Article {n}"),
+    "cpc": dict(act="Code of Civil Procedure, 1908", act_short="CPC", year=1908,
+                pattern=SECTION_RE, label=lambda n: f"Section {n}"),
 }
 
 
@@ -148,6 +156,100 @@ def parse_constitution(text: str) -> list[dict]:
     ]
 
 
+def parse_qso(text: str) -> list[dict]:
+    """Parse all 166 Articles of the Qanun-e-Shahadat Order 1984."""
+    m_start = text.find("Order :—")
+    if m_start == -1:
+        m_start = text.find("Order :")
+    sub = text[m_start:] if m_start != -1 else text
+
+    art_pat = re.compile(
+        r"^\s*(?:[\d*]+\s*\[|\[)?(?P<num>\d+[A-Z]?)\s*\.\s*(?:\]\s*)?(?P<rest>.*)$",
+        re.M
+    )
+    matches = list(art_pat.finditer(sub))
+    sections = []
+    for i, m in enumerate(matches):
+        sec_num = m.group("num")
+        rest = m.group("rest").strip()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(sub)
+        full_body = sub[m.end():end].strip()
+
+        sep_m = re.search(r"^(.*?)(?:\s*\.–|\s*\.—|\s*\.–|\s*–—|\s*\.\s*—|\s*\.\s+)(.*)$", rest, re.S)
+        if sep_m:
+            marginal_note = sep_m.group(1).strip()
+            body_text = (sep_m.group(2).strip() + " " + full_body).strip()
+        else:
+            marginal_note = rest
+            body_text = full_body
+
+        marginal_note = re.sub(r"^(?:[\d*]+\s*\[|\[)\s*", "", marginal_note).strip()
+        needs_rev = 1 if AMENDMENT_HINTS.search(body_text) else 0
+
+        sections.append({
+            "section": sec_num,
+            "marginal_note": marginal_note,
+            "text": body_text,
+            "needs_review": needs_rev,
+        })
+    return sections
+
+
+def parse_cpc(text: str) -> list[dict]:
+    """Parse Sections 1 to 158 of Code of Civil Procedure 1908:
+    - Isolates substantive Act body (Page 8 to Page 63 before The First Schedule).
+    - Despaces OCR artifacts across words and letter sequences.
+    - Strips page headers and cleans glued footnote numbers.
+    """
+    m_start = re.search(r"Page\s+8\s+of\s+370\s*P\s*R\s*E\s*L\s*I\s*M\s*I\s*N\s*A\s*R\s*Y", text)
+    start_pos = m_start.start() if m_start else 21550
+    m_sched = re.search(r"Page\s+63\s+of\s+370\s*T\s*H\s*E\s+F\s*I\s*R\s*S\s*T\s+S\s*C\s*H\s*E\s*D\s*U\s*L\s*E", text)
+    end_pos = m_sched.start() if m_sched else 323000
+    sub = text[start_pos:end_pos]
+
+    # Strip page headers
+    sub = re.sub(r"Code of Civil Procedure, 1908\s*\[1908\s*:\s*V\]\s*\nPage\s+\d+\s+of\s+370", "\n", sub)
+
+    lines = sub.split("\n")
+    despaced_lines = []
+    for line in lines:
+        tokens = line.split("\xa0")
+        cleaned_tokens = [
+            re.sub(r"(?<=[a-zA-Z0-9,\.\[\]\(\)\-\–])\s+(?=[a-zA-Z0-9,\.\[\]\(\)\-\–])", "", t.strip())
+            for t in tokens if t.strip()
+        ]
+        despaced_lines.append(" ".join(cleaned_tokens))
+    cpc_cleaned = "\n".join(despaced_lines)
+
+    pat = re.compile(r"^\s*(?:[\d*]+\s*\[\s*|\[\s*)?(?P<num>\d+[-–]?[A-Z]{0,2})\s*\.\s*(?:\]\s*)?(?P<rest>.*)$", re.M)
+    matches = list(pat.finditer(cpc_cleaned))
+    sections = []
+    for i, m in enumerate(matches):
+        sec_num = m.group("num")
+        rest = m.group("rest").strip()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(cpc_cleaned)
+        full_body = cpc_cleaned[m.end():end].strip()
+
+        sep_m = re.search(r"^(.*?)(?:\.__\s*|_\s*_\s*|\.\s*\(|\.–|\.—|\.\s+)(.*)$", rest, re.S)
+        if sep_m:
+            marginal_note = sep_m.group(1).strip()
+            body_text = (sep_m.group(2).strip() + " " + full_body).strip()
+        else:
+            marginal_note = rest
+            body_text = full_body
+
+        marginal_note = re.sub(r"^(?:[\d*]+\s*\[|\[)\s*", "", marginal_note).strip()
+        needs_rev = 1 if AMENDMENT_HINTS.search(body_text) else 0
+
+        sections.append({
+            "section": sec_num,
+            "marginal_note": marginal_note,
+            "text": body_text,
+            "needs_review": needs_rev,
+        })
+    return sections
+
+
 def clean_crpc_ocr(text: str) -> str:
     """Repair widespread PDF OCR intra-word spacing in Code of Criminal Procedure (1898).
     In official gazette scans, words are separated by 2+ spaces, while individual letters
@@ -169,6 +271,8 @@ def make_chunk_id(act_short: str, year: int, section: str) -> str:
     sec_clean = section.lower().replace("-", "").replace("–", "").strip()
     if act_short == "Constitution":
         return f"const-{year}-a{sec_clean}"
+    if act_short == "QSO":
+        return f"qso-{year}-a{sec_clean}"
     return f"{act_short.lower()}-{year}-s{sec_clean}"
 
 
@@ -176,6 +280,8 @@ MAX_SECTIONS = {
     "Constitution": 280,
     "PPC": 511,
     "CrPC": 565,
+    "QSO": 166,
+    "CPC": 158,
 }
 
 
@@ -216,6 +322,10 @@ def main():
 
         if key == "constitution":
             sections = parse_constitution(act_text)
+        elif key == "qso":
+            sections = parse_qso(act_text)
+        elif key == "cpc":
+            sections = parse_cpc(act_text)
         elif key == "criminal procedure":
             cleaned_crpc = clean_crpc_ocr(act_text)
             sections = split_sections(cleaned_crpc, spec["pattern"])

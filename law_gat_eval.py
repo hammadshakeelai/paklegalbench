@@ -144,11 +144,121 @@ def evaluate_llm_answers(retriever: Retriever, questions: list[dict[str, Any]], 
     }
 
 
+def permute_options_circular(options: dict[str, str], correct_option: str, shift: int) -> tuple[dict[str, str], str]:
+    """Rotate options circularly across 4 folds (shift in 0..3):
+    keys = ['A', 'B', 'C', 'D']
+    Option originally at index i moves to (i + shift) % 4.
+    The correct option letter moves correspondingly.
+    """
+    keys = ["A", "B", "C", "D"]
+    orig_vals = [options[k] for k in keys]
+    correct_idx = keys.index(correct_option)
+
+    new_options = {}
+    for i in range(4):
+        new_key = keys[(i + shift) % 4]
+        new_options[new_key] = orig_vals[i]
+
+    new_correct = keys[(correct_idx + shift) % 4]
+    sorted_options = {k: new_options[k] for k in keys}
+    return sorted_options, new_correct
+
+
+def extract_predicted_option(ans: str) -> str | None:
+    """Extract predicted option letter (A, B, C, D) robustly from LLM response."""
+    import re
+    m = re.search(r"\b(?:Option\s+|Answer:\s*|\()([A-D])(?:\)|\b)", ans, re.I)
+    if m:
+        return m.group(1).upper()
+    m2 = re.search(r"^\s*([A-D])(?:\)|\.|\:|\s)", ans, re.M)
+    if m2:
+        return m2.group(1).upper()
+    m3 = re.search(r"\b([A-D])\b", ans)
+    if m3:
+        return m3.group(1).upper()
+    return None
+
+
+def evaluate_circular_llm(retriever: Retriever, questions: list[dict[str, Any]], cfg: RetrievalConfig, use_urdu: bool = False) -> dict[str, Any]:
+    """Evaluates questions across all 4 circular permutations to measure and eliminate position bias."""
+    providers = llm.available_providers()
+    if not providers:
+        return {"error": "No LLM provider key configured"}
+
+    total_q = len(questions)
+    fold_correct = [0, 0, 0, 0]
+    all_folds_correct = 0
+    letter_counts = {"A": 0, "B": 0, "C": 0, "D": 0}
+    total_evals = total_q * 4
+    results_by_q = []
+
+    print(f"\nRunning 4-Fold Circular Option Permutation on {total_q} questions ({total_evals} evaluations) via {providers[0]}...")
+
+    for idx, q in enumerate(questions, start=1):
+        q_text = (q.get("question_ur") if use_urdu else None) or q["question"]
+        results = retriever.search(q_text, cfg)
+        q_fold_results = []
+
+        for shift in range(4):
+            perm_opts, perm_correct = permute_options_circular(q["options"], q["correct_option"], shift)
+            prompt_q = (
+                f"{q_text}\n\n"
+                f"OPTIONS:\n"
+                f"A) {perm_opts['A']}\n"
+                f"B) {perm_opts['B']}\n"
+                f"C) {perm_opts['C']}\n"
+                f"D) {perm_opts['D']}\n\n"
+                f"Which option (A, B, C, or D) is correct? Provide the letter and citation."
+            )
+            try:
+                ans, prov = llm.answer(prompt_q, results)
+                pred = extract_predicted_option(ans)
+                if pred:
+                    letter_counts[pred] = letter_counts.get(pred, 0) + 1
+                is_correct = (pred == perm_correct) or (f"({perm_correct})" in ans) or (f"Option {perm_correct}" in ans)
+                if is_correct:
+                    fold_correct[shift] += 1
+                q_fold_results.append(is_correct)
+            except Exception:
+                q_fold_results.append(False)
+
+        is_consistent = all(q_fold_results)
+        if is_consistent:
+            all_folds_correct += 1
+
+        results_by_q.append({
+            "id": q["id"],
+            "subject": q["subject"],
+            "fold_correct": q_fold_results,
+            "consistent": is_consistent
+        })
+        print(f"[{idx:02d}/{total_q}] {q['id']} ({q['subject']}): Folds={['PASS' if r else 'FAIL' for r in q_fold_results]} | Consistent={'YES' if is_consistent else 'NO'}")
+
+    fold_accuracies = [round(c / total_q, 4) for c in fold_correct]
+    debiased_acc = round(sum(fold_accuracies) / 4.0, 4)
+    consistency_rate = round(all_folds_correct / total_q, 4)
+
+    pos_dist = {k: round(v / max(1, total_evals), 4) for k, v in letter_counts.items()}
+    tvd = round(0.5 * sum(abs(pos_dist[k] - 0.25) for k in ["A", "B", "C", "D"]), 4)
+
+    return {
+        "total_questions": total_q,
+        "total_evaluations": total_evals,
+        "fold_accuracies": {f"fold_{k}": acc for k, acc in enumerate(fold_accuracies)},
+        "debiased_accuracy": debiased_acc,
+        "consistency_rate": consistency_rate,
+        "position_distribution": pos_dist,
+        "position_tvd": tvd,
+        "details": results_by_q
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description="Evaluate PakLegalBench on Law GAT & Bar Exam questions")
     parser.add_argument("--corpus", default=None, help="Path to corpus JSON (default chunks.json if present, else seed_corpus.json)")
     parser.add_argument("--urdu", action="store_true", help="Evaluate on authentic Urdu Law GAT bar exam questions")
     parser.add_argument("--llm", action="store_true", help="Run LLM question answering evaluation")
+    parser.add_argument("--circular", action="store_true", help="Run 4-fold circular option permutation evaluation for position debiasing")
     parser.add_argument("--out", default=None, help="Output JSON report path")
     args = parser.parse_args()
 
@@ -185,6 +295,12 @@ def main():
         if "accuracy" in llm_stats:
             print(f"\nLLM Exam Score: {llm_stats['correct']}/{llm_stats['total']} ({llm_stats['accuracy']*100:.1f}%)")
 
+    circular_stats = None
+    if args.circular:
+        circular_stats = evaluate_circular_llm(retriever, questions, cfg, use_urdu=args.urdu)
+        if "debiased_accuracy" in circular_stats:
+            print(f"\nDebiased True Exam Score: {circular_stats['debiased_accuracy']*100:.1f}% | Consistency Rate: {circular_stats['consistency_rate']*100:.1f}% | Position TVD: {circular_stats['position_tvd']:.4f}")
+
     default_output = ROOT / "results" / ("law_gat_urdu_report.json" if args.urdu else "law_gat_report.json")
     out_path = Path(args.out) if args.out else default_output
     report = {
@@ -193,6 +309,7 @@ def main():
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "retrieval": retrieval_stats,
         "llm_answering": llm_stats,
+        "circular_debiasing": circular_stats,
     }
 
     out_path.parent.mkdir(parents=True, exist_ok=True)

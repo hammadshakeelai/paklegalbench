@@ -49,7 +49,12 @@ def build_statutory_graph():
         cid = c.get("id")
         if act and sec and cid:
             ref_to_id[(act, sec)] = cid
-            cit_label = f"{act} Section {c.get('section')}" if act != "Constitution" else f"Constitution, Article {c.get('section')}"
+            if act == "Constitution":
+                cit_label = f"Constitution, Article {c.get('section')}"
+            elif act == "QSO":
+                cit_label = f"QSO Article {c.get('section')}"
+            else:
+                cit_label = f"{act} Section {c.get('section')}"
             id_to_citation[cid] = cit_label
             valid_citations.add((act, sec))
 

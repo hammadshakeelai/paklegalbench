@@ -277,7 +277,7 @@ def test_graph_context_expansion():
 def test_law_gat_benchmark():
     import law_gat_eval
     questions = law_gat_eval.load_dataset()
-    assert len(questions) == 30
+    assert len(questions) in (30, 50)
     from index import Retriever, load_chunks, RetrievalConfig
     r = Retriever(load_chunks(), load_dense=False)
     stats = law_gat_eval.evaluate_retrieval(r, questions, RetrievalConfig())
@@ -292,7 +292,7 @@ def test_law_gat_urdu_benchmark():
     from pathlib import Path
     from index import Retriever, load_chunks, RetrievalConfig
     questions = law_gat_eval.load_dataset()
-    assert len(questions) == 30
+    assert len(questions) in (30, 50)
     corpus = "chunks.json" if Path("chunks.json").exists() else None
     r = Retriever(load_chunks(corpus), load_dense=False)
     stats = law_gat_eval.evaluate_retrieval(r, questions, RetrievalConfig(), use_urdu=True)
