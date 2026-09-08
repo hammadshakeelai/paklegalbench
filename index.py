@@ -65,6 +65,13 @@ FOREIGN_ACTS = {
 
 URDU_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
 
+# Neutralize Unicode homoglyph lookalikes (Cyrillic characters used to evade Latin filters)
+HOMOGLYPH_MAP = str.maketrans({
+    "а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "у": "y", "х": "x", "і": "i", "ј": "j",
+    "А": "A", "В": "B", "Е": "E", "К": "K", "М": "M", "Н": "H", "О": "O", "Р": "P", "С": "C",
+    "Т": "T", "Х": "X", "І": "I", "Ј": "J"
+})
+
 
 # --------------------------------------------------------------------------
 # data
@@ -146,8 +153,13 @@ STOPWORDS = {
 
 def tokenize(text: str) -> list[str]:
     """Lowercase word tokens. Keeps hyphenated forms like 489-f and 10a intact,
-    which matters a lot for section numbers. Normalizes soft hyphens and en/em dashes."""
-    cleaned = text.replace("\xad", "-").replace("–", "-").replace("—", "-")
+    which matters a lot for section numbers. Normalizes soft hyphens, dashes, and homoglyphs."""
+    cleaned = (
+        text.replace("\xad", "-")
+        .replace("–", "-")
+        .replace("—", "-")
+        .translate(HOMOGLYPH_MAP)
+    )
     return TOKEN_RE.findall(cleaned.lower())
 
 
@@ -244,7 +256,7 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
     Returns [(section, act_short_or_None), ...] with section normalised
     to uppercase, e.g. ("489-F", "PPC") or ("10A", "Constitution").
     """
-    q_norm = query.translate(URDU_DIGITS)
+    q_norm = query.translate(URDU_DIGITS).translate(HOMOGLYPH_MAP)
     q = q_norm.lower()
     act_hint = None
     for f_alias, f_short in FOREIGN_ACTS.items():

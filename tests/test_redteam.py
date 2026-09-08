@@ -139,3 +139,13 @@ def test_extreme_length_dos_rejection():
     resp = client.post("/api/chat", json={"question": long_payload})
     # Exceeds max_length=4000 -> HTTP 422 Unprocessable Entity
     assert resp.status_code == 422
+
+
+def test_unicode_homoglyph_normalization(retriever):
+    # Cyrillic 'е', 'о', 'Р' look like Latin 'e', 'o', 'P'
+    cyrillic_q = "Sеctiоn 302 РРС"
+    hits = retriever.search(cyrillic_q)
+    assert retriever.should_refuse(hits, query=cyrillic_q) is False
+    assert len(hits) > 0
+    assert hits[0].chunk.id == "ppc-1860-s302"
+
