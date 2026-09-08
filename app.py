@@ -146,19 +146,20 @@ def chat(req: ChatRequest):
             msg = (
                 f"The requested provision belongs to {act}, which is outside Pakistani jurisdiction. "
                 "PakLegalBench exclusively indexes Pakistani federal statutes (the Constitution 1973, "
-                "the Pakistan Penal Code 1860, and the Code of Criminal Procedure 1898)."
+                "the Pakistan Penal Code 1860, the Code of Criminal Procedure 1898, "
+                "the Code of Civil Procedure 1908, and the Qanun-e-Shahadat Order 1984)."
             )
         elif reason and reason.startswith("unknown_provision:"):
             prov = reason.split(":", 1)[1]
             msg = (
                 f"I could not find {prov} in the indexed corpus. "
-                "The corpus currently covers the Constitution (1973), PPC (1860), and CrPC (1898) only. "
+                "The corpus currently covers the Constitution (1973), PPC (1860), CrPC (1898), CPC (1908), and QSO (1984). "
                 "Please verify the provision number."
             )
         else:
             msg = (
                 "I could not find a provision in the indexed corpus that addresses this. "
-                "The system currently indexes the Constitution, the PPC, and the CrPC only. "
+                "The system currently indexes the Constitution, PPC, CrPC, CPC, and QSO only. "
                 "Out-of-scope topics (e.g., civil service pay scales / BPS grades, tax ordinances, corporate rules) "
                 "are intentionally refused to prevent hallucination."
             )
