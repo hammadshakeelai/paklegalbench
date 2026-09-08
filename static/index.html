@@ -221,7 +221,7 @@ function renderSources(list){
     <div class="src">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:.5rem;">
         <span class="cit">${esc(s.citation)}</span>
-        <button type="button" class="ref-pill" style="border-color:var(--ink); font-weight:600;" onclick="inspectGraph('${esc(s.id || s.citation)}')">&#9881; Graph</button>
+        <button type="button" class="ref-pill" style="border-color:var(--ink); font-weight:600;" data-graph-ref="${encodeURIComponent(s.id || s.citation)}">&#9881; Graph</button>
       </div>
       ${s.formal_citation ? `<div style="font-size:.6875rem; color:var(--ink-soft); margin-bottom:.25rem; font-style:italic;">${esc(s.formal_citation)}</div>` : ''}
       <div class="note">${esc(s.marginal_note)}</div>
@@ -232,7 +232,7 @@ function renderSources(list){
       ${s.cross_references && s.cross_references.length ? `
         <div class="cross-refs">
           <span class="cross-refs-title">Cross-references:</span>
-          ${s.cross_references.slice(0, 5).map(r => `<button type="button" class="ref-pill" onclick="inspectGraph('${esc(r)}')">${esc(r)} &nearr;</button>`).join('')}
+          ${s.cross_references.slice(0, 5).map(r => `<button type="button" class="ref-pill" data-graph-ref="${encodeURIComponent(r)}">${esc(r)} &nearr;</button>`).join('')}
         </div>` : ''}
     </div>`).join('');
 }
@@ -260,14 +260,14 @@ window.inspectGraph = async function(prov) {
     
     if (data.outbound_details && data.outbound_details.length) {
       outBox.innerHTML = data.outbound_details.map(d => `
-        <button type="button" class="graph-node-btn" onclick="inspectGraph('${esc(d.id)}')">
+        <button type="button" class="graph-node-btn" data-graph-ref="${encodeURIComponent(d.id)}">
           <strong>${esc(d.citation)}</strong>
           <span>${esc(d.marginal_note || '')}</span>
         </button>
       `).join('');
     } else if (data.outbound_citations && data.outbound_citations.length) {
       outBox.innerHTML = data.outbound_citations.map(c => `
-        <button type="button" class="graph-node-btn" onclick="inspectGraph('${esc(c)}')">
+        <button type="button" class="graph-node-btn" data-graph-ref="${encodeURIComponent(c)}">
           <strong>${esc(c)}</strong>
         </button>
       `).join('');
@@ -277,14 +277,14 @@ window.inspectGraph = async function(prov) {
     
     if (data.inbound_details && data.inbound_details.length) {
       inBox.innerHTML = data.inbound_details.map(d => `
-        <button type="button" class="graph-node-btn" onclick="inspectGraph('${esc(d.id)}')">
+        <button type="button" class="graph-node-btn" data-graph-ref="${encodeURIComponent(d.id)}">
           <strong>${esc(d.citation)}</strong>
           <span>${esc(d.marginal_note || '')}</span>
         </button>
       `).join('');
     } else if (data.inbound_citations && data.inbound_citations.length) {
       inBox.innerHTML = data.inbound_citations.map(c => `
-        <button type="button" class="graph-node-btn" onclick="inspectGraph('${esc(c)}')">
+        <button type="button" class="graph-node-btn" data-graph-ref="${encodeURIComponent(c)}">
           <strong>${esc(c)}</strong>
         </button>
       `).join('');
@@ -308,6 +308,15 @@ window.closeGraphModal = function(e) {
   if (e && e.target !== e.currentTarget && !e.target.classList.contains('close-btn')) return;
   document.getElementById('graphModal').style.display = 'none';
 };
+
+// Delegated click handler for graph inspect buttons to prevent DOM XSS
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-graph-ref]');
+  if (btn) {
+    const rawRef = btn.getAttribute('data-graph-ref');
+    if (rawRef) inspectGraph(decodeURIComponent(rawRef));
+  }
+});
 
 form.addEventListener('submit', async e => {
   e.preventDefault();

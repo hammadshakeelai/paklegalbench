@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import re
 import urllib.error
 import urllib.request
 
@@ -192,8 +193,79 @@ def build_context(hits) -> str:
     return "\n\n".join(parts)
 
 
-def answer(question: str, hits, history: list[dict] | None = None) -> tuple[str, str]:
-    """Returns (answer_text, provider_used). Raises NoProviderError if no key set."""
+CITATION_PATTERN = re.compile(
+    r"!?\[([^\]\r\n]{2,100})\](?:\(([^\)]+)\))?"
+)
+
+
+def verify_and_clean_citations(answer_text: str, hits: list) -> tuple[str, list[dict]]:
+    """
+    Parses all `[...]` citations in the answer, cross-checks against retrieved `hits`,
+    strips malicious URLs/markdown, and annotates/cleans ungrounded citations.
+    Returns: (cleaned_answer, citation_audit_log)
+    """
+    from index import extract_references, HOMOGLYPH_MAP
+
+    valid_provisions = set()
+    canonical_labels = {}
+    for h in hits:
+        c = h.chunk
+        sec_clean = re.sub(r"[\s\-\(\)]", "", c.section).upper()
+        key = (sec_clean, c.act_short)
+        valid_provisions.add(key)
+        canonical_labels[key] = c.citation()
+
+    audit_log = []
+
+    def replace_citation(match: re.Match) -> str:
+        raw_inner = match.group(1).strip()
+        trailing_url = match.group(2)  # spoofed markdown link if present
+
+        cleaned_inner = raw_inner.translate(HOMOGLYPH_MAP).strip(" .,;:-")
+        extracted = extract_references(cleaned_inner)
+
+        if not extracted:
+            audit_log.append({
+                "raw": match.group(0),
+                "status": "NON_STATUTORY",
+                "clean": f"[{cleaned_inner}]"
+            })
+            return f"[{cleaned_inner}]"
+
+        resolved_citations = []
+        is_all_grounded = True
+
+        for sec, act in extracted:
+            root_sec = re.match(r"^([0-9]+(?:[-–]?[A-Z])?)", sec)
+            sec_lookup = root_sec.group(1).replace("-", "") if root_sec else sec.replace("-", "")
+            key = (sec_lookup, act)
+
+            if key in valid_provisions:
+                canonical = canonical_labels[key]
+                resolved_citations.append(canonical)
+            else:
+                is_all_grounded = False
+                audit_log.append({
+                    "raw": match.group(0),
+                    "provision": f"{act or ''} {sec}".strip(),
+                    "status": "UNGROUNDED_OR_FABRICATED",
+                    "trailing_url_stripped": bool(trailing_url),
+                })
+
+        if is_all_grounded and resolved_citations:
+            return f"[{', '.join(dict.fromkeys(resolved_citations))}]"
+        else:
+            labels = ", ".join(f"{a or ''} {s}".strip() for s, a in extracted)
+            return f"[Unverified: {labels}]"
+
+    cleaned_text = CITATION_PATTERN.sub(replace_citation, answer_text)
+    return cleaned_text, audit_log
+
+
+def answer_with_audit(
+    question: str, hits, history: list[dict] | None = None
+) -> tuple[str, str, list[dict]]:
+    """Returns (cleaned_answer_text, provider_used, audit_log). Raises NoProviderError if no key set."""
     context = build_context(hits)
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
@@ -206,14 +278,8 @@ def answer(question: str, hits, history: list[dict] | None = None) -> tuple[str,
             }
             messages.append(clean_turn)
 
-    # Sanitize potential delimiter spoofing from question
-    safe_q = (
-        str(question)[:4000]
-        .replace("<statute", "&lt;statute")
-        .replace("</statute>", "&lt;/statute&gt;")
-        .replace("<context", "&lt;context")
-        .replace("</context>", "&lt;/context&gt;")
-    )
+    # Sanitize potential delimiter spoofing from question (case-insensitive for all tags and attributes)
+    safe_q = re.sub(r"</?(?:context|statute)\b[^>]*>", "", str(question)[:4000], flags=re.I)
 
     user_payload = f"<context>\n{context}\n</context>\n\nQUESTION: {safe_q}"
     messages.append({"role": "user", "content": user_payload})
@@ -223,7 +289,9 @@ def answer(question: str, hits, history: list[dict] | None = None) -> tuple[str,
         if not os.environ.get(env):
             continue
         try:
-            return fn(messages), name
+            raw_text = fn(messages)
+            cleaned_text, audit_log = verify_and_clean_citations(raw_text, hits)
+            return cleaned_text, name, audit_log
         except (urllib.error.HTTPError, urllib.error.URLError, KeyError, TimeoutError) as e:
             errors.append(f"{name}: {e}")
             continue
@@ -233,3 +301,10 @@ def answer(question: str, hits, history: list[dict] | None = None) -> tuple[str,
             "No API key found. Set GROQ_API_KEY, GEMINI_API_KEY or OPENROUTER_API_KEY."
         )
     raise NoProviderError("All providers failed. " + " | ".join(errors))
+
+
+def answer(question: str, hits, history: list[dict] | None = None) -> tuple[str, str]:
+    """Returns (cleaned_answer_text, provider_used). Raises NoProviderError if no key set."""
+    cleaned, prov, _ = answer_with_audit(question, hits, history)
+    return cleaned, prov
+

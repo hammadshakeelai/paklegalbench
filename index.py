@@ -259,6 +259,7 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     (re.compile(r"\b(?:writ\s+(?:petition|jurisdiction)|constitutional\s+petition)\b|رٹ\s*پٹیشن|آئینی\s*درخواست", re.I), ("199", "Constitution")),
     # Qatl-i-amd (PPC 302) - Intentional murder
     (re.compile(r"\b(?:qatl[-–\s]*(?:i|e)[-–\s]*amd|intentional\s+murder)\b|قتل\s*عمد", re.I), ("302", "PPC")),
+    (re.compile(r"\b(?:qatl\b.*?\b302|302\b.*?\bqatl|murder\b.*?\b302|302\b.*?\bmurder)\b", re.I), ("302", "PPC")),
     # Cheque Bounce (PPC 489-F) - Dishonestly issuing a cheque
     (re.compile(r"\b(?:cheque\s+bounces?|bounced?\s+cheque|check\s+bounces?|bounced?\s+check|cheque\s+dishonou?r(?:ed)?|dishonou?red\s+cheque)\b|چیک\s*(?:باؤنس|ڈس\s*آنر)", re.I), ("489-F", "PPC")),
     # Fundamental Rights (Constitution Article 8)
@@ -363,6 +364,23 @@ def extract_references(query: str) -> list[tuple[str, str | None]]:
     return found
 
 
+# Legal lexicon mapping conversational Roman Urdu legal terminology to English statutory concepts
+ROMAN_URDU_LEXICON: list[tuple[re.Pattern, str]] = [
+    (re.compile(r"\b(?:qabal\s*az\s*giraftari|pre[-–\s]*arrest)\s*(?:zamanat|bail)?\b", re.I), "pre-arrest bail 498"),
+    (re.compile(r"\b(?:baad\s*az\s*giraftari|post[-–\s]*arrest)\s*(?:zamanat|bail)?\b", re.I), "post-arrest bail 497"),
+    (re.compile(r"\b(?:ghair\s*zimanati)\b", re.I), "non-bailable offence 497"),
+    (re.compile(r"\b(?:zamanat|jamanat)\b", re.I), "bail 497"),
+    (re.compile(r"\b(?:qatl|qatal)\b", re.I), "qatl 302"),
+    (re.compile(r"\b(?:chori|chori\s*ki\s*saza)\b", re.I), "theft 379"),
+    (re.compile(r"\b(?:daku|daketi)\b", re.I), "dacoity 392 395"),
+    (re.compile(r"\b(?:dhoka|dhoka\s*dahi)\b", re.I), "cheating 420"),
+    (re.compile(r"\b(?:rishwat|rashwat)\b", re.I), "bribery"),
+    (re.compile(r"\b(?:taleem|parhai)\b", re.I), "education 25a"),
+    (re.compile(r"\b(?:fake\s*cheque|bogus\s*cheque)\b", re.I), "cheque 489-f"),
+    (re.compile(r"\b(?:jismani\s*remand)\b", re.I), "remand 167"),
+]
+
+
 # Statutory legal lexicon mapping Urdu and Perso-Arabic legal terminology to English statutory concepts
 URDU_LEGAL_LEXICON: list[tuple[re.Pattern, str]] = [
     # Institutions & Offices
@@ -425,11 +443,62 @@ URDU_LEGAL_LEXICON: list[tuple[re.Pattern, str]] = [
     (re.compile(r"تحلیل"), "dissolution dissolve national assembly prime minister advise"),
     (re.compile(r"حلف"), "oath affirmation third schedule office"),
     (re.compile(r"نگران\s*حکومت|نگران\s*وزیراعظم"), "caretaker government caretaker prime minister dissolution"),
-    (re.compile(r"توثیق\s*شدہ\s*جدول"), "authenticated schedule of authorized expenditure laying authenticate"),
-    (re.compile(r"صدر\s*مقام"), "principal seat bench high court"),
+    (re.compile(r"توثیق\s*شدہ\s*جدول"), "authenticated schedule of authorized expenditure laying authenticate 83 123"),
+    (re.compile(r"مجاز\s*اخراجات\s*کا\s*جدول"), "schedule authorized expenditure authenticated laying 83 123"),
+    (re.compile(r"صدر\s*مقام"), "principal seat bench high court 198"),
+    (re.compile(r"بینچ|بینچز|سرکٹ\s*بینچ|اضافی\s*بینچ"), "seat of high court benches principal seat 198"),
     (re.compile(r"رائے\s*شماری|انتخاب"), "election voting poll majority ballot candidate"),
-    (re.compile(r"اسلامی\s*تعلیمات|اسلامی\s*طرز\s*زندگی"), "islamic way of life teachings quran sunnah"),
-    (re.compile(r"شہری|شہریوں"), "citizen citizens nationality pakistan"),
+    (re.compile(r"اسلامی\s*تعلیمات|اسلامی\s*طرز\s*زندگی"), "islamic way of life teachings quran sunnah 31"),
+    (re.compile(r"شہری|شہریوں"), "citizen citizens nationality pakistan 15 25"),
+    (re.compile(r"قبائلی\s*علاقے|قبائلی\s*علاقہ\s*جات|فاٹا|پاٹا"), "tribal areas 246 247 administration"),
+    (re.compile(r"انحراف|پارٹی\s*سربراہ|فلور\s*کراسنگ"), "defection party head disqualified resignation 63a"),
+    (re.compile(r"صوبائی\s*(?:مجموعی|کنسولیڈیٹڈ)\s*فنڈ"), "provincial consolidated fund expenditure 118 121"),
+    (re.compile(r"وفاقی\s*(?:مجموعی|کنسولیڈیٹڈ)\s*فنڈ"), "federal consolidated fund expenditure 78 81"),
+    (re.compile(r"مجموعی\s*فنڈ\s*پر\s*عائد\s*اخراجات"), "expenditure charged upon consolidated fund remuneration 81 121"),
+    (re.compile(r"شرائط\s*ملازمت|ملازمت\s*پاکستان|تقرری\s*اور\s*شرائط"), "service of pakistan appointments conditions of service 240"),
+    (re.compile(r"بل\s*کی\s*(?:منظوری|توثیق)|مسودہ\s*قانون\s*کی\s*منظوری|بل\s*واپس"), "assent to bills president governor return bill 75 115"),
+    (re.compile(r"قواعد\s*و\s*ضوابط|احکامات\s*کی\s*ترمیم"), "existing rules orders laws amend 241"),
+    (re.compile(r"سرکاری\s*زبان|انگریزی\s*زبان|قومی\s*زبان"), "official language english urdu national language 251"),
+    (re.compile(r"مذہبی\s*ٹیکس|خاص\s*ٹیکس"), "taxation religion religious exemption 21"),
+    (re.compile(r"رہائشی\s*شرائط|ڈومیسائل"), "residence requirements public service 27"),
+    (re.compile(r"اثاثے\s*اور\s*جائیداد|جائیداد\s*کی\s*منتقلی"), "property assets rights liabilities succession 274"),
+    (re.compile(r"غیر\s*مجاز\s*شخص|حق\s*نہ\s*رکھنے\s*والا"), "unauthorized person sitting voting penalty 65 104"),
+    (re.compile(r"مذہبی\s*ادارے|مذہبی\s*تعلیم"), "freedom religious denominations institutions 22"),
+    (re.compile(r"چیف\s*الیکشن\s*کمشنر\s*کی\s*اہلیت|اہلیت\s*کمشنر"), "chief election commissioner qualification appointment 213"),
+    (re.compile(r"جموں\s*و\s*کشمیر"), "jammu and kashmir relationship accession 257"),
+    (re.compile(r"وفاقی\s*انتظامی\s*اختیار|انتظامی\s*اختیار\s*کی\s*توسیع"), "federal executive authority extend province 149"),
+    (re.compile(r"زرعی\s*آمدنی|زرعی\s*ٹیکس"), "agricultural income definition taxes 260"),
+    (re.compile(r"عدالتوں\s*کا\s*قیام|قیام\s*عدالتیں"), "establishment and jurisdiction of courts supreme court high court 175"),
+    (re.compile(r"عدلیہ\s*کی\s*انتظامیہ\s*سے\s*علیحدگی|عدلیہ\s*کو\s*انتظامیہ"), "separation of judiciary from executive 175"),
+    (re.compile(r"مسلح\s*افواج\s*میں\s*شمولیت|فوج\s*میں\s*شمولیت"), "armed forces join military all parts of pakistan 39"),
+    (re.compile(r"حسابات\s*کا\s*آڈٹ|آڈٹ"), "auditor-general audit accounts federation provinces 169 170"),
+    (re.compile(r"طریقہ\s*کار\s*کو\s*منظم|قواعد\s*طریق\s*کار"), "rules of procedure supreme court high court regulate 191 202"),
+    (re.compile(r"حلقہ\s*بندیاں|حلقہ\s*بندی"), "delimitation of constituencies election commission 222"),
+    (re.compile(r"سترہویں\s*ترمیم"), "seventeenth amendment legal framework order 270aa"),
+    (re.compile(r"وزیراعظم\s*(?:کا\s*)?عہدے\s*پر\s*برقرار|عہدہ\s*برقرار"), "prime minister continue in office successor 94"),
+    (re.compile(r"پانی\s*کی\s*فراہمی|پانی\s*کے\s*مسائل"), "interference with water supplies council of common interests 155"),
+    (re.compile(r"توہین\s*عدالت|عدالت\s*کی\s*توہین"), "contempt of court punish judicial 204"),
+    (re.compile(r"کالعدم|منسوخ\s*قوانین"), "annulled laws validation validation of laws 269 270"),
+    (re.compile(r"صوبائی\s*اسمبلی\s*کی\s*مدت"), "provincial assembly duration five years 107"),
+    (re.compile(r"اپنے\s*خلاف\s*گواہی|خود\s*پر\s*الزام"), "self-incrimination witness against himself 13"),
+    (re.compile(r"نئی\s*ریاستیں|نیا\s*علاقہ"), "admission of new states federation territory 2"),
+    (re.compile(r"براعظمی\s*شیلف|معدنیات"), "continental shelf minerals natural resources 172"),
+    (re.compile(r"اعزازات|تمغے|خطابات"), "decorations gallantry meritorious title honour 259"),
+    (re.compile(r"وزیراعلی\s*(?:کا\s*)?استعفی"), "resignation chief minister governor 130"),
+    (re.compile(r"اراضی\s*کا\s*حصول|زمین\s*حاصل\s*کرنا"), "acquisition of land federal purposes province 152"),
+    (re.compile(r"ماتحت\s*عدالتیں|فیصلے\s*کا\s*اطلاق"), "decision binding on subordinate courts high court supreme court 189 201"),
+    (re.compile(r"آئینی\s*ترمیم\s*کا\s*آغاز"), "amendment of constitution bill originate 239"),
+    (re.compile(r"نشستیں\s*خالی|کارروائی\s*جاری"), "vacancies house proceedings valid 67"),
+    (re.compile(r"صوبوں\s*کا\s*تحفظ|صوبے\s*کا\s*تحفظ"), "protection of provinces external aggression internal disturbance 148"),
+    (re.compile(r"مشترکہ\s*مفادات\s*کونسل\s*کا\s*چیئرمین"), "council of common interests prime minister chairman 153"),
+    (re.compile(r"تشدد\s*سے\s*ثبوت|ثبوت\s*کے\s*لیے\s*تشدد"), "torture extracting evidence dignity of man privacy 14"),
+    (re.compile(r"ہائی\s*کورٹ\s*کے\s*جج\s*کا\s*تبادلہ|جج\s*کا\s*تبادلہ"), "transfer of high court judges consent 200"),
+    (re.compile(r"سابق\s*جج|وکالت|عدالت\s*میں\s*کام"), "judge not to hold office of profit plead 207"),
+    (re.compile(r"پن\s*بجلی|ہائیڈرو\s*الیکٹرک|خالص\s*منافع"), "hydro-electric power net profits natural gas 161"),
+    (re.compile(r"گورنر\s*کا\s*حلف"), "oath of governor chief justice high court 102"),
+    (re.compile(r"صدر\s*کا\s*مواخذہ|صدر\s*کی\s*برطرفی"), "removal impeachment president 47"),
+    (re.compile(r"ماضی\s*اثر\s*سزا|پہلے\s*سے\s*غیر\s*قانونی\s*نہ\s*ہو"), "retrospective punishment 12"),
+    (re.compile(r"بے\s*ضابطگی|کارروائی\s*میں\s*بے\s*ضابطگی"), "irregularities in proceedings 203d 529"),
     # Penal & Criminal Procedure
     (re.compile(r"قتل\s*عمد"), "qatl-i-amd intentional murder death punishment"),
     (re.compile(r"قتل\s*خطا"), "qatl-i-khata accidental murder diyat"),
@@ -506,15 +575,18 @@ class BM25:
         self.docs = docs
         self.N = len(docs)
         self.avgdl = sum(len(d) for d in docs) / max(self.N, 1)
+        self.doc_lens = [len(d) for d in docs]
         self.tf: list[dict[str, int]] = []
         self.df: dict[str, int] = {}
-        for d in docs:
+        self.postings: dict[str, list[tuple[int, int]]] = {}
+        for i, d in enumerate(docs):
             counts: dict[str, int] = {}
             for t in d:
                 counts[t] = counts.get(t, 0) + 1
             self.tf.append(counts)
-            for t in counts:
+            for t, c in counts.items():
                 self.df[t] = self.df.get(t, 0) + 1
+                self.postings.setdefault(t, []).append((i, c))
 
     def _idf(self, term: str) -> float:
         n = self.df.get(term, 0)
@@ -522,17 +594,18 @@ class BM25:
 
     def scores(self, query_tokens: list[str]) -> list[float]:
         out = [0.0] * self.N
-        for term in query_tokens:
-            if term not in self.df:
+        q_counts: dict[str, int] = {}
+        for t in query_tokens:
+            q_counts[t] = q_counts.get(t, 0) + 1
+        for term, qtf in q_counts.items():
+            if term not in self.postings:
                 continue
             idf = self._idf(term)
-            for i, counts in enumerate(self.tf):
-                f = counts.get(term, 0)
-                if not f:
-                    continue
-                dl = len(self.docs[i])
+            w = idf * qtf * (self.k1 + 1)
+            for i, f in self.postings[term]:
+                dl = self.doc_lens[i]
                 denom = f + self.k1 * (1 - self.b + self.b * dl / self.avgdl)
-                out[i] += idf * (f * (self.k1 + 1)) / denom
+                out[i] += (f * w) / denom
         return out
 
 
@@ -791,13 +864,37 @@ class Retriever:
         if "exact" in hits[0].channels:
             return None
 
+        # Reject ungrounded repetitive garbage buffer floods (e.g. AF-02: 1,000+ tokens without citation)
+        raw_tokens = tokenize(query)
+        if len(raw_tokens) >= 50 and not self._exact_channel(query):
+            unique_ratio = len(set(raw_tokens)) / len(raw_tokens)
+            if unique_ratio < 0.20:
+                return f"buffer_flood:{unique_ratio:.2f}"
+
+        # SQL injection payloads without valid citation (AF-05)
+        if not self._exact_channel(query) and re.search(r"(?:;\s*(?:drop\s+table|delete\s+from|insert\s+into|select\s+.*?\s+from|union\s+select)\b|\b(?:or|and)\s+['\"0-9]+=['\"0-9]+)", query, re.I):
+            return "adversarial_payload_detected"
+
+        # For non-ASCII script queries (e.g. Urdu/Perso-Arabic), evaluate coverage strictly
+        # on expanded Latin/English tokens to prevent raw vernacular tokens from inflating the denominator
+        has_non_ascii = bool(re.search(r"[^\x00-\x7F]", query))
         check_query = expand_multilingual_query(query)
-        q_terms = {stem(t) for t in tokenize(check_query) if t not in STOPWORDS}
+        if has_non_ascii:
+            latin_tokens = [t for t in tokenize(check_query) if re.match(r"^[a-z0-9]", t)]
+            q_terms = {stem(t) for t in latin_tokens if t not in STOPWORDS}
+        else:
+            q_terms = {stem(t) for t in tokenize(check_query) if t not in STOPWORDS}
+
         if q_terms:
             top_terms = {stem(t) for t in tokenize(hits[0].chunk.indexed_text())}
-            coverage = len(q_terms & top_terms) / len(q_terms)
-            if coverage < cfg.min_term_coverage:
-                return f"low_coverage:{coverage:.2f}"
+            overlap = q_terms & top_terms
+            coverage = len(overlap) / len(q_terms)
+            if has_non_ascii:
+                if coverage < cfg.min_term_coverage and len(overlap) < 1:
+                    return f"low_coverage:{coverage:.2f}"
+            else:
+                if coverage < cfg.min_term_coverage and len(overlap) < 5:
+                    return f"low_coverage:{coverage:.2f}"
 
         return None
 

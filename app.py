@@ -73,6 +73,8 @@ class ChatResponse(BaseModel):
     refused: bool
     sources: list[SourceItem] = []
     provider: str | None = None
+    citation_audit: list[dict] = []
+    citation_grounded: bool = True
 
 
 @app.get("/api/health", response_model=HealthResponse)
@@ -169,15 +171,26 @@ def chat(req: ChatRequest):
 
     try:
         text, provider = llm.answer(req.question, hits, req.history)
+        cleaned_text, audit = llm.verify_and_clean_citations(text, hits)
+        is_grounded = not any(item.get("status") == "UNGROUNDED_OR_FABRICATED" for item in audit)
     except llm.NoProviderError as e:
         return {
             "answer": f"Retrieval worked, generation is not configured. {e}",
             "refused": False,
             "sources": sources,
             "provider": None,
+            "citation_audit": [],
+            "citation_grounded": True,
         }
 
-    return {"answer": text, "refused": False, "sources": sources, "provider": provider}
+    return {
+        "answer": cleaned_text,
+        "refused": False,
+        "sources": sources,
+        "provider": provider,
+        "citation_audit": audit,
+        "citation_grounded": is_grounded,
+    }
 
 
 @app.get("/api/benchmarks")

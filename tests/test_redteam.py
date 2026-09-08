@@ -163,3 +163,25 @@ def test_unicode_homoglyph_normalization(retriever):
     assert len(hits) > 0
     assert hits[0].chunk.id == "ppc-1860-s302"
 
+
+def test_af01_extreme_length_with_valid_query_passes(retriever):
+    q = (
+        "My client was walking down Mall Road in Lahore on a Tuesday morning when a dispute arose. "
+        * 80
+        + " Ultimately he was arrested under allegations of non-bailable offences. Can bail be granted in a non-bailable offence under Section 497 CrPC?"
+    )
+    hits = retriever.search(q)
+    assert retriever.should_refuse(hits, query=q) is False
+    assert len(hits) > 0
+    assert hits[0].chunk.id == "crpc-1898-s497"
+
+
+def test_af02_garbage_buffer_flood_refused(retriever):
+    q = "legal law court lawyer justice rights statute jurisdiction petition " * 120
+    hits = retriever.search(q)
+    assert retriever.should_refuse(hits, query=q) is True
+    reason = retriever.refusal_reason(q, hits)
+    assert reason is not None
+    assert reason.startswith("buffer_flood:")
+
+
