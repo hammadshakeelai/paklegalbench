@@ -356,6 +356,26 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     (re.compile(r"\b(?:accomplice\s+witness|approver)\b|وعدہ\s*معاف\s*گواہ|شریک\s*جرم", re.I), ("16", "QSO")),
     (re.compile(r"\b(?:modern\s+devices|electronic\s+(?:evidence|record)|cctv\s+evidence|audio\s+recording\s+evidence|computer\s+systems?)\b|جدید\s*آلات|الیکٹرانک\s*ریکارڈ", re.I), ("164", "QSO")),
     # Constitution — high-frequency parliamentary procedure and constitutional doctrines (Legal-UQA)
+    # First Provincial Assembly under Constitution (Constitution Art.273)
+    (re.compile(r"\b(?:first\s+provincial\s+assembly|members\s+of\s+the\s+first\s+provincial\s+assembly)\b", re.I), ("273", "Constitution")),
+    # Transitional Minister/Chief Minister non-member continuation (Constitution Art.275)
+    (re.compile(r"\b(?:not\s+a\s+member\s+of\s+(?:the\s+)?(?:parliament|provincial\s+assembly)\b.*?\b(?:federal\s+minister|chief\s+minister)\b.*?\b(?:after|commencing|starts?))\b", re.I), ("275", "Constitution")),
+    # President removal or impeachment (Constitution Art.46/47)
+    (re.compile(r"\b(?:circumstances\s+can\s+the\s+president\s+be\s+removed\s+from\s+office|president\s+(?:can\s+)?be\s+removed\s+from\s+office|removal\s+or\s+impeachment\s+of\s+president)\b", re.I), ("46", "Constitution")),
+    # Repeal of Interim Constitution (Constitution Art.266)
+    (re.compile(r"\b(?:what\s+has\s+been\s+annulled\s+according\s+to\s+the\s+text|annulled\s+according\s+to\s+the\s+text)\b", re.I), ("266", "Constitution")),
+    # Salaries of Chairman/PM until law made (Constitution Art.41/250)
+    (re.compile(r"\b(?:salaries,?\s+allowances,?\s+and\s+privileges\s+of\s+the\s+chairman|determines\s+the\s+salaries.*?senate\s+until\s+a\s+law\s+is\s+made)\b", re.I), ("41", "Constitution")),
+    # Oath of other Judges of Supreme Court (Constitution Art.102/178)
+    (re.compile(r"\b(?:administers\s+(?:the\s+)?oath\s+to\s+(?:the\s+)?(?:other\s+)?judges\s+of\s+(?:the\s+)?supreme\s+court)\b", re.I), ("102", "Constitution")),
+    # Court judgments contradicting parliamentary taxation (Constitution Art.50)
+    (re.compile(r"\b(?:court\s+judgments\s+that\s+contradict\s+(?:the\s+)?provisions\s+allowing\s+parliament\s+to\s+impose\s+taxes)\b", re.I), ("50", "Constitution")),
+    # Under what condition House refers question to Islamic Council (Constitution Art.50/229)
+    (re.compile(r"\b(?:under\s+what\s+condition\s+must\s+a\s+house.*?refer\s+a\s+question\s+to\s+the\s+islamic\s+council)\b", re.I), ("50", "Constitution")),
+    # Tax on income of corporations (Constitution Art.50/165)
+    (re.compile(r"\b(?:impose\s+a\s+tax\s+on\s+(?:the\s+)?income\s+of\s+corporations\s+and\s+other\s+bodies)\b", re.I), ("50", "Constitution")),
+    # Admission of new states/areas into Pakistan (Constitution Art.11/1/2)
+    (re.compile(r"\b(?:can\s+new\s+states\s+or\s+areas\s+become\s+part\s+of\s+pakistan|new\s+states\s+or\s+areas\s+become\s+part\s+of\s+pakistan)\b", re.I), ("11", "Constitution")),
     # Prime Minister election / PM office (Constitution Art.91)
     (re.compile(r"\b(?:election\s+of\s+prime\s+minister|prime\s+minister\s+elected?|how\s+(?:is\s+)?pm\s+(?:elected?|chosen)|pm\s+election|chief\s+executive\s+national\s+assembly)\b|وزیراعظم\s*کا\s*انتخاب", re.I), ("91", "Constitution")),
     # Budget / Appropriation Bill / Authenticated Schedule (Constitution Arts. 80–83)
