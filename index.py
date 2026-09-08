@@ -51,16 +51,30 @@ ACT_ALIASES = {
     "سی آر پی سی": "CrPC",
 }
 
-# Explicitly track foreign acts to prevent cross-jurisdictional confusion (e.g. IPC vs PPC)
+# Explicitly track foreign acts to prevent cross-jurisdictional confusion (e.g. IPC vs PPC, UK/US statutes)
 FOREIGN_ACTS = {
+    # Indian Statutes
     "indian penal code": "IPC",
     "ipc": "IPC",
     "i.p.c": "IPC",
     "i.p.c.": "IPC",
     "indian evidence act": "Indian Evidence Act",
-    "bnss": "BNSS",
+    "bharatiya nyaya sanhita": "BNS",
+    "bharatiya nagarik suraksha sanhita": "BNSS",
+    "bharatiya sakshya adhiniyam": "BSA",
     "bns": "BNS",
+    "bnss": "BNSS",
     "bsa": "BSA",
+    # UK Statutes
+    "offences against the person act": "UK OAPA",
+    "police and criminal evidence act": "UK PACE",
+    "human rights act 1998": "UK HRA",
+    "human rights act": "UK HRA",
+    # US Statutes
+    "u.s. code": "US Code",
+    "united states code": "US Code",
+    "u.s.c": "US Code",
+    "u.s.c.": "US Code",
 }
 
 URDU_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")

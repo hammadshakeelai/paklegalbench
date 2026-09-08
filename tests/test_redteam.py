@@ -123,6 +123,20 @@ def test_api_foreign_jurisdiction_message():
     assert "PakLegalBench exclusively indexes Pakistani" in data["answer"]
 
 
+def test_foreign_uk_us_and_provincial_refused(retriever):
+    foreign_queries = [
+        ("What does Section 18 of the Offences Against the Person Act provide?", "foreign_jurisdiction:UK OAPA"),
+        ("What powers of search without warrant are conferred under Section 1 of the Police and Criminal Evidence Act?", "foreign_jurisdiction:UK PACE"),
+        ("What penalties are prescribed under Section 1001 of Title 18 of the United States Code?", "foreign_jurisdiction:US Code"),
+        ("Under Section 13 of the Punjab Rented Premises Act 2009, on what grounds can a landlord seek tenant eviction?", "unknown_provision:Punjab Rented Premises Act 13"),
+    ]
+    for q, expected_reason in foreign_queries:
+        hits = retriever.search(q)
+        assert retriever.should_refuse(hits, query=q) is True
+        reason = retriever.refusal_reason(q, hits)
+        assert reason == expected_reason
+
+
 # --- 4. Adversarial Formatting & Vernacular ---
 
 
