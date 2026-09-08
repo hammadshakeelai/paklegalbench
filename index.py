@@ -91,6 +91,16 @@ class Chunk:
             return f"Constitution, {self.section_label}"
         return f"{self.act_short} {self.section_label}"
 
+    def formal_citation(self) -> str:
+        """Formal statutory citation in official Pakistani law reporter format (PLD/SCMR)."""
+        if self.act_short == "Constitution":
+            return f"{self.section_label}, Constitution of the Islamic Republic of Pakistan, 1973"
+        elif self.act_short == "PPC":
+            return f"{self.section_label}, Pakistan Penal Code, 1860 (Act XLV of 1860)"
+        elif self.act_short == "CrPC":
+            return f"{self.section_label}, Code of Criminal Procedure, 1898 (Act V of 1898)"
+        return f"{self.section_label}, {self.act}"
+
     def indexed_text(self) -> str:
         """
         What actually goes into the index. The prepended header is the
@@ -220,6 +230,11 @@ VERNACULAR_PATTERNS: list[tuple[re.Pattern, tuple[str, str]]] = [
     (re.compile(r"\b(?:cheque\s+bounces?|bounced?\s+cheque|check\s+bounces?|bounced?\s+check|cheque\s+dishonou?r(?:ed)?|dishonou?red\s+cheque)\b|چیک\s*(?:باؤنس|ڈس\s*آنر)", re.I), ("489-F", "PPC")),
     # Fundamental Rights (Constitution Article 8)
     (re.compile(r"بنیادی\s*حقوق", re.I), ("8", "Constitution")),
+    # Statutory Definitions in CrPC Section 4 (Cognizable, non-cognizable, bailable, investigation)
+    (re.compile(r"\b(?:cognizable\s+offence|definition\s+of\s+cognizable)\b|قابل\s*دست\s*اندازی", re.I), ("4", "CrPC")),
+    (re.compile(r"\b(?:non-?cognizable\s+offence|definition\s+of\s+non-?cognizable)\b|نا\s*قابل\s*دست\s*اندازی", re.I), ("4", "CrPC")),
+    # Statutory Definitions in PPC Section 299 (Culpable homicide, qatl definitions)
+    (re.compile(r"\b(?:culpable\s+homicide|definition\s+of\s+culpable\s+homicide)\b", re.I), ("299", "PPC")),
 ]
 
 

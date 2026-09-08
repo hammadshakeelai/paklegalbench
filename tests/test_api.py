@@ -145,6 +145,7 @@ def test_chat_valid_response_shape_with_mocked_llm():
         assert len(data["sources"]) > 0
         src = data["sources"][0]
         assert "citation" in src and isinstance(src["citation"], str)
+        assert "formal_citation" in src and isinstance(src["formal_citation"], str)
         assert "marginal_note" in src and isinstance(src["marginal_note"], str)
         assert "act" in src and isinstance(src["act"], str)
         assert "text" in src and isinstance(src["text"], str)

@@ -380,6 +380,32 @@ def test_stanford_hallucination_benchmark():
     assert report["safety_metrics"]["disclaimer_compliance_rate"] == 1.0
 
 
+def test_formal_citation():
+    from index import Chunk
+    c_ppc = Chunk(id="ppc-1860-s302", act="Pakistan Penal Code, 1860", act_short="PPC", year=1860,
+                  chapter="", section="302", section_label="Section 302", marginal_note="Punishment of qatl-i-amd",
+                  text="Whoever commits qatl-i-amd shall...", jurisdiction="federal", status="in_force", source_url="")
+    assert c_ppc.formal_citation() == "Section 302, Pakistan Penal Code, 1860 (Act XLV of 1860)"
+
+    c_crpc = Chunk(id="crpc-1898-s497", act="Code of Criminal Procedure, 1898", act_short="CrPC", year=1898,
+                   chapter="", section="497", section_label="Section 497", marginal_note="When bail may be taken",
+                   text="When any person accused of any non-bailable offence...", jurisdiction="federal", status="in_force", source_url="")
+    assert c_crpc.formal_citation() == "Section 497, Code of Criminal Procedure, 1898 (Act V of 1898)"
+
+    c_const = Chunk(id="const-1973-a199", act="Constitution of the Islamic Republic of Pakistan, 1973", act_short="Constitution", year=1973,
+                    chapter="", section="199", section_label="Article 199", marginal_note="Jurisdiction of High Court",
+                    text="Subject to the Constitution, a High Court may...", jurisdiction="federal", status="in_force", source_url="")
+    assert c_const.formal_citation() == "Article 199, Constitution of the Islamic Republic of Pakistan, 1973"
+
+
+def test_statutory_definitions():
+    from index import extract_references
+    assert ("4", "CrPC") in extract_references("what is a cognizable offence")
+    assert ("4", "CrPC") in extract_references("definition of non-cognizable offence")
+    assert ("299", "PPC") in extract_references("what is culpable homicide")
+    assert ("4", "CrPC") in extract_references("قابل دست اندازی جرم کی تعریف")
+
+
 
 
 

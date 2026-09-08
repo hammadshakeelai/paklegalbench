@@ -55,6 +55,7 @@ class HealthResponse(BaseModel):
 
 class SourceItem(BaseModel):
     citation: str
+    formal_citation: str = ""
     marginal_note: str
     act: str
     text: str
@@ -122,6 +123,7 @@ def chat(req: ChatRequest):
         refs = graph.get(key, [])
         sources.append({
             "citation": c.citation(),
+            "formal_citation": c.formal_citation(),
             "marginal_note": c.marginal_note,
             "act": c.act,
             "text": c.text,

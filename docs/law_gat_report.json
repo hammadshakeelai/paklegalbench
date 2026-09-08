@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-09-07T23:53:49Z",
+  "retrieval": {
+    "overall": {
+      "total_questions": 30,
+      "recall@1": 0.9667,
+      "recall@5": 1.0,
+      "mrr": 0.9833,
+      "false_refusal_rate": 0.0
+    },
+    "by_subject": {
+      "PPC": {
+        "n": 10,
+        "recall@1": 1.0,
+        "recall@5": 1.0,
+        "mrr": 1.0,
+        "false_refusals": 0
+      },
+      "CrPC": {
+        "n": 10,
+        "recall@1": 0.9,
+        "recall@5": 1.0,
+        "mrr": 0.95,
+        "false_refusals": 0
+      },
+      "Constitution": {
+        "n": 10,
+        "recall@1": 1.0,
+        "recall@5": 1.0,
+        "mrr": 1.0,
+        "false_refusals": 0
+      }
+    }
+  },
+  "llm_answering": null
+}

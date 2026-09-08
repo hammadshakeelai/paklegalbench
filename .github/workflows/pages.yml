@@ -25,7 +25,9 @@ jobs:
 
       # Regenerate results so the published page always matches the code.
       - run: pip install -r requirements.txt
-      - run: python eval.py && cp results/retrieval.json docs/retrieval.json
+      - run: |
+          python eval.py
+          cp results/*.json docs/
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

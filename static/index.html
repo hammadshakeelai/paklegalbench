@@ -212,6 +212,7 @@ function renderSources(list){
   srcBox.innerHTML = list.map(s => `
     <div class="src">
       <span class="cit">${esc(s.citation)}</span>
+      ${s.formal_citation ? `<div style="font-size:.6875rem; color:var(--ink-soft); margin-bottom:.25rem; font-style:italic;">${esc(s.formal_citation)}</div>` : ''}
       <div class="note">${esc(s.marginal_note)}</div>
       <div class="meta">
         <span>${s.score.toFixed(4)}</span>
